@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --hot src/index.ts",
+    "dev": "bun --watch src/index.ts",
     "start": "bun run src/index.ts"
   },
   "devDependencies": {
@@ -12,5 +12,9 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "express": "^4.21.2"
   }
 }

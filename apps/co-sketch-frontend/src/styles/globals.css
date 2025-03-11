@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@theme {
+  /* fonts */
+  /* --font-handwriting: ""; */
+
+  /* colors */
+  --color-primary: #4a90e2;
+}
