@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* fonts */
-  /* --font-handwriting: ""; */
-
-  /* colors */
+  /* Custom Colors */
   --color-primary: #4a90e2;
+  --color-secondry: #091543;
 }

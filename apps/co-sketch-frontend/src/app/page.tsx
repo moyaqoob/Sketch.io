@@ -1,7 +1,7 @@
 export default function Home() {
   return (
-    <div className="flex justify-center items-center text-5xl font-extrabold w-screen h-screen text-primary">
-      CoSketch frontend
+    <div className="mt-24 flex justify-center items-center text-5xl font-extrabold text-primary">
+      CoSketch Frontend
     </div>
   );
 }

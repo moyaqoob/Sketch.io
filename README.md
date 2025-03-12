@@ -48,10 +48,10 @@ You can start specific apps independently:
 bun run dev --filter=co-sketch-frontend
 
 # Start backend (Express API)
-bun run dev --filter=backend
+bun run dev --filter=co-sketch-backend
 
 # Start WebSocket server
-bun run dev --filter=websocket
+bun run dev --filter=co-sketch-websocket
 ```
 
 ## 📦 Tech Stack
