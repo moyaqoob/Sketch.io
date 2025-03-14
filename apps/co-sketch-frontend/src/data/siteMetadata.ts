@@ -13,6 +13,8 @@ const siteMetadata = {
   description:
     "A real-time collaborative sketching tool for teams to brainstorm, draw, and create together.",
 
+  header: "COSKETCH",
+
   slogan: `Sketch Together, Think Better.`,
 
   developer: "Narsi Bhati",

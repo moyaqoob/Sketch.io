@@ -2,16 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import Header from "@/components/header";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { space_grotesk } from "@/data/fonts";
 
 export const metadata: Metadata = {
   title: {
@@ -47,9 +38,7 @@ export default function RootLayout({
       <meta name="apple-mobile-web-app-title" content="CoSketch" />
       <link rel="manifest" href="/favicons/site.webmanifest" />
 
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${space_grotesk.className} antialiased`}>
         <Header />
         {children}
       </body>
