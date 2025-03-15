@@ -2,10 +2,11 @@ import React from "react";
 import Image from "next/image";
 import siteMetadata from "@/data/siteMetadata";
 import { knewave } from "@/data/fonts";
+import Link from "next/link";
 
 const Logo = () => {
   return (
-    <div className="flex justify-center items-center gap-3 ml-4">
+    <Link className="flex justify-center items-center gap-3 ml-4" href={"/"}>
       <Image
         src={"/images/logo.png"}
         alt={"CoSketch logo"}
@@ -19,7 +20,7 @@ const Logo = () => {
       >
         {siteMetadata.header}
       </h1>
-    </div>
+    </Link>
   );
 };
 

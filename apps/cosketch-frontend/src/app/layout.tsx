@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
-import Header from "@/components/header";
+
 import { space_grotesk } from "@/data/fonts";
 
 export const metadata: Metadata = {
@@ -38,7 +38,6 @@ export default function RootLayout({
       <link rel="manifest" href="/favicons/site.webmanifest" />
 
       <body className={`${space_grotesk.className} antialiased`}>
-        <Header />
         {children}
       </body>
     </html>
