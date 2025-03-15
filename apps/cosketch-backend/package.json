@@ -1,5 +1,5 @@
 {
-  "name": "co-sketch-backend",
+  "name": "cosketch-backend",
   "module": "index.ts",
   "type": "module",
   "private": true,

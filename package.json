@@ -1,5 +1,5 @@
 {
-  "name": "co-sketch",
+  "name": "cosketch",
   "private": true,
   "scripts": {
     "build": "turbo run build",

@@ -7,7 +7,7 @@ const Logo = () => {
   return (
     <div className="flex justify-center items-center gap-3 ml-4">
       <Image
-        src={"/logo.png"}
+        src={"/images/logo.png"}
         alt={"CoSketch logo"}
         width={40}
         height={40}

@@ -1,5 +1,5 @@
 {
-  "name": "co-sketch-websocket",
+  "name": "cosketch-websocket",
   "module": "index.ts",
   "type": "module",
   "private": true,

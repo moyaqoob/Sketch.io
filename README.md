@@ -45,13 +45,13 @@ You can start specific apps independently:
 
 ```sh
 # Start frontend (Next.js)
-bun run dev --filter=co-sketch-frontend
+bun run dev --filter=cosketch-frontend
 
 # Start backend (Express API)
-bun run dev --filter=co-sketch-backend
+bun run dev --filter=cosketch-backend
 
 # Start WebSocket server
-bun run dev --filter=co-sketch-websocket
+bun run dev --filter=cosketch-websocket
 ```
 
 ## 📦 Tech Stack

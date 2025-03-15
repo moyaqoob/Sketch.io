@@ -2,7 +2,7 @@ const envSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
 if (!envSiteUrl) {
   throw new Error(
-    "❌ NEXT_PUBLIC_SITE_URL is missing or empty! Check your .env file."
+    "❌ NEXT_PUBLIC_SITE_URL is missing or empty! Check your .env file.",
   );
 }
 
@@ -24,10 +24,10 @@ const siteMetadata = {
   language: "en-US",
   locale: "en-US",
 
-  socialBannerOne: `${SITE_URL}/social-banner-1.jpeg`,
-  socialBannerTwo: `${SITE_URL}/social-banner-2.jpeg`,
-  socialBannerThree: `${SITE_URL}/social-banner-3.jpeg`,
-  socialBannerFour: `${SITE_URL}/social-banner-4.jpeg`,
+  socialBannerOne: `${SITE_URL}/images/social-banner-1.jpeg`,
+  socialBannerTwo: `${SITE_URL}/images/social-banner-2.jpeg`,
+  socialBannerThree: `${SITE_URL}/images/social-banner-3.jpeg`,
+  socialBannerFour: `${SITE_URL}/images/social-banner-4.jpeg`,
 };
 
 export default siteMetadata;
