@@ -2,7 +2,7 @@ const envSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
 if (!envSiteUrl) {
   throw new Error(
-    "❌ NEXT_PUBLIC_SITE_URL is missing or empty! Check your .env file."
+    "❌ NEXT_PUBLIC_SITE_URL is missing or empty! Check your .env file.",
   );
 }
 

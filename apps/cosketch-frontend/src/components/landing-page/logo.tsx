@@ -6,7 +6,11 @@ import Link from "next/link";
 
 const Logo = () => {
   return (
-    <Link className="flex justify-center items-center gap-3 ml-1" href={"/"}>
+    <Link
+      className="flex justify-center items-center gap-3 ml-1"
+      href={"/"}
+      scroll={false}
+    >
       <Image
         src={"/images/logo.png"}
         alt={"CoSketch logo"}

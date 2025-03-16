@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "@/data/navLink";
-import MobileNav from "./mobile-nav";
+import MobileNav from "@/components/mobile-nav";
 
 const Navbar = () => {
   return (
