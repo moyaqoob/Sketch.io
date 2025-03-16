@@ -6,17 +6,18 @@ import Link from "next/link";
 
 const Logo = () => {
   return (
-    <Link className="flex justify-center items-center gap-3 ml-4" href={"/"}>
+    <Link className="flex justify-center items-center gap-3 ml-1" href={"/"}>
       <Image
         src={"/images/logo.png"}
         alt={"CoSketch logo"}
         width={40}
         height={40}
         priority
+        className="w-6 md:w-10"
       />
 
       <h1
-        className={`${knewave.className} text-secondary text-3xl hidden md:block font-extrabold`}
+        className={`${knewave.className} text-secondary md:text-3xl text-2xl font-extrabold`}
       >
         {siteMetadata.header}
       </h1>

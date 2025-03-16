@@ -1,15 +1,10 @@
 import React from "react";
-
-const NavLink = [
-  { title: "Features", href: "/features" },
-  { title: "Demo Video", href: "/demo" },
-  { title: "Try Canvas", href: "/canvas" },
-];
+import { NavLink } from "@/data/navLink";
 
 const Navbar = () => {
   return (
     <nav>
-      <ul className="flex items-center gap-6 text-gray-700 font-medium">
+      <ul className="items-center gap-6 text-gray-700 font-medium hidden md:flex">
         {NavLink.map((link, index) => (
           <li key={index}>
             <a

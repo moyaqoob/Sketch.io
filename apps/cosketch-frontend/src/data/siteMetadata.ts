@@ -2,7 +2,7 @@ const envSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
 if (!envSiteUrl) {
   throw new Error(
-    "❌ NEXT_PUBLIC_SITE_URL is missing or empty! Check your .env file.",
+    "❌ NEXT_PUBLIC_SITE_URL is missing or empty! Check your .env file."
   );
 }
 
@@ -28,6 +28,14 @@ const siteMetadata = {
   socialBannerTwo: `${SITE_URL}/images/social-banner-2.jpeg`,
   socialBannerThree: `${SITE_URL}/images/social-banner-3.jpeg`,
   socialBannerFour: `${SITE_URL}/images/social-banner-4.jpeg`,
+
+  // social links
+  github: "https://github.com/NarsiBhati-Dev/CoSketch.git",
+  linkedIn: "https://www.linkedin.com/in/narsi-bhati-b43459224/",
+  twitter: "https://x.com/NarsiBhati31",
+
+  // contacts
+  email: "narsibhati2000@gmail.com",
 };
 
 export default siteMetadata;
