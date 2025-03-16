@@ -12,9 +12,15 @@ const VideoSection = () => {
       if (videoRef.current) {
         if (entry.isIntersecting) {
           videoRef.current.muted = true;
-          videoRef.current.play();
+          if (videoRef.current.paused) {
+            videoRef.current
+              .play()
+              .catch((e) => console.error("Play error:", e));
+          }
         } else {
-          videoRef.current.pause();
+          if (!videoRef.current.paused) {
+            videoRef.current.pause();
+          }
         }
       }
     },
@@ -22,33 +28,36 @@ const VideoSection = () => {
   );
 
   useEffect(() => {
+    if (!videoRef.current) return;
+
     const observer = new IntersectionObserver(handleVideoObserver, {
       threshold: 0.5,
     });
 
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
-    }
+    observer.observe(videoRef.current);
 
-    return () => {
-      if (videoRef.current) {
-        observer.unobserve(videoRef.current);
-      }
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, [handleVideoObserver]);
 
   return (
-    <section id="demo" className="my-10 drop-shadow-md">
-      <div className="container mx-auto max-w-5xl px-4 sm:px-6">
+    <section id="demo" className="my-10 shadow-lg rounded-xl mx-4">
+      <div className="container mx-auto max-w-5xl">
         {/* Video Container */}
-        <div className="relative overflow-hidden rounded-xl shadow-2xl bg-black">
+        <div className="relative overflow-hidden rounded-xl">
           <video
             ref={videoRef}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover rounded-xl"
             muted
             loop
             playsInline
+            onCanPlay={() => {
+              if (videoRef.current) {
+                videoRef.current.muted = true;
+                videoRef.current
+                  .play()
+                  .catch((e) => console.error("Autoplay prevented:", e));
+              }
+            }}
           >
             <source src="/final.mp4" type="video/mp4" />
             Your browser does not support the video tag.

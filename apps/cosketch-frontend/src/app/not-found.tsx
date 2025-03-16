@@ -2,7 +2,7 @@ import Logo from "@/components/landing-page/logo";
 import { knewave } from "@/data/fonts";
 import React from "react";
 import Link from "next/link";
-import { RoughNotation } from "react-rough-notation";
+import Animation from "@/components/animation";
 
 const NotFound = () => {
   return (
@@ -15,14 +15,7 @@ const NotFound = () => {
       <main className="h-[80vh] w-full flex flex-col justify-center items-center text-center">
         <h1 className="text-6xl font-semibold">
           <span className={`${knewave.className} tracking-widest`}>
-            <RoughNotation
-              type="highlight"
-              show={true}
-              color="#D1FAE5"
-              animationDuration={800}
-            >
-              404
-            </RoughNotation>
+            <Animation>404</Animation>
           </span>{" "}
           | Blank Canvas!
         </h1>

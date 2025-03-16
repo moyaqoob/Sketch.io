@@ -1,23 +1,16 @@
 import { knewave } from "@/data/fonts";
 import siteMetadata from "@/data/siteMetadata";
 import React from "react";
-import { RoughNotation } from "react-rough-notation";
+import Animation from "@/components/animation";
 
 const HeroSection = () => {
   return (
-    <section className="md:max-w-4xl max-w-xl text-center mt-16  my-10 flex justify-center items-center flex-col h-[40vh]">
+    <section className="text-center flex justify-center items-center flex-col w-screen md:mb-10 bg-[#FFFCEB] md:py-56 py-24">
       {/* Headline */}
       <h1 className="text-5xl font-semibold md:text-[56px] text-center lg:flex-row flex-col flex justify-between items-center gap-4 tracking-wide">
         <span>Online </span>
         <span className={`${knewave.className}  font-light `}>
-          <RoughNotation
-            type="highlight"
-            show={true}
-            color="#D1FAE5"
-            animationDuration={800}
-          >
-            Whiteboard{" "}
-          </RoughNotation>
+          <Animation>Whiteboard</Animation>
         </span>
         <span>Made Simple </span>
       </h1>
@@ -32,7 +25,7 @@ const HeroSection = () => {
       <div className="mt-8">
         <a
           href="#"
-          className="px-6 py-3 hover:bg-primary tracking-wider text-white font-bold rounded-lg bg-primary-darker transition text-center"
+          className="px-6 py-4 hover:bg-primary tracking-wider text-white font-bold rounded-lg bg-primary-darker transition text-center md:text-lg"
         >
           Start Drawing Now
         </a>

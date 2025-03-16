@@ -10,4 +10,9 @@
   --color-primary-light: #e2e1fc;
 
   --color-secondary: #223082;
+
+  /* Custom BG Colors */
+
+  --color-bg-yello: #fffceb;
+  --color-bg-green: #d1fae5;
 }
