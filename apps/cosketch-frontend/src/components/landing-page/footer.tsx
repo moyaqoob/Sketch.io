@@ -2,6 +2,7 @@ import React from "react";
 import siteMetadata from "@/data/siteMetadata";
 import CardSocial from "./card-social";
 import Logo from "./logo";
+import Animation from "@/components/animation";
 
 const Footer = () => {
   const links = [
@@ -50,7 +51,7 @@ const Footer = () => {
                 href={`mailto:${siteMetadata.email}`}
                 className="hover:text-primary"
               >
-                {siteMetadata.email}
+                <Animation type="box">{siteMetadata.email}</Animation>
               </a>
             </li>
           </ul>
