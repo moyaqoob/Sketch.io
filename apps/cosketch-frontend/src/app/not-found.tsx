@@ -2,6 +2,7 @@ import Logo from "@/components/logo";
 import { knewave } from "@/data/fonts";
 import React from "react";
 import Link from "next/link";
+import { RoughNotation } from "react-rough-notation";
 
 const NotFound = () => {
   return (
@@ -13,8 +14,17 @@ const NotFound = () => {
       </header>
       <main className="h-[80vh] w-full flex flex-col justify-center items-center text-center">
         <h1 className="text-6xl font-semibold">
-          <span className={`${knewave.className} tracking-widest`}>404</span> |
-          Blank Canvas!
+          <span className={`${knewave.className} tracking-widest`}>
+            <RoughNotation
+              type="highlight"
+              show={true}
+              color="#D1FAE5"
+              animationDuration={800}
+            >
+              404
+            </RoughNotation>
+          </span>{" "}
+          | Blank Canvas!
         </h1>
         <p className="text-lg text-gray-600 mt-4">
           Nothing’s drawn here yet—time to create something amazing.

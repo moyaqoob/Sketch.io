@@ -15,7 +15,7 @@ const Footer = () => {
     <footer className="mt-12 text-gray-700 border-t-2 border-gray-500">
       <section className="max-w-7xl mx-auto py-10 px-6 flex flex-col md:flex-row justify-between">
         {/* Left Section - Logo & Socials */}
-        <section className="flex flex-col justify-center items-center  w-78">
+        <section className="flex flex-col justify-center items-center  md:w-78 w-full">
           <Logo />
           <section className="flex gap-4 mt-8 w-full justify-between">
             <CardSocial title="Twitter" href={siteMetadata.twitter} />
@@ -26,8 +26,8 @@ const Footer = () => {
 
         {/* Center Section - Quick Links */}
         <section className="mt-8 md:mt-0">
-          <h3 className="font-semibold text-lg text-black">Quick Links</h3>
-          <ul className="mt-3 space-y-2">
+          <h3 className="font-semibold text-xl text-black">Quick Links</h3>
+          <ul className="mt-3 space-y-2 text-lg">
             {links.map((link) => (
               <li key={link.name}>
                 <a
@@ -43,8 +43,8 @@ const Footer = () => {
 
         {/* Right Section - Contact Info */}
         <section className="mt-8 md:mt-0">
-          <h3 className="font-semibold text-lg text-black">Contact Us</h3>
-          <ul className="mt-3 space-y-2 font-medium">
+          <h3 className="font-semibold text-xl text-black">Contact Us</h3>
+          <ul className="mt-3 space-y-2 font-medium text-lg">
             <li>
               <a
                 href={`mailto:${siteMetadata.email}`}
