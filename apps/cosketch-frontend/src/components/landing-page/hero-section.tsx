@@ -5,7 +5,7 @@ import { RoughNotation } from "react-rough-notation";
 
 const HeroSection = () => {
   return (
-    <section className="md:max-w-4xl max-w-xl text-center mt-18 md:mt-28">
+    <section className="md:max-w-4xl max-w-xl text-center mt-16  my-10 flex justify-center items-center flex-col h-[40vh]">
       {/* Headline */}
       <h1 className="text-5xl font-semibold md:text-[56px] text-center lg:flex-row flex-col flex justify-between items-center gap-4 tracking-wide">
         <span>Online </span>
