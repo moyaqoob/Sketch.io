@@ -27,7 +27,7 @@ const HeroSection = () => {
           href="#"
           className="px-6 py-4 hover:bg-primary tracking-wider text-white font-bold rounded-lg bg-primary-darker transition text-center md:text-lg"
         >
-          Start Drawing Now
+          🎨 Start Drawing Now
         </a>
       </div>
     </section>

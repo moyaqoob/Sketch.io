@@ -80,6 +80,7 @@ const MobileNav = () => {
               <li key={index} className="mt-6">
                 <a
                   href={link.href}
+                  onClick={() => setIsOpen(false)}
                   className="hover:text-primary transition text-2xl"
                 >
                   {link.title}

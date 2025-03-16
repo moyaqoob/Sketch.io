@@ -37,7 +37,7 @@ export default function RootLayout({
       <meta name="apple-mobile-web-app-title" content="CoSketch" />
       <link rel="manifest" href="/favicons/site.webmanifest" />
 
-      <body className={`${space_grotesk.className} antialiased`}>
+      <body className={`${space_grotesk.className} antialiased scroll-smooth`}>
         {children}
       </body>
     </html>

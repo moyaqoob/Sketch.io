@@ -11,15 +11,18 @@ const VideoSection = () => {
 
       if (videoRef.current) {
         if (entry.isIntersecting) {
-          videoRef.current.muted = true;
           if (videoRef.current.paused) {
-            videoRef.current
-              .play()
-              .catch((e) => console.error("Play error:", e));
+            requestAnimationFrame(() => {
+              videoRef.current
+                ?.play()
+                .catch((e) => console.error("Play error:", e));
+            });
           }
         } else {
           if (!videoRef.current.paused) {
-            videoRef.current.pause();
+            requestAnimationFrame(() => {
+              videoRef.current?.pause();
+            });
           }
         }
       }
@@ -31,7 +34,7 @@ const VideoSection = () => {
     if (!videoRef.current) return;
 
     const observer = new IntersectionObserver(handleVideoObserver, {
-      threshold: 0.5,
+      threshold: 0.5, // Ensures 50% of video is in view before playing
     });
 
     observer.observe(videoRef.current);
@@ -40,7 +43,7 @@ const VideoSection = () => {
   }, [handleVideoObserver]);
 
   return (
-    <section id="demo" className="my-10 shadow-lg rounded-xl mx-4">
+    <section id="demo" className="my-10 shadow-lg rounded-xl mx-4 scroll-mt-20">
       <div className="container mx-auto max-w-5xl">
         {/* Video Container */}
         <div className="relative overflow-hidden rounded-xl">
@@ -51,11 +54,12 @@ const VideoSection = () => {
             loop
             playsInline
             onCanPlay={() => {
-              if (videoRef.current) {
-                videoRef.current.muted = true;
-                videoRef.current
-                  .play()
-                  .catch((e) => console.error("Autoplay prevented:", e));
+              if (videoRef.current?.paused) {
+                requestAnimationFrame(() => {
+                  videoRef.current
+                    ?.play()
+                    .catch((e) => console.error("Autoplay prevented:", e));
+                });
               }
             }}
           >
