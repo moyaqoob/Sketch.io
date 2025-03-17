@@ -12,7 +12,11 @@
     "lucide-react": "^0.482.0",
     "next": "15.2.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@tanstack/react-query": "^5.68.0",
+    "body-scroll-lock": "^4.0.0-beta.0",
+    "clsx": "^2.1.1",
+    "react-rough-notation": "^1.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -60,7 +60,7 @@ const MobileNav = () => {
         ref={navRef}
         className={clsx(
           isOpen ? "translate-x-0" : "translate-x-full",
-          "fixed inset-y-0 right-0 z-50 flex flex-col bg-white px-2 text-secondary transition-transform duration-500 w-screen h-screen md:w-72"
+          "fixed inset-y-0 right-0 z-50 flex flex-col bg-white px-2 text-secondary transition-transform duration-500 w-screen h-screen md:w-72",
         )}
       >
         <div
@@ -89,7 +89,7 @@ const MobileNav = () => {
             ))}
             <li className="mt-8">
               <a
-                href="/auth/signin"
+                href="/signin"
                 className="hover:bg-primary tracking-wider text-white px-6 py-3 font-bold rounded-lg bg-primary-darker transition"
               >
                 Sign In

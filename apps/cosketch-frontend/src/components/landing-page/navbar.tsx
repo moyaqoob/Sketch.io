@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "@/data/navLink";
 import MobileNav from "./mobile-nav";
+import Link from "next/link";
 
 const Navbar = () => {
   return (
@@ -18,12 +19,12 @@ const Navbar = () => {
         ))}
 
         <li>
-          <a
-            href="/auth/signin"
+          <Link
+            href="/signin"
             className="hover:bg-primary tracking-wider text-white px-6 py-3 font-bold rounded-lg bg-primary-darker transition"
           >
             Sign In
-          </a>
+          </Link>
         </li>
       </ul>
       <MobileNav />

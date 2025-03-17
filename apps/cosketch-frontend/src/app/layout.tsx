@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 
 import { space_grotesk } from "@/data/fonts";
+import ReactQueryProvider from "@/lib/react-query";
 
 export const metadata: Metadata = {
   title: {
@@ -38,7 +39,7 @@ export default function RootLayout({
       <link rel="manifest" href="/favicons/site.webmanifest" />
 
       <body className={`${space_grotesk.className} antialiased scroll-smooth`}>
-        {children}
+        <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
   );

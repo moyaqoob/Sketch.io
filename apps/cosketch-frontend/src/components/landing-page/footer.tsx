@@ -6,14 +6,14 @@ import Animation from "@/components/animation";
 
 const Footer = () => {
   const links = [
-    { name: "About Us", href: "/about" },
-    { name: "Features", href: "/features" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "Blog", href: "/blog" },
+    { name: "About Us" },
+    { name: "Features" },
+    { name: "Pricing" },
+    { name: "Blog" },
   ];
 
   return (
-    <footer className="mt-12 text-gray-700 border-t-2 border-gray-500">
+    <footer className=" text-gray-700 border-t-2 border-gray-500">
       <section className="max-w-7xl mx-auto py-10 px-6 flex flex-col md:flex-row justify-between">
         {/* Left Section - Logo & Socials */}
         <section className="flex flex-col justify-center items-center  md:w-78 w-full">
@@ -30,13 +30,11 @@ const Footer = () => {
           <h3 className="font-semibold text-xl text-black">Quick Links</h3>
           <ul className="mt-3 space-y-2 text-lg">
             {links.map((link) => (
-              <li key={link.name}>
-                <a
-                  href={link.href}
-                  className="hover:text-primary transition duration-300 font-medium"
-                >
-                  {link.name}
-                </a>
+              <li
+                key={link.name}
+                className="hover:text-primary transition duration-300 font-medium cursor-pointer"
+              >
+                {link.name}
               </li>
             ))}
           </ul>

@@ -20,10 +20,5 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "dependencies": {
-    "body-scroll-lock": "^4.0.0-beta.0",
-    "clsx": "^2.1.1",
-    "react-rough-notation": "^1.0.5"
-  }
+  ]
 }

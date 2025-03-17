@@ -21,29 +21,28 @@ const Animation = ({
   type = "highlight",
   color = "#A7EFC2",
   children,
-  brackets,
 }: AnimationProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
+    const element = ref.current; // Store the ref value
+
+    if (!element) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
         }
       },
-      { threshold: 0.3 } // Adjust visibility threshold
+      { threshold: 0.3 }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
+    observer.observe(element);
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
+      observer.unobserve(element); // Use stored ref value
     };
   }, []);
 
@@ -51,7 +50,7 @@ const Animation = ({
     <span ref={ref}>
       <RoughNotation
         type={type}
-        show={isVisible} // Only show when visible
+        show={isVisible}
         color={color}
         strokeWidth={2}
         animationDuration={800}

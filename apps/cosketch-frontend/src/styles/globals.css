@@ -13,6 +13,10 @@
 
   /* Custom BG Colors */
 
-  --color-bg-yello: #fffceb;
-  --color-bg-green: #d1fae5;
+  --color-bgyellow: #fffceb;
+  --color-bggreen: #d1fae5;
+}
+
+html {
+  scroll-behavior: smooth;
 }
