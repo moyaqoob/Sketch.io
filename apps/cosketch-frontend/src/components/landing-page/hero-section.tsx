@@ -7,7 +7,7 @@ const HeroSection = () => {
   return (
     <section className="text-center flex justify-center items-center flex-col w-screen md:mb-10 bg-[#FFFCEB] md:py-56 py-24">
       {/* Headline */}
-      <h1 className="text-5xl font-semibold md:text-[56px] text-center lg:flex-row flex-col flex justify-between items-center gap-4 tracking-wide">
+      <h1 className="text-5xl font-semibold md:text-[56px] text-center lg:flex-row flex-col flex justify-between items-center gap-4 md:gap-2 tracking-wide">
         <span>Online </span>
         <span className={`${knewave.className}  font-light `}>
           <Animation>Whiteboard</Animation>
