@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink } from "@/data/navLink";
 import MobileNav from "./mobile-nav";
 import Link from "next/link";
+import siteMetadata from "@/data/siteMetadata";
 
 const Navbar = () => {
   return (
@@ -17,6 +18,16 @@ const Navbar = () => {
             </a>
           </li>
         ))}
+
+        <li>
+          <a
+            href={siteMetadata.github}
+            target="_blank"
+            className="hover:text-primary-chubb transition text-lg"
+          >
+            Github
+          </a>
+        </li>
 
         <li>
           <Link

@@ -1,9 +1,18 @@
+import { useRouter } from "next/navigation";
+
 interface LogoutDialogBoxProps {
   isOpen: boolean;
   onClose: (e: boolean) => void;
 }
 
 export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/");
+  };
+
   if (!isOpen) {
     return null;
   }
@@ -39,7 +48,10 @@ export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
           >
             Cancel
           </button>
-          <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+          <button
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            onClick={handleLogout}
+          >
             Logout
           </button>
         </div>

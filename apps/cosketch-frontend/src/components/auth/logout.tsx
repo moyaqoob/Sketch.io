@@ -4,16 +4,16 @@ import React, { useState } from "react";
 import { LogoutDialogBox } from "@/components/dialogbox/logout-dialogbox";
 
 const Logout = () => {
-  const [DailogboxOpen, serDailogBoxOpen] = useState<boolean>(false);
+  const [DailogboxOpen, setDailogBoxOpen] = useState<boolean>(false);
 
   return (
     <>
-      <LogoutDialogBox isOpen={DailogboxOpen} onClose={serDailogBoxOpen} />
+      <LogoutDialogBox isOpen={DailogboxOpen} onClose={setDailogBoxOpen} />
       <div className="flex justify-between items-center gap-4 text-base font-bold">
         <button
-          className="px-4 py-2 bg-primary-darker hover:bg-primary rounded text-white cursor-pointer"
+          className="px-4 py-1.5 bg-primary-darker hover:bg-primary rounded text-white cursor-pointer"
           onClick={() => {
-            serDailogBoxOpen(true);
+            setDailogBoxOpen(true);
           }}
         >
           Logout

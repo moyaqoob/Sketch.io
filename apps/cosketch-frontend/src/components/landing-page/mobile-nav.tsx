@@ -11,6 +11,7 @@ import {
 import clsx from "clsx";
 import { NavLink } from "@/data/navLink";
 import Logo from "./logo";
+import siteMetadata from "@/data/siteMetadata";
 
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +52,7 @@ const MobileNav = () => {
       {/* Sidebar & Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity duration-300"
+          className="fixed inset-0 z-50  bg-opacity-50 transition-opacity duration-300"
           onClick={onToggleNav} // Close menu when clicking outside
         />
       )}
@@ -60,7 +61,7 @@ const MobileNav = () => {
         ref={navRef}
         className={clsx(
           isOpen ? "translate-x-0" : "translate-x-full",
-          "fixed inset-y-0 right-0 z-50 flex flex-col bg-white px-2 text-secondary transition-transform duration-500 w-screen h-screen md:w-72",
+          "fixed inset-y-0 right-0 z-50 flex flex-col bg-white px-2 text-secondary transition-transform duration-500 w-screen h-screen md:w-72"
         )}
       >
         <div
@@ -87,6 +88,18 @@ const MobileNav = () => {
                 </a>
               </li>
             ))}
+
+            <li className="mt-6">
+              <a
+                href={siteMetadata.github}
+                target="_blank"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-primary transition text-2xl"
+              >
+                Github
+              </a>
+            </li>
+
             <li className="mt-8">
               <a
                 href="/signin"

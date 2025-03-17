@@ -80,7 +80,7 @@ interface CardProps {
 function Card({ title, description, icon }: CardProps) {
   return (
     <div className="flex flex-col items-center bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition duration-300">
-      <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-gray-100">
+      <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-gray-100">
         {icon}
       </div>
       <h3 className="mt-4 text-xl font-semibold text-gray-900">{title}</h3>
