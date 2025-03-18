@@ -9,9 +9,15 @@ interface TokenPayload {
   username: string;
 }
 
+//  Generate JWT token
+// const token = generateToken(user.email);
+
 export const generateToken = (username: string): string => {
   return jwt.sign({ username }, JWT_SECRET as string, { expiresIn: "1d" });
 };
+
+// const decoded = verifyToken(token);
+// if (!decoded) return res.status(401).json({ message: "Invalid token" });
 
 export const verifyToken = (token: string): TokenPayload | null => {
   try {

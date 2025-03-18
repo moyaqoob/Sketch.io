@@ -7,7 +7,7 @@ export const hashPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password, 10);
 };
 
-//  verifyPassword
+// use verifyPassword
 // const isMatch = await verifyPassword("mypassword123", hashedPassword);
 export const verifyPassword = async (
   password: string,
