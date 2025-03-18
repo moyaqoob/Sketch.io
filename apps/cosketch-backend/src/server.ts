@@ -1,11 +1,11 @@
 import express, { type Request, type Response } from "express";
+import { PORT } from "./config/env";
 const app = express();
-const PORT = process.env.PORT;
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
-    message: "welcome to CoSketch",
+    message: "welcome to COSKETCH",
   });
 });
 
