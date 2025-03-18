@@ -61,6 +61,8 @@ bun run dev --filter=cosketch-websocket
 - **Next.js** → Frontend framework
 - **Express.js** → Backend API
 - **WebSockets** → Real-time collaboration
+- **PostgreSQL** → Database
+- **Docker** → Containerized database for development
 
 ## 📜 Scripts (Root Package.json)
 
@@ -75,10 +77,28 @@ bun run dev --filter=cosketch-websocket
 }
 ```
 
-## 🚧 To-Do
+## 🐳 Running PostgreSQL with Docker
 
-- [ ] Implement real-time drawing synchronization
-- [ ] Add authentication system
-- [ ] Optimize performance
+To set up and run PostgreSQL using Docker Compose
+
+### Start PostgreSQL
+
+```sh
+docker-compose -f docker/docker-compose.yml up -d
+```
+
+### Stop PostgreSQL
+
+```sh
+docker-compose -f docker/docker-compose.yml down
+```
+
+### Connect to PostgreSQL via CLI
+
+```sh
+docker exec -it <postgres_container_name> psql -U <your_db_user> -d <your_database>
+```
+
+> Replace `<postgres_container_name>`, `<your_db_user>`, and `<your_database>` accordingly.
 
 🚀 **"Sketch Together, Think Better."**

@@ -19,7 +19,7 @@ const CardSocial = ({ title, href }: CardSocialProps) => {
       href={href}
       aria-label={title}
       target="_blank"
-      className="bg-black px-8 py-2 md:py-3 rounded text-white md:hover:bg-gray-800 md:hover:scale-110 transition-all duration-300"
+      className="bg-black p-2 rounded text-white md:hover:bg-gray-800 md:hover:scale-110 transition-all duration-300"
     >
       {getIcon(title)}
     </a>

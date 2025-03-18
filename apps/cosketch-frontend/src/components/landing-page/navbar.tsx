@@ -12,7 +12,7 @@ const Navbar = () => {
           <li key={index}>
             <a
               href={link.href}
-              className="hover:text-primary-chubb transition text-lg"
+              className="hover:text-primary-chubb transition text-base"
             >
               {link.title}
             </a>
@@ -23,7 +23,7 @@ const Navbar = () => {
           <a
             href={siteMetadata.github}
             target="_blank"
-            className="hover:text-primary-chubb transition text-lg"
+            className="hover:text-primary-chubb transition text-base"
           >
             Github
           </a>
@@ -32,7 +32,7 @@ const Navbar = () => {
         <li>
           <Link
             href="/signin"
-            className="hover:bg-primary tracking-wider text-white px-6 py-3 font-bold rounded-lg bg-primary-darker transition"
+            className="hover:bg-primary tracking-wider text-white px-6 py-2 font-bold rounded-lg bg-primary-darker transition"
           >
             Sign In
           </Link>

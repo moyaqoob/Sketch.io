@@ -103,7 +103,7 @@ const MobileNav = () => {
             <li className="mt-8">
               <a
                 href="/signin"
-                className="hover:bg-primary tracking-wider text-white px-6 py-3 font-bold rounded-lg bg-primary-darker transition"
+                className="hover:bg-primary tracking-wider text-white px-6 py-2 font-bold rounded-lg bg-primary-darker transition"
               >
                 Sign In
               </a>
