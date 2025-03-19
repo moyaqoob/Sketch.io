@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavLink } from '@/data/navLink';
 import MobileNav from './mobile-nav';
-import Link from 'next/link';
 import siteMetadata from '@/data/siteMetadata';
+import Link from 'next/link';
 
 const Navbar = () => {
   return (
@@ -32,6 +32,7 @@ const Navbar = () => {
         <li>
           <Link
             href='/signin'
+            scroll={false}
             className='hover:bg-primary bg-primary-darker rounded-lg border-2 border-gray-200 px-6 py-2 font-bold tracking-wider text-white transition'
           >
             Sign In

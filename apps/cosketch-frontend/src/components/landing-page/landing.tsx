@@ -5,7 +5,7 @@ import FeaturesSection from './FeaturesSection';
 
 const Landing = () => {
   return (
-    <main className='text-secondary mt-16 flex flex-col items-center justify-center md:mt-18'>
+    <main className='text-secondary flex flex-col items-center justify-center'>
       <HeroSection />
       <VideoSection />
       <FeaturesSection />
