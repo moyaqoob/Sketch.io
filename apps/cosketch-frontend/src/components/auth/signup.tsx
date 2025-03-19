@@ -1,72 +1,72 @@
-"use client";
+'use client';
 
-import siteMetadata from "@/data/siteMetadata";
-import { X } from "lucide-react";
-import Link from "next/link";
-import React, { useState } from "react";
-import { Input, InputPassword } from "@/components/forms/input";
-import Animation from "@/components/animation";
-import { Button } from "@/components/forms/button";
+import siteMetadata from '@/data/siteMetadata';
+import { X } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState } from 'react';
+import { Input, InputPassword } from '@/components/forms/input';
+import Animation from '@/components/animation';
+import { Button } from '@/components/forms/button';
 
 const Signup = () => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
-    <main className="flex justify-center items-center h-screen w-screen bg-bggreen">
-      <section className="p-4 shadow-md w-full mx-6 sm:max-w-md max-w-sm rounded-md bg-white">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-2xl font-bold text-secondary">
-            <Animation type="underline" color="#93C5FD">
+    <main className='bg-bggreen flex h-screen w-screen items-center justify-center'>
+      <section className='mx-6 w-full max-w-sm rounded-md bg-white p-4 shadow-md sm:max-w-md'>
+        <div className='mb-3 flex items-center justify-between'>
+          <h2 className='text-secondary text-2xl font-bold'>
+            <Animation type='underline' color='#93C5FD'>
               Sign up
             </Animation>
           </h2>
 
-          <Link href="/" className="text-secondary hover:text-primary">
+          <Link href='/' className='text-secondary hover:text-primary'>
             <X size={22} />
           </Link>
         </div>
-        <p className="text-sm text-gray-700 mb-6">{siteMetadata.slogan}</p>
-        {/* <form onSubmit={handleSignup} className="space-y-4"> */}{" "}
+        <p className='mb-6 text-sm text-gray-700'>{siteMetadata.slogan}</p>
+        {/* <form onSubmit={handleSignup} className="space-y-4"> */}{' '}
         <Input
-          title={"Name"}
-          placeholder={"Enter your Name"}
-          type={"text"}
+          title={'Name'}
+          placeholder={'Enter your Name'}
+          type={'text'}
           required
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={e => setName(e.target.value)}
         />
         <Input
-          title={"Email"}
-          placeholder={"Enter your Email"}
-          type={"email"}
+          title={'Email'}
+          placeholder={'Enter your Email'}
+          type={'email'}
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
         />
         <InputPassword
-          title={"Password"}
-          placeholder="Enter your password"
+          title={'Password'}
+          placeholder='Enter your password'
           value={password}
           required
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
         />
-        <div className="pt-2">
+        <div className='pt-2'>
           <Button
-            text={"Sign in"}
+            text={'Sign in'}
             onClick={() => {}}
-            type="submit"
+            type='submit'
             disabled={false}
           />
         </div>
         {/* </form> */}
-        <div className="mt-6 text-center text-sm">
-          <p className="text-gray-600">
-            Already have an account?{" "}
+        <div className='mt-6 text-center text-sm'>
+          <p className='text-gray-600'>
+            Already have an account?{' '}
             <Link
-              href="/signin"
-              className="text-primary-darkest  hover:text-primary font-medium hover:underline transition-all duration-300"
+              href='/signin'
+              className='text-primary-darkest hover:text-primary font-medium transition-all duration-300 hover:underline'
             >
               Sign up
             </Link>

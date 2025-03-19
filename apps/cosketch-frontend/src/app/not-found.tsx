@@ -1,29 +1,29 @@
-import Logo from "@/components/landing-page/logo";
-import { knewave } from "@/data/fonts";
-import React from "react";
-import Animation from "@/components/animation";
+import Logo from '@/components/landing-page/logo';
+import { knewave } from '@/data/fonts';
+import React from 'react';
+import Animation from '@/components/animation';
 
 const NotFound = () => {
   return (
     <>
-      <header className="shadow-lg">
-        <section className="items-start flex justify-start max-w-7xl mx-auto py-4 px-4">
+      <header className='shadow-lg'>
+        <section className='mx-auto flex max-w-7xl items-start justify-start px-4 py-4'>
           <Logo />
         </section>
       </header>
-      <main className="h-[80vh] w-full flex flex-col justify-center items-center text-center">
-        <h1 className="text-6xl font-semibold">
+      <main className='flex h-[80vh] w-full flex-col items-center justify-center text-center'>
+        <h1 className='text-6xl font-semibold'>
           <span className={`${knewave.className} tracking-widest`}>
             <Animation>404</Animation>
-          </span>{" "}
+          </span>{' '}
           | Blank Canvas!
         </h1>
-        <p className="text-lg text-gray-600 mt-4">
+        <p className='mt-4 text-lg text-gray-600'>
           Nothing’s drawn here yet—time to create something amazing.
         </p>
-        <div className="mt-8 flex gap-4">
-          <a href="/canvas">
-            <span className="hover:bg-primary tracking-wider text-white px-6 py-3 font-bold rounded-lg bg-primary-darker transition">
+        <div className='mt-8 flex gap-4'>
+          <a href='/canvas'>
+            <span className='hover:bg-primary bg-primary-darker rounded-lg px-6 py-3 font-bold tracking-wider text-white transition'>
               🎨 Start Drawing
             </span>
           </a>

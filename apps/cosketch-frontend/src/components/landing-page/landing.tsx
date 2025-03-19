@@ -1,11 +1,11 @@
-import React from "react";
-import HeroSection from "./hero-section";
-import VideoSection from "./video-section";
-import FeaturesSection from "./FeaturesSection";
+import React from 'react';
+import HeroSection from './hero-section';
+import VideoSection from './video-section';
+import FeaturesSection from './FeaturesSection';
 
 const Landing = () => {
   return (
-    <main className="md:mt-18  mt-16 flex justify-center items-center flex-col text-secondary">
+    <main className='text-secondary mt-16 flex flex-col items-center justify-center md:mt-18'>
       <HeroSection />
       <VideoSection />
       <FeaturesSection />

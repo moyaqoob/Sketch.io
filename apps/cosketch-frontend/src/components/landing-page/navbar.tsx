@@ -1,18 +1,18 @@
-import React from "react";
-import { NavLink } from "@/data/navLink";
-import MobileNav from "./mobile-nav";
-import Link from "next/link";
-import siteMetadata from "@/data/siteMetadata";
+import React from 'react';
+import { NavLink } from '@/data/navLink';
+import MobileNav from './mobile-nav';
+import Link from 'next/link';
+import siteMetadata from '@/data/siteMetadata';
 
 const Navbar = () => {
   return (
     <nav>
-      <ul className="items-center gap-6 text-gray-700 font-medium hidden md:flex">
+      <ul className='hidden items-center gap-6 font-medium text-gray-700 md:flex'>
         {NavLink.map((link, index) => (
           <li key={index}>
             <a
               href={link.href}
-              className="hover:text-primary-chubb transition text-base"
+              className='hover:text-primary-chubb text-base transition'
             >
               {link.title}
             </a>
@@ -22,8 +22,8 @@ const Navbar = () => {
         <li>
           <a
             href={siteMetadata.github}
-            target="_blank"
-            className="hover:text-primary-chubb transition text-base"
+            target='_blank'
+            className='hover:text-primary-chubb text-base transition'
           >
             Github
           </a>
@@ -31,8 +31,8 @@ const Navbar = () => {
 
         <li>
           <Link
-            href="/signin"
-            className="hover:bg-primary tracking-wider text-white px-6 py-2 font-bold rounded-lg bg-primary-darker transition"
+            href='/signin'
+            className='hover:bg-primary bg-primary-darker rounded-lg border-2 border-gray-200 px-6 py-2 font-bold tracking-wider text-white transition'
           >
             Sign In
           </Link>

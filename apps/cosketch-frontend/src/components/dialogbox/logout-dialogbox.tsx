@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 interface LogoutDialogBoxProps {
   isOpen: boolean;
@@ -9,8 +9,8 @@ export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/");
+    localStorage.removeItem('token');
+    router.push('/');
   };
 
   if (!isOpen) {
@@ -19,29 +19,29 @@ export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
 
   return (
     <section
-      className="fixed inset-0 flex justify-center items-center bg-black/30 backdrop-blur-md z-[1100] h-screen"
+      className='fixed inset-0 z-[1100] flex h-screen items-center justify-center bg-black/30 backdrop-blur-md'
       onClick={() => {
         onClose(false);
       }} // Close when clicking outside
-      role="dialog"
-      aria-modal="true"
+      role='dialog'
+      aria-modal='true'
     >
       <div
-        className="bg-white p-6 rounded-xl shadow-lg w-[90%] max-w-md"
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+        className='w-[90%] max-w-md rounded-xl bg-white p-6 shadow-lg'
+        onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
       >
-        <h2 className="text-2xl font-semibold text-secondary mb-2">
+        <h2 className='text-secondary mb-2 text-2xl font-semibold'>
           Confirm Logout
         </h2>
-        <p className="text-gray-600">
+        <p className='text-gray-600'>
           Are you sure you want to logout? You will need to sign in again to
           access your rooms.
         </p>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-2 mt-6 font-bold">
+        <div className='mt-6 flex justify-end gap-2 font-bold'>
           <button
-            className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-100 transition"
+            className='rounded-lg border px-4 py-2 text-gray-600 transition hover:bg-gray-100'
             onClick={() => {
               onClose(false);
             }}
@@ -49,7 +49,7 @@ export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            className='rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700'
             onClick={handleLogout}
           >
             Logout

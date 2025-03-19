@@ -1,14 +1,14 @@
-import { MetadataRoute } from "next";
-import siteMetadata from "@/data/siteMetadata";
+import { MetadataRoute } from 'next';
+import siteMetadata from '@/data/siteMetadata';
 
-export const dynamic = "force-static";
+export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = siteMetadata.siteUrl;
 
-  const routes = ["", "contact-us"].map((route) => ({
+  const routes = ['', 'contact-us'].map(route => ({
     url: `${siteUrl}/${route}`,
-    lastModified: new Date().toISOString().split("T")[0],
+    lastModified: new Date().toISOString().split('T')[0],
   }));
 
   return [...routes];

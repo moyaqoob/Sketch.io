@@ -1,5 +1,5 @@
-import { EyeOff, Eye } from "lucide-react";
-import React, { useState } from "react";
+import { EyeOff, Eye } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface InputProps {
   title: string;
@@ -21,21 +21,21 @@ export const Input = ({
   error,
 }: InputProps) => {
   return (
-    <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+    <div className='mb-4'>
+      <label className='mb-1 block text-sm font-medium text-gray-700'>
         {title}
-        {required && <span className="text-red-500">*</span>}
+        {required && <span className='text-red-500'>*</span>}
       </label>
       <input
         type={type}
-        className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        className='focus:ring-primary w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:border-transparent focus:ring-2 focus:outline-none'
         placeholder={placeholder}
         required={required}
         value={value}
         onChange={onChange}
       />
       {error && (
-        <div className="mt-2 text-red-500 text-sm text-right">{error}</div>
+        <div className='mt-2 text-right text-sm text-red-500'>{error}</div>
       )}
     </div>
   );
@@ -54,7 +54,7 @@ export const InputPassword = ({
   title,
   value,
   onChange,
-  placeholder = "Enter password",
+  placeholder = 'Enter password',
   required = false,
   error,
 }: InputPasswordProps) => {
@@ -65,35 +65,35 @@ export const InputPassword = ({
   };
 
   return (
-    <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+    <div className='mb-4'>
+      <label className='mb-1 block text-sm font-medium text-gray-700'>
         {title}
-        {required && <span className="text-red-500">*</span>}
+        {required && <span className='text-red-500'>*</span>}
       </label>
-      <div className="relative">
+      <div className='relative'>
         <input
-          type={showPassword ? "text" : "password"}
-          className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-10"
+          type={showPassword ? 'text' : 'password'}
+          className='focus:ring-primary w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-black focus:border-transparent focus:ring-2 focus:outline-none'
           placeholder={placeholder}
           required={required}
           value={value}
           onChange={onChange}
         />
         <button
-          type="button"
+          type='button'
           onClick={togglePasswordVisibility}
-          className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700 focus:outline-none"
-          aria-label={showPassword ? "Hide password" : "Show password"}
+          className='absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700 focus:outline-none'
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
           {showPassword ? (
-            <EyeOff className="h-5 w-5" />
+            <EyeOff className='h-5 w-5' />
           ) : (
-            <Eye className="h-5 w-5" />
+            <Eye className='h-5 w-5' />
           )}
         </button>
       </div>
       {error && (
-        <div className="mt-2 text-red-500 text-sm text-right">{error}</div>
+        <div className='mt-2 text-right text-sm text-red-500'>{error}</div>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from 'react';
 
 const VideoSection = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -15,7 +15,7 @@ const VideoSection = () => {
             requestAnimationFrame(() => {
               videoRef.current
                 ?.play()
-                .catch((e) => console.error("Play error:", e));
+                .catch(e => console.error('Play error:', e));
             });
           }
         } else {
@@ -27,7 +27,7 @@ const VideoSection = () => {
         }
       }
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -43,13 +43,13 @@ const VideoSection = () => {
   }, [handleVideoObserver]);
 
   return (
-    <section id="demo" className="my-10 shadow-lg rounded-xl mx-4 scroll-mt-20">
-      <div className="container mx-auto max-w-5xl">
+    <section id='demo' className='mx-4 my-10 scroll-mt-20 rounded-xl shadow-lg'>
+      <div className='container mx-auto max-w-5xl'>
         {/* Video Container */}
-        <div className="relative overflow-hidden rounded-xl">
+        <div className='relative overflow-hidden rounded-xl'>
           <video
             ref={videoRef}
-            className="w-full h-full object-cover rounded-xl"
+            className='h-full w-full rounded-xl object-cover'
             muted
             loop
             playsInline
@@ -58,12 +58,12 @@ const VideoSection = () => {
                 requestAnimationFrame(() => {
                   videoRef.current
                     ?.play()
-                    .catch((e) => console.error("Autoplay prevented:", e));
+                    .catch(e => console.error('Autoplay prevented:', e));
                 });
               }
             }}
           >
-            <source src="/final.mp4" type="video/mp4" />
+            <source src='/final.mp4' type='video/mp4' />
             Your browser does not support the video tag.
           </video>
         </div>
