@@ -1,11 +1,10 @@
 {
-  "name": "cosketch-websocket",
+  "name": "@repo/database",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "start": "bun run src/index.ts"
+    "generate": "bun run prisma generate"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -14,7 +13,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@types/ws": "^8.18.0",
-    "ws": "^8.18.1"
+    "@prisma/client": "^6.5.0",
+    "prisma": "^6.5.0"
   }
 }
