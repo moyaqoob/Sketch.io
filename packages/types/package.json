@@ -1,11 +1,8 @@
 {
-  "name": "@repo/database",
+  "name": "@repo/types",
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "scripts": {
-    "generate": "bun run prisma generate"
-  },
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -13,7 +10,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@prisma/client": "^6.5.0",
-    "prisma": "^6.5.0"
+    "zod": "^3.24.2"
   }
 }

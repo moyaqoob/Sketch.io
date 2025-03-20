@@ -1,17 +1,23 @@
 import bcrypt from "bcrypt";
 
-// use hashPassword
-// const hashedPassword = await hashPassword(userPassword);
-
-export const hashPassword = async (password: string): Promise<string> => {
-  return await bcrypt.hash(password, 10);
+/**
+ * Hash a password using bcrypt with a salt round of 10.
+ * @param password - The plain text password to hash.
+ * @returns The hashed password as a string.
+ */
+export const hashPassword = (password: string): Promise<string> => {
+  return bcrypt.hash(password, 10);
 };
 
-// use verifyPassword
-// const isMatch = await verifyPassword("mypassword123", hashedPassword);
-export const verifyPassword = async (
+/**
+ * Verify if a given password matches a hashed password.
+ * @param password - The plain text password to check.
+ * @param hashedPassword - The stored hashed password.
+ * @returns A boolean indicating whether the passwords match.
+ */
+export const verifyPassword = (
   password: string,
   hashedPassword: string
-) => {
-  return await bcrypt.compare(password, hashedPassword);
+): Promise<boolean> => {
+  return bcrypt.compare(password, hashedPassword);
 };
