@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate": "bun run prisma generate"
+    "generate": "bun prisma generate",
+    "reset": "bun prisma migrate reset"
   },
   "devDependencies": {
     "@types/bun": "latest"

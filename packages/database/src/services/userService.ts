@@ -14,7 +14,7 @@ export const createUser = async (
   });
 };
 
-export const getUserByUsername = async (email: string) => {
+export const getUserByEmail = async (email: string) => {
   return await client.user.findUnique({
     where: {
       email,
