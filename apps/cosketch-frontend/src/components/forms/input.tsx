@@ -9,6 +9,7 @@ interface InputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
+  autoComplete?: 'name' | 'email';
 }
 
 export const Input = ({
@@ -19,6 +20,7 @@ export const Input = ({
   value,
   onChange,
   error,
+  autoComplete,
 }: InputProps) => {
   return (
     <div className='mb-4'>
@@ -33,6 +35,7 @@ export const Input = ({
         required={required}
         value={value}
         onChange={onChange}
+        autoComplete={autoComplete}
       />
       {error && (
         <div className='mt-2 text-right text-sm text-red-500'>{error}</div>
@@ -48,6 +51,7 @@ interface InputPasswordProps {
   placeholder?: string;
   required?: boolean;
   error?: string;
+  autoComplete: 'new-password' | 'current-password';
 }
 
 export const InputPassword = ({
@@ -57,6 +61,7 @@ export const InputPassword = ({
   placeholder = 'Enter password',
   required = false,
   error,
+  autoComplete,
 }: InputPasswordProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -77,6 +82,7 @@ export const InputPassword = ({
           placeholder={placeholder}
           required={required}
           value={value}
+          autoComplete={autoComplete}
           onChange={onChange}
         />
         <button

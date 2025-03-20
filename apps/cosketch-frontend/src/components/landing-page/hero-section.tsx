@@ -5,7 +5,7 @@ import Animation from '@/components/animation';
 
 const HeroSection = () => {
   return (
-    <section className='flex w-screen flex-col items-center justify-center bg-[#FFFCEB] py-24 text-center md:mb-10 md:py-56'>
+    <section className='mt-18 flex w-screen flex-col items-center justify-center bg-[#FFFCEB] py-24 text-center md:mb-10 md:py-56'>
       {/* Headline */}
       <h1 className='flex flex-col items-center justify-between gap-4 text-center text-5xl font-semibold tracking-wide md:gap-2 md:text-[56px] lg:flex-row'>
         <span>Online </span>
