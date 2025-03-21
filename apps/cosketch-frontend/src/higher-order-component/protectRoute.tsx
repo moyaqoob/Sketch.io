@@ -1,6 +1,7 @@
 'use client';
 
 import { authorize } from '@/api/auth';
+import Spinner from '@/components/spinner';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -34,14 +35,16 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
     } else {
       authorizeMutation.mutate({ token: storedToken });
     }
-  });
+
+    return () => setIsLoading(false);
+  }, []);
 
   if (isLoading || authorizeMutation.isPending) {
     return (
       <div className='bg-bgyellow flex h-screen items-center justify-center'>
         <div className='flex flex-col items-center space-y-4'>
           {/* Animated Spinner */}
-          <div className='border-t-primary h-12 w-12 animate-spin rounded-full border-4 border-gray-300' />
+          <Spinner />
           {/* Loading Text */}
           <p className='text-xl font-medium text-gray-700'>Verifying...</p>
         </div>

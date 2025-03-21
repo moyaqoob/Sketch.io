@@ -66,7 +66,7 @@ const Signin = () => {
           <div className='relative inline-block'>
             <h2 className='text-secondary relative text-2xl font-bold'>
               <Animation type='underline' color='#93C5FD'>
-                Sign up
+                Sign in
               </Animation>
             </h2>
           </div>

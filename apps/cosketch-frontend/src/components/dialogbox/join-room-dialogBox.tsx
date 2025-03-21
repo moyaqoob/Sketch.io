@@ -38,12 +38,12 @@ const JoinRoomDialogBox = ({ onClose }: JoinRoomDialogBoxProps) => {
         {/* Action Buttons */}
         <div className='mt-6 flex justify-end gap-2 font-bold'>
           <button
-            className='rounded-lg border px-4 py-2 text-gray-600 transition hover:bg-gray-100'
+            className='cursor-pointer rounded-lg border px-4 py-2 text-gray-600 transition hover:bg-gray-100'
             onClick={() => onClose(false)}
           >
             Cancel
           </button>
-          <button className='bg-primary-darker hover:bg-primary-chubb rounded-lg px-4 py-2 text-white transition'>
+          <button className='bg-primary-darker hover:bg-primary-chubb cursor-pointer rounded-lg px-4 py-2 text-white transition'>
             Join Room
           </button>
         </div>
