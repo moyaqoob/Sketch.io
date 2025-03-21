@@ -24,7 +24,7 @@ const HeroSection = () => {
       {/* Call-to-Action Buttons */}
       <div className='mt-8'>
         <a
-          href='#'
+          href='/dashboard'
           className='hover:bg-primary bg-primary-darker rounded-lg px-6 py-4 text-center font-bold tracking-wider text-white transition md:text-lg'
         >
           🎨 Start Drawing Now

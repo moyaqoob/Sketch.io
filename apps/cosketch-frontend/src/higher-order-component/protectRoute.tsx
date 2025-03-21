@@ -12,12 +12,13 @@ interface ProtectRouteProps {
 
 const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
   const router = useRouter();
-  const [token, setToken] = useState<string | null | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
   const authorizeMutation = useMutation({
     mutationFn: authorize,
     onSuccess: data => {
       toast.success(data.message || 'Authentication successful');
+      setIsLoading(false);
     },
     onError: (err: Error) => {
       toast.error(err.message || 'Unauthorized access');
@@ -31,15 +32,19 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
     if (!storedToken) {
       router.replace('/signin');
     } else {
-      setToken(storedToken);
       authorizeMutation.mutate({ token: storedToken });
     }
-  }, []);
+  });
 
-  if (token === undefined || authorizeMutation.isPending || token === null) {
+  if (isLoading || authorizeMutation.isPending) {
     return (
-      <div className='flex h-screen items-center justify-center'>
-        <p className='text-lg font-medium'>Verifying...</p>
+      <div className='bg-bgyellow flex h-screen items-center justify-center'>
+        <div className='flex flex-col items-center space-y-4'>
+          {/* Animated Spinner */}
+          <div className='border-t-primary h-12 w-12 animate-spin rounded-full border-4 border-gray-300' />
+          {/* Loading Text */}
+          <p className='text-xl font-medium text-gray-700'>Verifying...</p>
+        </div>
       </div>
     );
   }

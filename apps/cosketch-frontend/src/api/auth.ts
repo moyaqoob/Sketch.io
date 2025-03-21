@@ -34,6 +34,8 @@ export const signinUser = async (userData: {
 }) => {
   try {
     const response = await axios.post(`${HTTP_URL}/auth/signin`, userData);
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
     return response.data;
   } catch (error) {
     const err = error as AuthError;

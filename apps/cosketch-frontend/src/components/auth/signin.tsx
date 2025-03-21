@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { signinUser } from '@/api/auth';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import HashLoader from 'react-spinners/HashLoader';
 
 const Signin = () => {
   const [email, setEmail] = useState('');
@@ -96,7 +97,19 @@ const Signin = () => {
             onChange={e => setPassword(e.target.value)}
           />
           <div className='pt-2'>
-            <Button text={'Sign in'} type='submit' disabled={false} />
+            <Button
+              text={
+                signinMutation.isPending ? (
+                  <div className='flex justify-center'>
+                    <HashLoader color='#ffffff' size={20} />
+                  </div>
+                ) : (
+                  'Signin'
+                )
+              }
+              type='submit'
+              disabled={false}
+            />
           </div>
         </form>
 

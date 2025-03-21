@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import HashLoader from 'react-spinners/HashLoader';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -112,7 +113,19 @@ const Signup = () => {
             onChange={e => setPassword(e.target.value)}
           />
           <div className='pt-2'>
-            <Button text={'Sign in'} type='submit' disabled={false} />
+            <Button
+              text={
+                signupMutation.isPending ? (
+                  <div className='flex justify-center'>
+                    <HashLoader color='#ffffff' size={20} />
+                  </div>
+                ) : (
+                  'Signup'
+                )
+              }
+              type='submit'
+              disabled={false}
+            />
           </div>
         </form>
         <div className='mt-6 text-center text-sm'>
