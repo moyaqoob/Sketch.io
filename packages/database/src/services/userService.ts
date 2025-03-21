@@ -21,3 +21,11 @@ export const getUserByEmail = async (email: string) => {
     },
   });
 };
+
+export const getUserById = async (id: string) => {
+  return await client.user.findUnique({
+    where: {
+      id,
+    },
+  });
+};

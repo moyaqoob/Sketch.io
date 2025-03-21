@@ -28,7 +28,7 @@ const Signin = () => {
     mutationFn: signinUser,
     onSuccess: data => {
       toast.success('User Signed in Successfully');
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('token', `Bearer ${data.token}`);
       route.push('./dashboard');
     },
     onError: err => {

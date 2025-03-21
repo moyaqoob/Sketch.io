@@ -1,10 +1,11 @@
 import { type Request, type Response } from "express";
 import { HttpStatus } from "../utils/HttpStatus";
-import { createUser } from "@repo/database";
+import { createUser, getUserById } from "@repo/database";
 import { hashPassword, verifyPassword } from "../utils/bcrypt";
 import { CreateUserSchema, SigninSchema } from "@repo/types";
 import { getUserByEmail } from "@repo/database";
 import { generateToken } from "../utils/jwt";
+import type { AuthRequest } from "../utils/request-type";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -39,6 +40,7 @@ export const signup = async (req: Request, res: Response) => {
       message: "User created successfully",
       user: newUser,
     });
+    return;
   } catch (error) {
     console.error("Signup Error:", error);
     res
@@ -53,10 +55,11 @@ export const signin = async (req: Request, res: Response) => {
     // Validate input
     const parsedData = SigninSchema.safeParse(req.body);
     if (!parsedData.success) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
+      res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         error: parsedData.error.errors,
       });
+      return;
     }
 
     const { email, password } = parsedData.data;
@@ -64,36 +67,76 @@ export const signin = async (req: Request, res: Response) => {
     // Fetch user from database
     const user = await getUserByEmail(email);
     if (!user) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
+      res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
         error: "Invalid email or password",
       });
+      return;
     }
 
     // Compare passwords
     const isPasswordValid = await verifyPassword(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({
+      res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
         error: "Invalid email or password",
       });
+      return;
     }
 
     // Generate JWT token
     const token = generateToken(user.id);
 
     // Send response
-    return res.status(HttpStatus.SUCCESS).json({
+    res.status(HttpStatus.SUCCESS).json({
       success: true,
       message: "Signin successful",
       token,
     });
+    return;
   } catch (error) {
     console.error("Signin error:", error);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: "Internal server error",
     });
+    return;
+  }
+};
+
+export const me = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.id) {
+      res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        error: "Unauthorized: No user ID found",
+      });
+      return;
+    }
+
+    const user = await getUserById(req.id);
+
+    if (!user) {
+      res.status(HttpStatus.NOT_FOUND).json({
+        success: false,
+        error: "User not found",
+      });
+      return;
+    }
+
+    res.status(HttpStatus.SUCCESS).json({
+      success: true,
+      message: `Welcome ${user.name}`,
+      name: user.name,
+    });
+    return;
+  } catch (error) {
+    console.error("Me Route Error:", error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      error: "Internal server error",
+    });
+    return;
   }
 };
