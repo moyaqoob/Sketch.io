@@ -1,40 +1,40 @@
 import axios from 'axios';
 import { HTTP_URL } from '@/config';
 
-interface SignupData {
-  name: string;
+export const signupUser = async (userData: {
   email: string;
   password: string;
-}
-
-export const signupUser = async ({ name, email, password }: SignupData) => {
+  name: string;
+}) => {
   try {
-    const response = await axios.post(`${HTTP_URL}/auth/signup`, {
-      name,
-      email,
-      password,
-    });
-
+    const response = await axios.post(`${HTTP_URL}/auth/signup`, userData);
     return response.data;
-  } catch {
-    console.log('Internal server errr');
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(
+        error.response.data.message || 'Signup failed. Please try again.',
+      );
+    } else {
+      throw new Error('Network error. Please check your connection.');
+    }
   }
 };
 
-interface SigninData {
+export const signinUser = async (userData: {
   email: string;
   password: string;
-}
-
-export const signinUser = async ({ email, password }: SigninData) => {
+}) => {
   try {
-    const response = await axios.post(`${HTTP_URL}/auth/signin`, {
-      email,
-      password,
-    });
-
+    const response = await axios.post(`${HTTP_URL}/auth/signin`, userData);
     return response.data;
-  } catch {
-    console.log('Internal server errr');
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(
+        error.response.data.message ||
+          'Sign-in failed. Please check your credentials.',
+      );
+    } else {
+      throw new Error('Network error. Please check your connection.');
+    }
   }
 };
