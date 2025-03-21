@@ -1,5 +1,5 @@
 import { type Response, type NextFunction } from "express";
-import { verifyToken } from "../utils/jwt";
+import { verifyToken } from "@repo/backend-common";
 import type { AuthRequest } from "../utils/request-type";
 
 export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {

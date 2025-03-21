@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 // Email Schema
-const emailSchema = z
+export const emailSchema = z
   .string()
   .trim()
   .email({ message: "Please enter a valid email address" })
   .nonempty({ message: "Email is required" });
 
 // Password Schema
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .trim()
   .nonempty({ message: "Password is required" })
@@ -26,7 +26,7 @@ const passwordSchema = z
   });
 
 // Name Schema
-const nameSchema = z
+export const nameSchema = z
   .string()
   .trim()
   .nonempty({ message: "Name is required" })
@@ -34,14 +34,14 @@ const nameSchema = z
   .max(50, { message: "Name cannot exceed 50 characters" });
 
 // Create User Schema (Signup)
-const CreateUserSchema = z.object({
+export const CreateUserSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   name: nameSchema,
 });
 
 // Signin Schema
-const SigninSchema = z.object({
+export const SigninSchema = z.object({
   email: emailSchema,
   password: z
     .string()
@@ -51,19 +51,10 @@ const SigninSchema = z.object({
 });
 
 // Create Room Schema
-const CreateRoomSchema = z.object({
+export const CreateRoomSchema = z.object({
   roomName: z
     .string()
     .trim()
     .nonempty({ message: "Room name is required" })
     .min(3, { message: "Room name must be at least 3 characters long" }),
 });
-
-export {
-  emailSchema,
-  passwordSchema,
-  nameSchema,
-  CreateUserSchema,
-  SigninSchema,
-  CreateRoomSchema,
-};

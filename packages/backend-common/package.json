@@ -1,5 +1,5 @@
 {
-  "name": "@repo/types",
+  "name": "@repo/backend-common",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -10,6 +10,8 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
+    "jsonwebtoken": "^9.0.2",
     "zod": "^3.24.2"
   }
 }

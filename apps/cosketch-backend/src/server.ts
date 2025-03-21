@@ -4,6 +4,7 @@ import { PORT } from "./config/env";
 
 // import routers
 import authRouter from "./routes/auth.routes";
+import roomRouter from "./routes/room.routes";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 
 app.use(express.json());
@@ -28,6 +29,7 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/room", roomRouter);
 
 app.listen(PORT, () => {
   console.log(`[ server ] is listening on : http://localhost:${PORT}`);

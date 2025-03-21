@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { Input, InputPassword } from '@/components/forms/input';
 import Animation from '@/components/animation';
 import { Button } from '@/components/forms/button';
-import { CreateUserSchema } from '@repo/types';
+import { CreateUserSchema } from '@repo/backend-common';
 import { signupUser } from '@/api/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';

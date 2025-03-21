@@ -14,7 +14,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@repo/types": "*",
+    "@repo/backend-common": "*",
     "@repo/database": "*",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",

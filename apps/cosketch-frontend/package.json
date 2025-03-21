@@ -10,7 +10,7 @@
     "lint:fix": "next lint --fix && prettier --write ."
   },
   "dependencies": {
-    "@repo/types": "*",
+    "@repo/backend-common": "*",
     "@tanstack/react-query": "^5.68.0",
     "axios": "^1.8.4",
     "body-scroll-lock": "^4.0.0-beta.0",

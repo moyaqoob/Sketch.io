@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 import siteMetadata from '@/data/siteMetadata';
 import Animation from '@/components/animation';
 import { Button } from '@/components/forms/button';
-import { SigninSchema } from '@repo/types';
+import { SigninSchema } from '@repo/backend-common';
 import { useRouter } from 'next/navigation';
 import { signinUser } from '@/api/auth';
 import { useMutation } from '@tanstack/react-query';
