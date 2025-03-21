@@ -1,4 +1,4 @@
-const envSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+import { envSiteUrl } from '@/config';
 
 if (!envSiteUrl) {
   throw new Error(

@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 
 import { space_grotesk } from '@/data/fonts';
 import ReactQueryProvider from '@/lib/react-query';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: {
@@ -39,7 +40,10 @@ export default function RootLayout({
       <link rel='manifest' href='/favicons/site.webmanifest' />
 
       <body className={`${space_grotesk.className} scroll-smooth antialiased`}>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          {children}
+          <Toaster position='top-right' reverseOrder={false} />
+        </ReactQueryProvider>
       </body>
     </html>
   );

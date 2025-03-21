@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 interface LogoutDialogBoxProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    toast.success('Logged out successfully');
     router.push('/');
   };
 

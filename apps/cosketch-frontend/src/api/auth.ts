@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { HTTP_URL } from '@/config';
 
 interface SignupData {
   name: string;
@@ -8,7 +9,7 @@ interface SignupData {
 
 export const signupUser = async ({ name, email, password }: SignupData) => {
   try {
-    const response = await axios.post('http://localhost:9000/auth/signup', {
+    const response = await axios.post(`${HTTP_URL}/auth/signup`, {
       name,
       email,
       password,
@@ -27,7 +28,7 @@ interface SigninData {
 
 export const signinUser = async ({ email, password }: SigninData) => {
   try {
-    const response = await axios.post('http://localhost:9000/auth/signin', {
+    const response = await axios.post(`${HTTP_URL}/auth/signin`, {
       email,
       password,
     });

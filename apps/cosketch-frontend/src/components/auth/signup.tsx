@@ -10,6 +10,8 @@ import { CreateUserSchema } from '@repo/types';
 import { signupUser } from '@/api/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -19,10 +21,22 @@ const Signup = () => {
     name?: string;
     email?: string;
     password?: string;
-    general?: string;
   }>({});
-
   const route = useRouter();
+
+  const signupMutation = useMutation({
+    mutationFn: signupUser,
+    onSuccess: () => {
+      toast.success('User Signed up Successfully');
+      route.push('/signin');
+    },
+    onError: err => {
+      setEmail('');
+      setPassword('');
+      setName('');
+      toast.error(err.message);
+    },
+  });
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,21 +58,7 @@ const Signup = () => {
     // Clear errors
     setErrors({});
 
-    try {
-      // Call API
-      const response = await signupUser({ name, email, password });
-
-      if (response.success) {
-        console.log('Signup successful:', response);
-        route.push('/signin');
-      } else {
-        setErrors({
-          general: response.message || 'Signup failed. Please try again.',
-        });
-      }
-    } catch {
-      setErrors({ general: 'Something went wrong. Please try again later.' });
-    }
+    signupMutation.mutate({ name, password, email });
   };
 
   return (
@@ -79,11 +79,6 @@ const Signup = () => {
         </div>
 
         <p className='mb-6 text-sm text-gray-700'>{siteMetadata.slogan}</p>
-
-        {/* Display General Error */}
-        {errors.general && (
-          <p className='mb-4 text-sm text-red-500'>{errors.general}</p>
-        )}
 
         <form onSubmit={handleSignup} className='min-h-[320px] space-y-4'>
           {' '}

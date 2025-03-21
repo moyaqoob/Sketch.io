@@ -10,6 +10,8 @@ import { Button } from '@/components/forms/button';
 import { SigninSchema } from '@repo/types';
 import { useRouter } from 'next/navigation';
 import { signinUser } from '@/api/auth';
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 const Signin = () => {
   const [email, setEmail] = useState('');
@@ -21,6 +23,20 @@ const Signin = () => {
   }>({});
 
   const route = useRouter();
+
+  const signinMutation = useMutation({
+    mutationFn: signinUser,
+    onSuccess: data => {
+      toast.success('User Signed in Successfully');
+      localStorage.setItem('token', data.token);
+      route.push('./dashboard');
+    },
+    onError: err => {
+      setEmail('');
+      setPassword('');
+      toast.error(err.message);
+    },
+  });
 
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,22 +55,7 @@ const Signin = () => {
     // Clear errors
     setErrors({});
 
-    try {
-      // Call API
-      const response = await signinUser({ email, password });
-
-      if (response.success) {
-        console.log('Signin successful:', response);
-        localStorage.setItem('token', response.token);
-        route.push('/dashboard');
-      } else {
-        setErrors({
-          general: response.message || 'Signin failed. Please try again.',
-        });
-      }
-    } catch {
-      setErrors({ general: 'Something went wrong. Please try again later.' });
-    }
+    signinMutation.mutate({ email, password });
   };
 
   return (
@@ -73,11 +74,6 @@ const Signin = () => {
           </Link>
         </div>
         <p className='mb-6 text-sm text-gray-700'>{siteMetadata.slogan}</p>
-
-        {/* Display General Error */}
-        {errors.general && (
-          <p className='mb-4 text-sm text-red-500'>{errors.general}</p>
-        )}
 
         <form onSubmit={handleSignin} className='space-y-4'>
           <Input
