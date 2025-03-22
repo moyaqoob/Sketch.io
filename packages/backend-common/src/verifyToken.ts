@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "./config";
 
 interface TokenPayload {
   id: string;
@@ -11,7 +10,10 @@ interface TokenPayload {
  * @returns The decoded payload or null if verification fails.
  */
 
-export const verifyToken = (token: string): TokenPayload | null => {
+export const verifyToken = (
+  token: string,
+  JWT_SECRET: string
+): TokenPayload | null => {
   try {
     return jwt.verify(token, JWT_SECRET as string) as TokenPayload;
   } catch (error) {

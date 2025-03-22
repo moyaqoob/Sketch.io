@@ -2,7 +2,7 @@ import { type Request, type Response } from "express";
 import { HttpStatus } from "../utils/HttpStatus";
 import { createUser, getUserById } from "@repo/database";
 import { hashPassword, verifyPassword } from "../utils/bcrypt";
-import { CreateUserSchema, SigninSchema } from "@repo/backend-common";
+import { CreateUserSchema, SigninSchema } from "@repo/types";
 import { getUserByEmail } from "@repo/database";
 import { generateToken } from "../utils/jwt";
 import type { AuthRequest } from "../utils/request-type";

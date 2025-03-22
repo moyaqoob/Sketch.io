@@ -1,9 +1,5 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "@repo/backend-common";
-
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in environment variables.");
-}
+import { JWT_SECRET } from "../config/env";
 
 interface TokenPayload {
   id: string;
@@ -16,20 +12,6 @@ interface TokenPayload {
  */
 export const generateToken = (id: string): string => {
   return jwt.sign({ id }, JWT_SECRET as string, { expiresIn: "1d" });
-};
-
-/**
- * Verify a JWT token and return the decoded payload.
- * @param token - The JWT token to verify.
- * @returns The decoded payload or null if verification fails.
- */
-export const verifyToken = (token: string): TokenPayload | null => {
-  try {
-    return jwt.verify(token, JWT_SECRET as string) as TokenPayload;
-  } catch (error) {
-    console.error("Invalid token:", error);
-    return null;
-  }
 };
 
 /**
