@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "generate": "bun prisma generate",
-    "reset": "bun prisma migrate reset"
+    "reset": "bun prisma migrate reset",
+    "migrate": "bun prisma migrate dev"
   },
   "devDependencies": {
     "@types/bun": "latest"

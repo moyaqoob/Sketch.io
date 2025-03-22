@@ -19,7 +19,8 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
       return;
     }
 
-    req.id = decoded.id;
+    req.auth = { id: decoded.id };
+
     next();
   } catch (error) {
     res.status(401).json({ message: "Authentication Failed" });

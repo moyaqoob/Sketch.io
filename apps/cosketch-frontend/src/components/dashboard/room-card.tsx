@@ -17,7 +17,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
 }) => {
   return (
     <div
-      className='hover:border-primary flex w-full cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-lg transition hover:border-2 hover:bg-gray-50 hover:shadow-xl'
+      className='hover:border-primary flex w-full cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-lg transition-all duration-300 hover:border-2 hover:bg-gray-50 hover:shadow-xl'
       onClick={onClick}
       aria-label={title}
     >

@@ -107,7 +107,7 @@ export const signin = async (req: Request, res: Response) => {
 
 export const me = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.id) {
+    if (!req.auth?.id) {
       res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
         error: "Unauthorized: No user ID found",
@@ -115,7 +115,7 @@ export const me = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    const user = await getUserById(req.id);
+    const user = await getUserById(req.auth.id);
 
     if (!user) {
       res.status(HttpStatus.NOT_FOUND).json({
