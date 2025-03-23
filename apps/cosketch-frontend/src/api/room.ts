@@ -67,7 +67,7 @@ export const getRooms = async () => {
       headers: getAuthHeaders(),
     });
 
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     return response.data;
   } catch (error: unknown) {

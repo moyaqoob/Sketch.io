@@ -2,26 +2,31 @@
 
 ![CoSketch banner](https://github.com/NarsiBhati-Dev/CoSketch/blob/master/apps/cosketch-frontend/public/images/social-banner-4.jpeg?raw=true)
 
-CoSketch is a **real-time collaborative drawing application** built using **Turborepo** and **Bun** as the package manager. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
+CoSketch is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
+
+---
 
 ## 🏗 Project Structure
 
-This monorepo is managed using **Turborepo** and structured as follows:
+This monorepo is managed using **Turborepo** and is structured as follows:
 
 ```sh
 cosketch/
 ├── apps/ # Contains independent applications
-│ ├── frontend/ # Next.js app for the UI
-│ ├── backend/ # Express backend for API handling
-│ ├── websocket/ # WebSocket server for real-time collaboration
+│   ├── cosketch-frontend/        # Next.js app for the UI
+│   ├── cosketch-backend/         # Express backend for API handling
+│   ├── cosketch-websocket/       # WebSocket server for real-time collaboration
 ├── packages/ # Shared code across apps
-│ ├── types/       # Shared TypeScript types
-│ ├── ui/ # Shared UI components (e.g., buttons, modals)
-│ ├── utils/ # Shared utility functions
-├── turbo.json # Turborepo config file
-├── package.json # Root package.json for Bun & Turborepo setup
-└── README.md # Project documentation
+│   ├── database/        # Prisma & PostgreSQL setup
+│   ├── types/           # Shared TypeScript types
+│   ├── ui/              # Shared UI components (e.g., buttons, modals)
+│   ├── backend-common/  # Common utilities for backend services
+├── turbo.json           # Turborepo config file
+├── package.json         # Root package.json for Bun & Turborepo setup
+└── README.md            # Project documentation
 ```
+
+---
 
 ## 🚀 Getting Started
 
@@ -33,7 +38,7 @@ Ensure **Bun** is installed on your system:
 bun install
 ```
 
-### 2️⃣ Run the Development Environment
+### 2️⃣ Start the Development Environment
 
 Use Turborepo to start all apps simultaneously:
 
@@ -41,7 +46,7 @@ Use Turborepo to start all apps simultaneously:
 bun run dev
 ```
 
-### 3️⃣ Running Individual Apps
+### 3️⃣ Run Individual Apps
 
 You can start specific apps independently:
 
@@ -56,6 +61,8 @@ bun run dev --filter=cosketch-backend
 bun run dev --filter=cosketch-websocket
 ```
 
+---
+
 ## 📦 Tech Stack
 
 - **Turborepo** → Monorepo management
@@ -64,38 +71,30 @@ bun run dev --filter=cosketch-websocket
 - **Express.js** → Backend API
 - **WebSockets** → Real-time collaboration
 - **PostgreSQL** → Database
+- **Prisma** → ORM for database management
 - **Docker** → Containerized database for development
+- **Sharp** → Image processing
 
-## 📜 Scripts (Root Package.json)
+---
 
-```json
-{
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "start": "turbo run start",
-    "generate": "turbo run generate",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
-  }
-}
-```
+## 🗄 Database Setup
 
-## 🐳 Running PostgreSQL with Docker
-
-To set up and run PostgreSQL using Docker Compose
-
-### Start PostgreSQL
+### Start PostgreSQL with Docker
 
 ```sh
-docker-compose -f docker/docker-compose.yml up -d
+bun db:up
 ```
 
 ### Stop PostgreSQL
 
 ```sh
-docker-compose -f docker/docker-compose.yml down
+bun db:down
+```
+
+### Run Database Migrations
+
+```sh
+bun prisma migrate deploy
 ```
 
 ### Connect to PostgreSQL via CLI
@@ -105,5 +104,27 @@ docker exec -it <postgres_container_name> psql -U <your_db_user> -d <your_databa
 ```
 
 > Replace `<postgres_container_name>`, `<your_db_user>`, and `<your_database>` accordingly.
+
+---
+
+## 📜 Available Scripts (Root `package.json`)
+
+```json
+{
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types",
+    "db:start": "docker-compose -f docker/docker-compose.yml up -d",
+    "db:stop": "docker-compose -f docker/docker-compose.yml down",
+    "generate": "turbo run generate"
+  }
+}
+```
+
+---
 
 🚀 **"Sketch Together, Think Better."**
