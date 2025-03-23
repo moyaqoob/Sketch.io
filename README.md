@@ -118,8 +118,8 @@ docker exec -it <postgres_container_name> psql -U <your_db_user> -d <your_databa
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "db:start": "docker-compose -f docker/docker-compose.yml up -d",
-    "db:stop": "docker-compose -f docker/docker-compose.yml down",
+    "db:up": "docker-compose -f docker/docker-compose.yml up -d",
+    "db:down": "docker-compose -f docker/docker-compose.yml down",
     "generate": "turbo run generate"
   }
 }
