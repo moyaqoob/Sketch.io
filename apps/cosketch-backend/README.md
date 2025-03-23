@@ -110,8 +110,8 @@ bun run start
   "scripts": {
     "dev": "bun run src/server.ts",
     "start": "bun run src/server.ts",
-    "db:start": "docker-compose -f ../docker/docker-compose.yml up -d",
-    "db:stop": "docker-compose -f ../docker/docker-compose.yml down"
+    "db:up": "docker-compose -f ../docker/docker-compose.yml up -d",
+    "db:down": "docker-compose -f ../docker/docker-compose.yml down"
   }
 }
 ```
