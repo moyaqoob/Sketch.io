@@ -6,30 +6,19 @@ import { createRoom, getRoomById, getRoomsByUserId } from "@repo/database";
 
 export const CreateRoom = async (req: AuthRequest, res: Response) => {
   try {
-    // Validating body data
-    const parseData = CreateRoomSchema.safeParse(req.body);
-
-    if (!parseData.success) {
+    // Validate request body
+    const parsedData = CreateRoomSchema.safeParse(req.body);
+    if (!parsedData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
-        error: "Invalid RoomName",
+        error: "Invalid Room Name",
       });
       return;
     }
 
-    // Checking if room exists
-    const { roomName } = parseData.data;
+    const { roomName } = parsedData.data;
 
-    const isRoomExist = await getRoomById(roomName);
-    if (isRoomExist) {
-      res.status(HttpStatus.CONFLICT).json({
-        success: false,
-        error: "Room already exists",
-      });
-      return;
-    }
-
-    // Creating room
+    // Ensure user is authenticated
     const userId = req.auth?.id;
     if (!userId) {
       res.status(HttpStatus.UNAUTHORIZED).json({
@@ -39,8 +28,18 @@ export const CreateRoom = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    const room = await createRoom(roomName, userId);
+    // Check if room already exists
+    const existingRoom = await getRoomById(roomName);
+    if (existingRoom) {
+      res.status(HttpStatus.CONFLICT).json({
+        success: false,
+        error: "Room already exists",
+      });
+      return;
+    }
 
+    // Create the room
+    const room = await createRoom(roomName, userId);
     if (!room) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
@@ -48,13 +47,16 @@ export const CreateRoom = async (req: AuthRequest, res: Response) => {
       });
       return;
     }
-    res.status(HttpStatus.SUCCESS).json({
+
+    res.status(HttpStatus.CREATED).json({
       success: true,
-      message: "Room Created",
-      roomName: room.slug,
+      message: "Room Created Successfully",
+      roomId: room.id,
+      slug: room.slug,
     });
     return;
-  } catch {
+  } catch (error) {
+    console.error("Error creating room:", error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: "Something went wrong while creating the room.",
@@ -97,37 +99,51 @@ export const leaveRoom = async (req: Request, res: Response) => {
   }
 };
 
-// Fetching all rooms
-export const Rooms = async (req: AuthRequest, res: Response) => {
+export const getRooms = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.auth?.id;
+
     if (!userId) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
+      res.status(401).json({
         success: false,
         error: "User authentication failed.",
       });
       return;
     }
 
-    const rooms = await getRoomsByUserId(userId);
-    if (!rooms || rooms.length === 0) {
-      res.status(HttpStatus.NOT_FOUND).json({
+    const user = await getRoomsByUserId(userId);
+
+    if (!user || !user.rooms.length) {
+      res.status(404).json({
         success: false,
-        error: "No rooms found for this user.",
+        error: "No rooms found.",
       });
       return;
     }
 
-    res.status(HttpStatus.SUCCESS).json({
+    const formattedRooms = user.rooms.map((room) => ({
+      roomId: room.id,
+      slug: room.slug,
+      createdAt: room.createdAt, // Sending raw timestamp
+      participants: room.users.map((participant) => participant.name), // Correct relation key
+      noOfParticipants: room.users.length, // Correct relation key
+    }));
+
+    res.status(200).json({
       success: true,
       message: "Rooms fetched successfully.",
-      rooms,
+      data: {
+        userId,
+        userName: user.name,
+        rooms: formattedRooms,
+      },
     });
     return;
   } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    console.error("Error fetching rooms:", error);
+    res.status(500).json({
       success: false,
-      error: "Failed to retrieve rooms.",
+      error: "Internal server error.",
     });
     return;
   }

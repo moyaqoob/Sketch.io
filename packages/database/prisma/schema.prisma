@@ -12,46 +12,32 @@ model User {
   email     String   @unique
   password  String
   name      String?
+  photo     String?
   createdAt DateTime @default(now())
 
-  ownedRooms Room[]        @relation("RoomAdmins")  // ✅ Rooms where user is admin
-  // rooms      RoomMembers[] // ✅ Many-to-many room membership
-  canvases   Canvas[]      // ✅ Canvases created by the user
-  Room Room[] @relation("RoomUsers")
+  adminOf   Room[]   @relation("RoomAdmin") // Rooms where user is admin
+  rooms     Room[]   @relation("RoomUsers") // Many-to-many room membership
+  canvas    Canvas[] // User's canvas designs
 }
 
 model Room {
-  id        String   @id @default(uuid())
-  slug      String   @unique
+  id        String      @id @default(uuid())
+  slug      String      @unique
+  createdAt DateTime    @default(now())
   adminId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  admin     User     @relation("RoomAdmins", fields: [adminId], references: [id], onDelete: Cascade)
-  // members   RoomMembers[] // ✅ Many-to-many relationship
-  canvases  Canvas[]
-  member User[] @relation("RoomUsers")
+  admin     User     @relation(fields: [adminId], references: [id], name: "RoomAdmin") // Relationship with admin
+  users     User[]   @relation("RoomUsers") // Many-to-many relationship
+  canvas    Canvas[]
 }
 
-// model RoomMembers {
-//   id     String @id @default(uuid())
-//   userId String
-//   roomId String
-
-//   // user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
-
-//   @@unique([userId, roomId]) // ✅ Ensures a user joins a room only once
-// }
-
 model Canvas {
-  id        Int      @id @default(autoincrement())
-  design    String   
+  id        String   @id @default(uuid())
   roomId    String
   userId    String
+  design    String 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt  
 
-  room      Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id])
+  room      Room @relation(fields: [roomId], references: [id])
 }

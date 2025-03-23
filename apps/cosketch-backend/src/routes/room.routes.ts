@@ -3,7 +3,7 @@ import {
   CreateRoom,
   joinRoom,
   leaveRoom,
-  Rooms,
+  getRooms,
 } from "../controllers/room.controller";
 
 import { auth } from "../middleware/auth";
@@ -16,6 +16,6 @@ router.post("/create-room", CreateRoom);
 router.post("/join-room/:roomId", joinRoom);
 router.post("/leave-room/:roomId", leaveRoom);
 
-router.get("/rooms", Rooms);
+router.get("/rooms", getRooms);
 
 export default router;

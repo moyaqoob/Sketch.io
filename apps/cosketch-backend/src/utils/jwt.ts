@@ -23,7 +23,7 @@ export const decodeToken = (token: string): TokenPayload | null => {
   try {
     return jwt.decode(token) as TokenPayload;
   } catch (error) {
-    console.error("JWT Decoding Error:", error);
+    // console.error("JWT Decoding Error:", error);
     return null;
   }
 };

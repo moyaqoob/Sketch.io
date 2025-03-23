@@ -1,5 +1,6 @@
-import Actions from '@/components/dashboard/actions';
+import DashboardBody from '@/components/dashboard/dashboard-body';
 import DashboardHeader from '@/components/dashboard/header';
+
 import ProtectRoute from '@/higher-order-component/protectRoute';
 import React from 'react';
 
@@ -8,7 +9,7 @@ const DashboardPage = () => {
     <ProtectRoute>
       <main>
         <DashboardHeader />
-        <Actions />
+        <DashboardBody />
       </main>
     </ProtectRoute>
   );
