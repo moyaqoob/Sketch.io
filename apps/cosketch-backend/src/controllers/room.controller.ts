@@ -2,7 +2,14 @@ import type { Request, Response } from "express";
 import { HttpStatus } from "../utils/HttpStatus";
 import { CreateRoomSchema } from "@repo/types";
 import type { AuthRequest } from "../utils/request-type";
-import { createRoom, getRoomById, getRoomsByUserId } from "@repo/database";
+import {
+  createRoom,
+  deleteRoom,
+  getRoomById,
+  getRoomsByUserId,
+  getRoomWithUsersById,
+  removeUserFromRoom,
+} from "@repo/database";
 
 export const CreateRoom = async (req: AuthRequest, res: Response) => {
   try {
@@ -83,18 +90,38 @@ export const joinRoom = async (req: Request, res: Response) => {
 };
 
 // Leaving a room
-export const leaveRoom = async (req: Request, res: Response) => {
-  try {
-    res.status(HttpStatus.SUCCESS).json({
-      success: true,
-      message: "Room left successfully.",
-    });
+export const leaveRoom = async (req: AuthRequest, res: Response) => {
+  const userId = req.auth?.id;
+  const { roomId } = req.body;
+
+  if (!userId) {
+    res.status(401).json({ success: false, error: "Unauthorized" });
     return;
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: "Failed to leave the room.",
-    });
+  }
+
+  if (!roomId) {
+    res.status(400).json({ success: false, message: "Room ID required" });
+    return;
+  }
+
+  try {
+    const room = await getRoomWithUsersById(roomId);
+    if (!room) {
+      res.status(404).json({ success: false, message: "Room not found." });
+      return;
+    }
+
+    if (room.adminId === userId) {
+      await deleteRoom(roomId);
+      res.status(200).json({ success: true, message: "Room deleted." });
+      return;
+    }
+
+    await removeUserFromRoom(roomId, userId);
+    res.status(200).json({ success: true, message: "Left the room." });
+    return;
+  } catch {
+    res.status(500).json({ success: false, error: "Server error." });
     return;
   }
 };

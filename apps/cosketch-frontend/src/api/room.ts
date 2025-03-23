@@ -44,19 +44,25 @@ export const joinRoom = async (roomId: string) => {
   }
 };
 
-// Delete Room
-export const deleteRoom = async (roomId: string) => {
+// Delete or Leave Room
+export const deleteLeaveRoom = async (roomId: string) => {
   try {
-    const response = await axios.delete(`${HTTP_URL}/room/delete/${roomId}`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await axios.post(
+      `${HTTP_URL}/room/leave-or-delete`,
+      { roomId },
+      { headers: getAuthHeaders() },
+    );
 
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.error || 'Failed to delete room.');
+      throw new Error(
+        error.response?.data?.error || 'Failed to leave/delete the room.',
+      );
     }
-    throw new Error('Unexpected error occurred while deleting the room.');
+    throw new Error(
+      'Unexpected error occurred while leaving/deleting the room.',
+    );
   }
 };
 

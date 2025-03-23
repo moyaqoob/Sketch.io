@@ -10,6 +10,16 @@ import {
   createRoom,
   getRoomById,
   getRoomsByUserId,
+  getRoomWithUsersById,
+  deleteRoom,
+  removeUserFromRoom,
 } from "./src/services/roomService";
 
-export { createRoom, getRoomById, getRoomsByUserId };
+export {
+  createRoom,
+  getRoomById,
+  getRoomsByUserId,
+  deleteRoom,
+  removeUserFromRoom,
+  getRoomWithUsersById,
+};

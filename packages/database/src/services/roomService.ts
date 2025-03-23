@@ -44,3 +44,30 @@ export const getRoomsByUserId = async (userId: string) => {
     },
   });
 };
+
+export const deleteRoom = async (roomId: string) => {
+  return await client.room.delete({
+    where: { id: roomId },
+  });
+};
+
+export const removeUserFromRoom = async (roomId: string, userId: string) => {
+  return await client.room.update({
+    where: { id: roomId },
+    data: {
+      users: {
+        disconnect: [{ id: userId }],
+      },
+    },
+  });
+};
+
+export const getRoomWithUsersById = async (roomId: string) => {
+  return await client.room.findUnique({
+    where: { id: roomId },
+    include: {
+      users: true, // Get all users in the room
+      admin: true, // Get the admin details
+    },
+  });
+};
