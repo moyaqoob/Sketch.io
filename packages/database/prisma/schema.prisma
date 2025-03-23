@@ -21,7 +21,7 @@ model User {
 }
 
 model Room {
-  id        String      @id @default(uuid())
+  id        String      @id @default(cuid())
   slug      String      @unique
   createdAt DateTime    @default(now())
   adminId   String
@@ -32,7 +32,7 @@ model Room {
 }
 
 model Canvas {
-  id        String   @id @default(uuid())
+  id        Int   @id @default(autoincrement())
   roomId    String
   userId    String
   design    String 

@@ -10,21 +10,21 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import RoomParticipants from './room-participants';
+import { RoomData } from '@/hook/useRooms';
 
-interface RoomCardProps {
+export interface RoomCardProps {
   username?: string;
-  room: {
-    roomId: string;
-    slug: string;
-    createdAt: string;
-    participants: string[];
-    noOfParticipants: number;
-  };
+  room: RoomData;
   onJoin?: (roomId: string) => void;
   onDelete?: (roomId: string) => void;
 }
 
-const RoomCard: React.FC<RoomCardProps> = ({ room, onJoin, onDelete }) => {
+const RoomCard: React.FC<RoomCardProps> = ({
+  username,
+  room,
+  onJoin,
+  onDelete,
+}) => {
   const [copied, setCopied] = useState(false);
 
   const formattedDate = new Date(room.createdAt).toLocaleString('en-IN', {
@@ -49,7 +49,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onJoin, onDelete }) => {
   };
 
   return (
-    <div className='flex w-full flex-col items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-md transition hover:bg-gray-50 hover:shadow-lg sm:flex-row'>
+    <div className='hover:border-primary flex w-full flex-col items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-md transition hover:bg-gray-50 hover:shadow-lg sm:flex-row'>
       {/* Room Details */}
       <div className='w-full flex-1 sm:w-auto'>
         <h3 className='truncate text-lg font-semibold text-gray-900'>
@@ -59,9 +59,13 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onJoin, onDelete }) => {
           className='mt-1 flex cursor-pointer items-center gap-2 text-sm text-gray-500 hover:text-gray-700'
           onClick={handleCopy}
         >
-          <span className='font-semibold'>Room ID:</span> {room.roomId}
+          <span className='font-semibold'>Room ID:</span>
+          <span>
+            {room.roomId.slice(0, 10)}
+            {room.roomId.length > 10 ? '...' : ''}
+          </span>
           {copied ? (
-            <ClipboardCheck className='h-4 w-4 text-green-600' />
+            <ClipboardCheck className='h-4 w-4 text-green-500' />
           ) : (
             <Clipboard className='h-4 w-4 text-gray-400 hover:text-green-500' />
           )}
@@ -77,6 +81,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onJoin, onDelete }) => {
         <RoomParticipants
           participants={room.participants}
           noOfParticipants={room.noOfParticipants}
+          username={username}
         />
       </div>
 

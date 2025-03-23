@@ -104,7 +104,7 @@ export const getRooms = async (req: AuthRequest, res: Response) => {
     const userId = req.auth?.id;
 
     if (!userId) {
-      res.status(401).json({
+      res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
         error: "User authentication failed.",
       });
@@ -112,11 +112,22 @@ export const getRooms = async (req: AuthRequest, res: Response) => {
     }
 
     const user = await getRoomsByUserId(userId);
-
-    if (!user || !user.rooms.length) {
-      res.status(404).json({
+    if (!user) {
+      res.status(HttpStatus.NOT_FOUND).json({
         success: false,
-        error: "No rooms found.",
+        error: "User not found.",
+      });
+      return;
+    }
+
+    if (!user.rooms?.length) {
+      res.status(HttpStatus.SUCCESS).json({
+        success: true,
+        message: "No rooms available.",
+        data: {
+          userName: user.name,
+          rooms: [],
+        },
       });
       return;
     }
@@ -129,11 +140,10 @@ export const getRooms = async (req: AuthRequest, res: Response) => {
       noOfParticipants: room.users.length, // Correct relation key
     }));
 
-    res.status(200).json({
+    res.status(HttpStatus.SUCCESS).json({
       success: true,
       message: "Rooms fetched successfully.",
       data: {
-        userId,
         userName: user.name,
         rooms: formattedRooms,
       },
@@ -141,7 +151,7 @@ export const getRooms = async (req: AuthRequest, res: Response) => {
     return;
   } catch (error) {
     console.error("Error fetching rooms:", error);
-    res.status(500).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: "Internal server error.",
     });

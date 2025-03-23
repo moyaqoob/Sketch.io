@@ -1,10 +1,10 @@
 import React from 'react';
-import Actions from './actions';
-import Rooms from './rooms';
+import Actions from './action/actions';
+import Rooms from './room/rooms';
 
-export interface Room {
-  slug: string;
+export interface RoomResponse {
   roomId: string;
+  slug: string;
   createdAt: string;
   participants: string[];
   noOfParticipants: number;

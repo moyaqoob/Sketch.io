@@ -4,11 +4,13 @@ import { Users, ChevronDown } from 'lucide-react';
 interface RoomParticipantProps {
   participants: string[];
   noOfParticipants: number;
+  username?: string;
 }
 
 export default function RoomParticipants({
   participants,
   noOfParticipants,
+  username,
 }: RoomParticipantProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -33,7 +35,7 @@ export default function RoomParticipants({
     <div className='relative' ref={dropdownRef}>
       <button
         onClick={() => setOpen(prev => !prev)}
-        className='flex items-center gap-1 rounded-md px-2 py-1 whitespace-nowrap hover:bg-gray-100'
+        className='flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 whitespace-nowrap hover:bg-gray-100'
       >
         <Users className='h-4 w-4 text-gray-400' />
         {noOfParticipants}
@@ -43,14 +45,14 @@ export default function RoomParticipants({
       </button>
 
       {open && (
-        <div className='border-primary-chubb absolute left-0 z-10 mt-2 w-40 rounded-md border bg-white shadow-lg'>
+        <div className='absolute left-0 z-10 mt-2 w-48 rounded-md border border-gray-300 bg-white shadow-lg'>
           {participants.length > 0 ? (
             participants.map((participant, index) => (
               <div
                 key={index}
-                className='cursor-pointer rounded-md px-3 py-2 hover:bg-blue-50'
+                className='mx-2 my-1 border-b border-gray-200 px-3 py-2'
               >
-                {participant}
+                {participant === username ? 'you' : participant}
               </div>
             ))
           ) : (

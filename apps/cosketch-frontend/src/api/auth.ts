@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { HTTP_URL } from '@/config';
 
-interface AuthError {
+export interface AuthError {
   response?: {
     data?: {
       message?: string;
@@ -39,10 +39,12 @@ export const signinUser = async (userData: {
     return response.data;
   } catch (error) {
     const err = error as AuthError;
-    if (err.response) {
-      throw new Error('Sign-in failed. Please check your credentials.');
-    } else {
-      throw new Error('Network error. Please check your connection.');
+    if (axios.isAxiosError(err)) {
+      if (err.response) {
+        throw new Error('Sign-in failed. Please check your credentials.');
+      } else {
+        throw new Error('Network error. Please check your connection.');
+      }
     }
   }
 };
@@ -56,7 +58,10 @@ export const authorize = async (userData: { token: string }) => {
     });
 
     return response.data;
-  } catch {
-    throw new Error('Authorization failed');
+  } catch (error) {
+    const err = error as AuthError;
+    if (axios.isAxiosError(err)) {
+      throw new Error('Authorization failed');
+    }
   }
 };

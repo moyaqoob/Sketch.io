@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { Input } from '../forms/input';
+import { useRooms } from '@/hook/useRooms';
+import { toast } from 'react-hot-toast';
 
 interface CreateRoomDialogBoxProps {
   onClose: (e: boolean) => void;
@@ -9,6 +11,40 @@ interface CreateRoomDialogBoxProps {
 
 const CreateRoomDialogBox = ({ onClose }: CreateRoomDialogBoxProps) => {
   const [roomName, setRoomName] = useState('');
+  const { createRoom } = useRooms(); // ✅ Hook inside the component
+
+  const handleCreateRoom = async () => {
+    onClose(false);
+    if (!roomName.trim()) return;
+    setRoomName('');
+
+    toast.promise(
+      createRoom(roomName), // ✅ Corrected function call
+      {
+        loading: <span className='text-gray-800'>Creating room...</span>,
+        success: (
+          <span className='text-green-600'>Room created successfully!</span>
+        ),
+        error: err => (
+          <span className='text-red-600'>
+            {err.message || 'Failed to create room'}
+          </span>
+        ),
+      },
+      {
+        style: {
+          background: '#FAFAFA',
+          color: '#1e1e1e',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.1)',
+          border: '2px solid #e5e7eb',
+          maxWidth: '500px',
+        },
+        position: 'top-center',
+      },
+    );
+  };
 
   return (
     <section
@@ -43,7 +79,10 @@ const CreateRoomDialogBox = ({ onClose }: CreateRoomDialogBoxProps) => {
           >
             Cancel
           </button>
-          <button className='bg-primary-darker hover:bg-primary-chubb cursor-pointer rounded-lg px-4 py-2 text-white transition'>
+          <button
+            className='bg-primary-darker hover:bg-primary-chubb cursor-pointer rounded-lg px-4 py-2 text-white transition'
+            onClick={handleCreateRoom}
+          >
             Create Room
           </button>
         </div>
