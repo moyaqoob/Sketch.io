@@ -1,12 +1,14 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import { HttpStatus } from "../utils/HttpStatus";
 import { CreateRoomSchema } from "@repo/types";
 import type { AuthRequest } from "../utils/request-type";
 import {
+  connectUserWithRoom,
   createRoom,
   deleteRoom,
-  getRoomById,
+  getRoomByName,
   getRoomsByUserId,
+  getRoomWithUsers,
   getRoomWithUsersById,
   removeUserFromRoom,
 } from "@repo/database";
@@ -36,7 +38,7 @@ export const CreateRoom = async (req: AuthRequest, res: Response) => {
     }
 
     // Check if room already exists
-    const existingRoom = await getRoomById(roomName);
+    const existingRoom = await getRoomByName(roomName);
     if (existingRoom) {
       res.status(HttpStatus.CONFLICT).json({
         success: false,
@@ -73,14 +75,53 @@ export const CreateRoom = async (req: AuthRequest, res: Response) => {
 };
 
 // Joining a room
-export const joinRoom = async (req: Request, res: Response) => {
+export const joinRoom = async (req: AuthRequest, res: Response) => {
+  const userId = req.auth?.id;
+  const { roomId } = req.body;
+
+  if (!userId) {
+    res.status(HttpStatus.UNAUTHORIZED).json({
+      success: false,
+      error: "User not authenticated. Please log in.",
+    });
+    return;
+  }
+
+  if (!roomId) {
+    res.status(HttpStatus.BAD_REQUEST).json({
+      success: false,
+      error: "Room ID is required.",
+    });
+    return;
+  }
+
   try {
-    res.status(HttpStatus.SUCCESS).json({
+    const room = await getRoomWithUsers(roomId);
+
+    if (!room) {
+      res.status(HttpStatus.NOT_FOUND).json({
+        success: false,
+        error: "Room doesn't exist",
+      });
+      return;
+    }
+
+    // Check if the user is already a member
+    const isAlreadyMember = room.users.some((user) => user.id === userId);
+
+    if (!isAlreadyMember) {
+      await connectUserWithRoom(roomId, userId);
+    }
+
+    res.status(HttpStatus.OK).json({
       success: true,
       message: "Room joined successfully.",
+      roomId,
     });
     return;
   } catch (error) {
+    console.error("Error joining room:", error);
+
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: "Failed to join the room.",
@@ -148,7 +189,7 @@ export const getRooms = async (req: AuthRequest, res: Response) => {
     }
 
     if (!user.rooms?.length) {
-      res.status(HttpStatus.SUCCESS).json({
+      res.status(HttpStatus.OK).json({
         success: true,
         message: "No rooms available.",
         data: {
@@ -167,7 +208,7 @@ export const getRooms = async (req: AuthRequest, res: Response) => {
       noOfParticipants: room.users.length, // Correct relation key
     }));
 
-    res.status(HttpStatus.SUCCESS).json({
+    res.status(HttpStatus.OK).json({
       success: true,
       message: "Rooms fetched successfully.",
       data: {

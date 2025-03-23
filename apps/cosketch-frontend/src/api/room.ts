@@ -31,7 +31,7 @@ export const createRoom = async (name: string) => {
 export const joinRoom = async (roomId: string) => {
   try {
     const response = await axios.post(
-      `${HTTP_URL}/room/join`,
+      `${HTTP_URL}/room/join-room`,
       { roomId },
       { headers: getAuthHeaders() },
     );

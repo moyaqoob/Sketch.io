@@ -2,6 +2,7 @@ import Logo from '@/components/landing-page/logo';
 import { knewave } from '@/data/fonts';
 import React from 'react';
 import Animation from '@/components/animation';
+import Link from 'next/link';
 
 const NotFound = () => {
   return (
@@ -22,11 +23,11 @@ const NotFound = () => {
           Nothing’s drawn here yet—time to create something amazing.
         </p>
         <div className='mt-8 flex gap-4'>
-          <a href='/canvas'>
+          <Link href='/'>
             <span className='hover:bg-primary bg-primary-darker rounded-lg px-6 py-3 font-bold tracking-wider text-white transition'>
               🎨 Start Drawing
             </span>
-          </a>
+          </Link>
         </div>
       </main>
     </>

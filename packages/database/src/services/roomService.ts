@@ -12,7 +12,7 @@ export const createRoom = async (name: string, userId: string) => {
   });
 };
 
-export const getRoomById = async (roomName: string) => {
+export const getRoomByName = async (roomName: string) => {
   return await client.room.findFirst({
     where: {
       slug: roomName,
@@ -69,5 +69,19 @@ export const getRoomWithUsersById = async (roomId: string) => {
       users: true, // Get all users in the room
       admin: true, // Get the admin details
     },
+  });
+};
+
+export const getRoomWithUsers = async (roomId: string) => {
+  return await client.room.findUnique({
+    where: { id: roomId },
+    include: { users: true },
+  });
+};
+
+export const connectUserWithRoom = async (roomId: string, userId: string) => {
+  await client.room.update({
+    where: { id: roomId },
+    data: { users: { connect: { id: userId } } },
   });
 };

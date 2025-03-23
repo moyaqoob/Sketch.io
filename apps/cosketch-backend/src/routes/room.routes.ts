@@ -13,7 +13,7 @@ const router = express.Router();
 router.use(auth);
 
 router.post("/create-room", CreateRoom);
-router.post("/join-room/:roomId", joinRoom);
+router.post("/join-room", joinRoom);
 router.post("/leave-or-delete", leaveRoom);
 
 router.get("/rooms", getRooms);

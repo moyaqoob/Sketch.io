@@ -8,18 +8,22 @@ export { getUserByEmail, createUser, getUserById };
 
 import {
   createRoom,
-  getRoomById,
+  getRoomByName,
   getRoomsByUserId,
   getRoomWithUsersById,
   deleteRoom,
   removeUserFromRoom,
+  getRoomWithUsers,
+  connectUserWithRoom,
 } from "./src/services/roomService";
 
 export {
   createRoom,
-  getRoomById,
+  getRoomByName,
   getRoomsByUserId,
   deleteRoom,
   removeUserFromRoom,
   getRoomWithUsersById,
+  getRoomWithUsers,
+  connectUserWithRoom,
 };

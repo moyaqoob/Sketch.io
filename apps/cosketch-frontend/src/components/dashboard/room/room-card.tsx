@@ -12,14 +12,14 @@ import { toast } from 'react-hot-toast';
 import RoomParticipants from './room-participants';
 import { RoomData } from '@/hook/useRooms';
 import DeleteRoomDialogBox from '@/components/dialogbox/delete-room-dialogbox';
+import useJoinRoomMutation from '@/hook/useJoinRoom';
 
 export interface RoomCardProps {
   username?: string;
   room: RoomData;
-  onJoin?: (roomId: string) => void;
 }
 
-const RoomCard: React.FC<RoomCardProps> = ({ username, room, onJoin }) => {
+const RoomCard: React.FC<RoomCardProps> = ({ username, room }) => {
   const [copied, setCopied] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -42,6 +42,17 @@ const RoomCard: React.FC<RoomCardProps> = ({ username, room, onJoin }) => {
     } catch {
       toast.error('Failed to copy');
     }
+  };
+
+  const { mutate: joinRoom } = useJoinRoomMutation();
+
+  const handleJoinRoom = (roomId: string) => {
+    if (!roomId) {
+      console.error('Room ID is required to join a room.');
+      toast.error('Invalid Room ID.');
+      return;
+    }
+    joinRoom(roomId);
   };
 
   return (
@@ -85,7 +96,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ username, room, onJoin }) => {
         {/* Buttons */}
         <div className='flex w-full gap-3 sm:w-auto'>
           <button
-            onClick={() => onJoin?.(room.roomId)}
+            onClick={() => handleJoinRoom(room.roomId)}
             className='text-primary-chubb flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-100 px-4 py-2 text-sm font-medium transition hover:bg-blue-100 sm:w-auto sm:bg-transparent'
           >
             <LogIn className='h-4 w-4' />

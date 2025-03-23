@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getRooms, createRoom, joinRoom, deleteLeaveRoom } from '@/api/room';
+import { getRooms, createRoom, deleteLeaveRoom } from '@/api/room';
 
 export interface RoomData {
   roomId: string;
@@ -58,16 +58,6 @@ export const useRooms = () => {
     },
   });
 
-  const joinRoomMutation = useMutation({
-    mutationFn: joinRoom,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-    },
-    onError: err => {
-      console.error('Error joining room:', err);
-    },
-  });
-
   return {
     // userId: data?.data.userId ?? '',
     userName: data?.data.userName ?? '',
@@ -77,7 +67,6 @@ export const useRooms = () => {
     error,
     refetch,
     createRoom: createRoomMutation.mutateAsync,
-    joinRoom: joinRoomMutation.mutateAsync,
     leaveRoom: deleteLeaveRoomMutation.mutateAsync,
   };
 };
