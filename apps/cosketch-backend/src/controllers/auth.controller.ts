@@ -89,7 +89,7 @@ export const signin = async (req: Request, res: Response) => {
     const token = generateToken(user.id);
 
     // Send response
-    res.status(HttpStatus.SUCCESS).json({
+    res.status(HttpStatus.OK).json({
       success: true,
       message: "Signin successful",
       token,
@@ -125,7 +125,7 @@ export const me = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    res.status(HttpStatus.SUCCESS).json({
+    res.status(HttpStatus.OK).json({
       success: true,
       message: `Welcome ${user.name}`,
       name: user.name,

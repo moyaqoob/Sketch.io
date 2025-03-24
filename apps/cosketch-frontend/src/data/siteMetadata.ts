@@ -15,7 +15,7 @@ const siteMetadata = {
 
   header: 'COSKETCH',
 
-  slogan: `Sketch Together, Think Better.`,
+  slogan: `Sketch Together, Think Better`,
 
   developer: 'Narsi Bhati',
 
