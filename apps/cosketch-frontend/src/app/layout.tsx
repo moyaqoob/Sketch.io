@@ -4,15 +4,44 @@ import '@/styles/globals.css';
 import { space_grotesk } from '@/data/fonts';
 import ReactQueryProvider from '@/lib/react-query';
 import { Toaster } from 'react-hot-toast';
+import siteMetadata from '@/data/siteMetadata';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteMetadata.siteUrl),
   title: {
     default: 'COSKETCH',
     template: `%s | COSKETCH`,
   },
 
-  description:
-    'A real-time collaborative sketching tool for teams to brainstorm, draw, and create together.',
+  description: siteMetadata.description,
+
+  openGraph: {
+    title: siteMetadata.title,
+    description: siteMetadata.description,
+    url: siteMetadata.siteUrl,
+    siteName: siteMetadata.title,
+    images: [siteMetadata.socialBannerFour],
+    locale: 'en_US',
+    type: 'website',
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+  twitter: {
+    title: siteMetadata.title,
+    card: 'summary_large_image',
+    images: [siteMetadata.socialBannerFour],
+  },
 };
 
 export default function RootLayout({

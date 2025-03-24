@@ -1,16 +1,14 @@
-'use client';
+import Canvas from './page.client';
+import getPageMetadata from '@/lib/getPageMetadata';
 
-import React from 'react';
-import { useParams } from 'next/navigation';
+export const metadata = getPageMetadata({
+  title: 'Canvas - Real-Time Collaboration',
+  description:
+    'Jump into a live CoSketch canvas! Collaborate, sketch, and share ideas with your team instantly.',
+});
 
 const CanvasPage = () => {
-  const { roomId } = useParams(); // ✅ Extract dynamic room ID from URL
-
-  return (
-    <div className='flex h-screen w-screen items-center justify-center text-5xl'>
-      Canvas Room ID: {roomId}
-    </div>
-  );
+  return <Canvas />;
 };
 
 export default CanvasPage;

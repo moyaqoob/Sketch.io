@@ -16,7 +16,7 @@ const Footer = () => {
     <footer className='border-t border-gray-300 text-gray-700'>
       <section className='mx-auto flex max-w-7xl flex-col justify-between px-6 py-10 md:flex-row'>
         {/* Left Section - Logo & Socials */}
-        <section className='flex w-full flex-col items-start justify-start md:w-78 md:items-center md:justify-center'>
+        <section className='flex w-full flex-col items-start justify-start md:w-40'>
           <Logo />
           <section className='mt-8 flex justify-between gap-4'>
             <CardSocial title='Twitter' href={siteMetadata.twitter} />
