@@ -22,8 +22,8 @@ const Rooms = () => {
   return (
     <section className='mx-auto mt-12 w-full max-w-7xl rounded-2xl border border-gray-200 bg-white shadow-lg'>
       <div className='mb-6 flex items-center justify-between border-b border-gray-300 p-6'>
-        <h2 className='px-3 py-2 text-2xl font-bold text-white'>
-          <Animation type={'highlight'} color='#6965db'>
+        <h2 className='text-2xl font-bold text-gray-800'>
+          <Animation type={'underline'} color='#6965db'>
             {userName.charAt(0).toUpperCase() +
               userName.slice(1).toLowerCase() +
               `'s Rooms`}

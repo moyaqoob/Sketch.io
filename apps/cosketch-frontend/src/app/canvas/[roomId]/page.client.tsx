@@ -1,7 +1,7 @@
 'use client';
 
-import EncryptionBadge from '@/components/canvas/Encryption';
-import ShareButton from '@/components/canvas/share-button';
+import CanvasFooter from '@/components/canvas/footer/canvas-footer';
+import CanvasHeader from '@/components/canvas/header/canvas-header';
 import { useParams } from 'next/navigation';
 import React from 'react';
 
@@ -10,11 +10,11 @@ const Canvas = () => {
 
   return (
     <>
-      <div className='flex h-screen w-screen items-center justify-center text-5xl'>
+      <CanvasHeader roomId={roomId} />
+      <div className='flex h-[86vh] w-screen items-center justify-center text-5xl'>
         Canvas Room ID: {roomId}
-        <ShareButton roomId={roomId} />
-        <EncryptionBadge />
       </div>
+      <CanvasFooter />
     </>
   );
 };

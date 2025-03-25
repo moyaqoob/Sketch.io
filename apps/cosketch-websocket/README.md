@@ -57,7 +57,7 @@ co-sketch-websocket/
 ```json
 {
   "scripts": {
-    "dev": "bun run --watch src/index.ts",
+    "dev": "bun run src/index.ts",
     "start": "bun run src/index.ts",
     "lint": "bun lint"
   }

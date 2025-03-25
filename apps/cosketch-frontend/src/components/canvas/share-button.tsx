@@ -13,11 +13,22 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
   const [copied, setCopied] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [dashboardUrl, setDashboardUrl] = useState('');
 
-  const shareUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}/canvas/${roomId}`
-      : '';
+  // Set dashboard URL on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setDashboardUrl(`${window.location.origin}/dashboard`);
+    }
+  }, []);
+
+  const shareMessage = `🎨 JOIN MY COSKETCH ROOM! ✨
+🚀 Let's collaborate in real-time on CoSketch and bring ideas to life!
+
+🔹 ROOM ID: ${roomId}
+🔹 JOIN FROM DASHBOARD: ${dashboardUrl}
+
+🖌️ Head to the dashboard, enter the Room ID, and start sketching with us! 🎭`;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -41,8 +52,8 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
     try {
       await navigator.share({
         title: 'Join My CoSketch Room!',
-        text: `Let's collaborate in real time on CoSketch. Click the link to join now!`,
-        url: shareUrl,
+        text: shareMessage,
+        url: dashboardUrl,
       });
       toast.success('Room link shared successfully!');
     } catch {
@@ -56,9 +67,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
   const handleCopy = async () => {
     setIsProcessing(true);
     try {
-      await navigator.clipboard.writeText(
-        `Join My CoSketch Room!\nLet's collaborate in real time on CoSketch. Click the link to join now!\n${shareUrl}`,
-      );
+      await navigator.clipboard.writeText(shareMessage);
       setCopied(true);
       toast.success('Room link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
@@ -76,7 +85,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
       <button
         onClick={() => setIsOpen(prev => !prev)}
         disabled={isProcessing}
-        className='bg-primary-darker hover:bg-primary-chubb flex items-center gap-2 rounded-lg px-4 py-2 text-base text-white transition disabled:opacity-50'
+        className='flex cursor-pointer items-center gap-2 rounded-lg bg-white px-4 py-2 text-base text-black transition disabled:opacity-50'
       >
         {isProcessing ? (
           <Loader2 className='h-5 w-5 animate-spin' />
@@ -95,7 +104,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
           <button
             onClick={handleShare}
             disabled={isProcessing}
-            className='flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50'
+            className='flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50'
           >
             {isProcessing ? (
               <Loader2 className='h-4 w-4 animate-spin' />
@@ -107,7 +116,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
           <button
             onClick={handleCopy}
             disabled={isProcessing}
-            className='flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50'
+            className='flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50'
           >
             {isProcessing ? (
               <Loader2 className='h-4 w-4 animate-spin' />
