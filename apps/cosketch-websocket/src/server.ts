@@ -1,9 +1,7 @@
 import { WebSocketServer } from "ws";
 import { PORT } from "./config";
+import { setupWebSocketServer } from "./handlers/wsHandler";
 
 const wss = new WebSocketServer({ port: PORT });
 
-wss.on("connection", (socket) => {
-  console.log("user connected");
-  socket.send("hello");
-});
+setupWebSocketServer(wss);
