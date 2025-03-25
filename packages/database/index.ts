@@ -27,3 +27,7 @@ export {
   getRoomWithUsers,
   connectUserWithRoom,
 };
+
+import { deleteUserCanvasInRoom } from "./src/services/canvasService";
+
+export { deleteUserCanvasInRoom };

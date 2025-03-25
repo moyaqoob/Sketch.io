@@ -11,7 +11,7 @@ const Canvas = () => {
   return (
     <>
       <CanvasHeader roomId={roomId} />
-      <div className='flex h-[86vh] w-screen items-center justify-center text-5xl'>
+      <div className='flex h-[86vh] w-screen items-center justify-center text-5xl text-white'>
         Canvas Room ID: {roomId}
       </div>
       <CanvasFooter />
