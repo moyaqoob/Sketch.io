@@ -39,8 +39,10 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
 
           case "draw_canvas":
           case "clear_canvas":
+          case "eraser":
+          case "update":
             // handleCanvasEvent(socket, message, userId);
-            handleCanvasEvent(message, userId);
+            handleCanvasEvent(socket, message, userId);
             break;
 
           default:

@@ -19,7 +19,7 @@ export const removeUser = (socket: WebSocket, roomId: string) => {
   rooms[roomId].delete(socket);
 };
 
-// ✅ Get all users in a room
+// Get all users in a room
 export const getUsersInRoom = (roomId: string): WebSocket[] => {
   return rooms[roomId] ? Array.from(rooms[roomId]) : [];
 };
@@ -30,12 +30,16 @@ export const isUserInRoom = (socket: WebSocket, roomId: string): boolean => {
 };
 
 //  Broadcast message to all users in a room
-export const broadcastToRoom = (roomId: string, message: object) => {
+export const broadcastToRoom = (
+  roomId: string,
+  message: object,
+  excludeSocket?: WebSocket
+) => {
   if (!rooms[roomId]) return;
   const data = JSON.stringify(message);
 
   rooms[roomId].forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
+    if (client.readyState === WebSocket.OPEN && client !== excludeSocket) {
       client.send(data);
     }
   });

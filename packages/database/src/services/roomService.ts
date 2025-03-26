@@ -85,3 +85,9 @@ export const connectUserWithRoom = async (roomId: string, userId: string) => {
     data: { users: { connect: { id: userId } } },
   });
 };
+
+export const getRoomIfExists = async (roomId: string) => {
+  return await client.room.findUnique({
+    where: { id: roomId },
+  });
+};
