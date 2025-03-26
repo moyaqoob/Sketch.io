@@ -1,4 +1,4 @@
-import client from "..";
+import { client } from "..";
 
 export const createRoom = async (name: string, userId: string) => {
   return await client.room.create({

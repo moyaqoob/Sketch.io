@@ -2,14 +2,14 @@ import express from "express";
 import { auth } from "../middleware/auth";
 
 import {
-  clearCanvas,
+  // clearCanvas,
   getCanvasDesigns,
 } from "../controllers/canvas.controller";
 
 const router = express.Router();
 
-router.post("/clear-canvas", clearCanvas);
-router.post("/get-canvas-desgin", getCanvasDesigns);
+// router.post("/clear-canvas", clearCanvas);
+router.post("/get-canvas-desgin/:roomId", getCanvasDesigns);
 
 router.use(auth);
 

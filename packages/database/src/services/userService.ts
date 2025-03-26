@@ -1,4 +1,4 @@
-import client from "..";
+import { client } from "..";
 
 export const createUser = async (
   email: string,
