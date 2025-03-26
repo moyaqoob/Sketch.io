@@ -12,6 +12,7 @@ import {
   getRoomWithUsersById,
   removeUserFromRoom,
 } from "@repo/database";
+import { OK } from "zod";
 
 export const CreateRoom = async (req: AuthRequest, res: Response) => {
   try {
@@ -136,33 +137,45 @@ export const leaveRoom = async (req: AuthRequest, res: Response) => {
   const { roomId } = req.body;
 
   if (!userId) {
-    res.status(401).json({ success: false, error: "Unauthorized" });
+    res
+      .status(HttpStatus.UNAUTHORIZED)
+      .json({ success: false, error: "Unauthorized" });
     return;
   }
 
   if (!roomId) {
-    res.status(400).json({ success: false, message: "Room ID required" });
+    res
+      .status(HttpStatus.BAD_REQUEST)
+      .json({ success: false, message: "Room ID required" });
     return;
   }
 
   try {
     const room = await getRoomWithUsersById(roomId);
     if (!room) {
-      res.status(404).json({ success: false, message: "Room not found." });
+      res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ success: false, message: "Room not found." });
       return;
     }
 
     if (room.adminId === userId) {
       await deleteRoom(roomId);
-      res.status(200).json({ success: true, message: "Room deleted." });
+      res
+        .status(HttpStatus.OK)
+        .json({ success: true, message: "Room deleted." });
       return;
     }
 
     await removeUserFromRoom(roomId, userId);
-    res.status(200).json({ success: true, message: "Left the room." });
+    res
+      .status(HttpStatus.OK)
+      .json({ success: true, message: "Left the room." });
     return;
   } catch {
-    res.status(500).json({ success: false, error: "Server error." });
+    res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .json({ success: false, error: "Server error." });
     return;
   }
 };

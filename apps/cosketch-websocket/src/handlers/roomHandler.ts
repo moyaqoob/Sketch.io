@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { logger } from "../utils/logger";
-import { deleteUserCanvasInRoom } from "@repo/database";
+import { deleteUserCanvasInRoom, getRoomIfExists } from "@repo/database";
 import {
   addUserToRoom,
   isUserInRoom,
@@ -9,7 +9,7 @@ import {
   broadcastToRoom,
 } from "../utils/roomManager";
 
-export const handleRoomEvent = (
+export const handleRoomEvent = async (
   socket: WebSocket,
   message: { type: string; room: string },
   userId: string
@@ -18,12 +18,22 @@ export const handleRoomEvent = (
 
   switch (type) {
     case "join_room":
+      // const existingRoom = await getRoomIfExists(room);
+      // if (!existingRoom) {
+      //   logger.warn(`Room ${room} does not exist in the database.`);
+      //   return;
+      // }
+
       addUserToRoom(socket, room);
       logger.info(`User ${userId} joined room ${room}`);
-      broadcastToRoom(room, {
-        type: "user_joined",
-        message: { type: "user_joined", message: `User ${userId} joined` },
-      });
+      broadcastToRoom(
+        room,
+        {
+          type: "user_joined",
+          message: { type: "user_joined", message: `User ${userId} joined` },
+        },
+        socket
+      );
       break;
 
     case "leave_room":
@@ -84,28 +94,22 @@ const removeUserFromRoom = async (
     }
   }
 
-  cleanupRoom(room);
+  cleanupRoom(room, socket);
 };
 
 // Remove Room if Empty
-const cleanupRoom = (room: string) => {
+const cleanupRoom = (room: string, socket: WebSocket) => {
   if (rooms[room] && rooms[room].size === 0) {
     delete rooms[room];
     logger.info(`Room ${room} deleted (no users left).`);
   } else {
-    broadcastToRoom(room, {
-      type: "user_left",
-      message: `A user left the room`,
-    });
+    broadcastToRoom(
+      room,
+      {
+        type: "user_left",
+        message: `A user left the room`,
+      },
+      socket
+    );
   }
 };
-
-// Broadcast Message to All Users in a Room
-// const broadcast = (room: string, message: object) => {
-//   if (!rooms[room]) return;
-//   for (const client of rooms[room]) {
-//     if (client.readyState === WebSocket.OPEN) {
-//       client.send(JSON.stringify(message));
-//     }
-//   }
-// };

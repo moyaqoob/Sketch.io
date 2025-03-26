@@ -43,7 +43,7 @@ export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
         {/* Action Buttons */}
         <div className='mt-6 flex justify-end gap-2 font-bold'>
           <button
-            className='rounded-lg border px-4 py-2 text-gray-600 transition hover:bg-gray-100'
+            className='cursor-pointer rounded-lg border px-4 py-2 text-gray-600 transition hover:bg-gray-100'
             onClick={() => {
               onClose(false);
             }}
@@ -51,7 +51,7 @@ export const LogoutDialogBox = ({ onClose, isOpen }: LogoutDialogBoxProps) => {
             Cancel
           </button>
           <button
-            className='rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700'
+            className='cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-white transition hover:bg-red-700'
             onClick={handleLogout}
           >
             Logout

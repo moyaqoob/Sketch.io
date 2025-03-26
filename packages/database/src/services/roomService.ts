@@ -1,4 +1,4 @@
-import client from "..";
+import { client } from "..";
 
 export const createRoom = async (name: string, userId: string) => {
   return await client.room.create({
@@ -83,5 +83,11 @@ export const connectUserWithRoom = async (roomId: string, userId: string) => {
   await client.room.update({
     where: { id: roomId },
     data: { users: { connect: { id: userId } } },
+  });
+};
+
+export const getRoomIfExists = async (roomId: string) => {
+  return await client.room.findUnique({
+    where: { id: roomId },
   });
 };

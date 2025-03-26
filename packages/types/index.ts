@@ -15,3 +15,12 @@ export {
   passwordSchema,
   SigninSchema,
 };
+
+import {
+  shapeSchema,
+  canvasMessageSchema,
+  type CanvasMessage,
+  type Shape,
+} from "./src/canvasTypes";
+
+export { shapeSchema, canvasMessageSchema, type CanvasMessage, type Shape };

@@ -1,4 +1,4 @@
-import Canvas from './page.client';
+import CanvasClient from './page.client';
 import getPageMetadata from '@/lib/getPageMetadata';
 
 export const metadata = getPageMetadata({
@@ -10,7 +10,7 @@ export const metadata = getPageMetadata({
 const CanvasPage = () => {
   return (
     <section className='bg-black'>
-      <Canvas />;
+      <CanvasClient />;
     </section>
   );
 };

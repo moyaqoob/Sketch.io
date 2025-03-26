@@ -15,6 +15,7 @@ import {
   removeUserFromRoom,
   getRoomWithUsers,
   connectUserWithRoom,
+  getRoomIfExists,
 } from "./src/services/roomService";
 
 export {
@@ -26,8 +27,23 @@ export {
   getRoomWithUsersById,
   getRoomWithUsers,
   connectUserWithRoom,
+  getRoomIfExists,
 };
 
-import { deleteUserCanvasInRoom } from "./src/services/canvasService";
+import {
+  createCanvas,
+  deleteUserCanvasInRoom,
+  getRoomCanvas,
+  getCanvasShape,
+  deleteCanvasShape,
+  updateCanvasShape,
+} from "./src/services/canvasService";
 
-export { deleteUserCanvasInRoom };
+export {
+  deleteUserCanvasInRoom,
+  getRoomCanvas,
+  createCanvas,
+  getCanvasShape,
+  deleteCanvasShape,
+  updateCanvasShape,
+};
