@@ -1,9 +1,29 @@
 import React from 'react';
 
-const ToolbarButton = ({ icon: Icon }: { icon: React.ElementType }) => {
+interface ToolbarButtonProps {
+  icon: React.ElementType;
+  isSelected?: boolean;
+  onClick?: () => void;
+  id: number;
+}
+
+const ToolbarButton: React.FC<ToolbarButtonProps> = ({
+  icon: Icon,
+  isSelected,
+  onClick,
+  id,
+}) => {
   return (
-    <button className='hover:bg-light_background flex cursor-pointer items-center gap-2 rounded p-2'>
-      <Icon size={20} />
+    <button
+      onClick={onClick}
+      className={`relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition ${
+        isSelected ? 'bg-tool_select' : 'hover:bg-light_background'
+      }`}
+    >
+      <Icon size={16} className='text-white' />
+      <span className='absolute right-1 bottom-0 text-[9px] text-gray-400 opacity-80'>
+        {id}
+      </span>
     </button>
   );
 };

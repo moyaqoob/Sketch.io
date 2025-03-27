@@ -7,7 +7,7 @@ const EncryptionBadge = () => {
 
   return (
     <div
-      className='text-primary relative flex items-center gap-2 text-sm font-medium'
+      className='text-primary relative hidden items-center gap-2 text-sm font-medium sm:block'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

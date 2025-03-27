@@ -11,9 +11,11 @@ const CanvasClient = () => {
 
   return (
     <>
-      <CanvasHeader roomId={roomId} />
-      <Canvas roomId={roomId} />;
-      <CanvasFooter />
+      <section className='h-screen w-screen bg-black'>
+        <CanvasHeader roomId={roomId} />
+        <Canvas roomId={roomId} />;
+        <CanvasFooter />
+      </section>
     </>
   );
 };
