@@ -8,11 +8,7 @@ export const metadata = getPageMetadata({
 });
 
 const CanvasPage = () => {
-  return (
-    <section className='bg-black'>
-      <CanvasClient />;
-    </section>
-  );
+  return <CanvasClient />;
 };
 
 export default CanvasPage;

@@ -7,14 +7,14 @@ const EncryptionBadge = () => {
 
   return (
     <div
-      className='relative flex items-center gap-2 text-sm font-medium text-white'
+      className='text-primary relative flex items-center gap-2 text-sm font-medium'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='22'
-        height='22'
+        width='18'
+        height='18'
         fill='currentColor'
         className='bi bi-shield-fill-check'
         viewBox='0 0 16 16'
@@ -27,7 +27,7 @@ const EncryptionBadge = () => {
 
       {/* Tooltip */}
       {isHovered && (
-        <div className='absolute -top-20 left-1/2 w-max -translate-x-[80%] rounded-md bg-white px-6 py-6 text-base whitespace-nowrap text-black shadow-lg'>
+        <div className='bg-background absolute -top-20 left-1/2 w-max -translate-x-[80%] rounded-md px-6 py-6 text-base whitespace-nowrap text-white shadow-lg'>
           Your drawings are <strong>fully private & secured</strong>.
         </div>
       )}

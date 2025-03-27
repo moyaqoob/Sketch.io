@@ -11,10 +11,15 @@
 
   --color-secondary: #223082;
 
+  --color-background: #1f1f1f;
+  --color-light_background: #2a2a2a;
+  --color-lighter_background: #191919;
+
   /* Custom BG Colors */
 
-  --color-bgyellow: #fffceb;
-  --color-bggreen: #d1fae5;
+  --color-background_yellow: #fffceb;
+  --color-background_green: #d1fae5;
+  --color-background_blue: #f0f9ff;
 }
 
 html {

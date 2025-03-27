@@ -63,7 +63,7 @@ const Signup = () => {
   };
 
   return (
-    <main className='bg-bggreen flex h-screen w-screen items-center justify-center'>
+    <main className='bg-background_green flex h-screen w-screen items-center justify-center'>
       <section className='mx-6 w-full max-w-sm rounded-md bg-white p-4 shadow-md sm:max-w-md'>
         <div className='mb-3 flex items-center justify-between'>
           <div className='relative inline-block'>

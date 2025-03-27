@@ -60,7 +60,7 @@ const Signin = () => {
   };
 
   return (
-    <main className='bg-bggreen flex h-[90vh] w-screen items-center justify-center md:h-screen'>
+    <main className='bg-background_green flex h-[90vh] w-screen items-center justify-center md:h-screen'>
       <section className='mx-6 w-full max-w-sm rounded-md bg-white p-4 shadow-md sm:max-w-md'>
         <div className='mb-3 flex items-center justify-between'>
           <div className='relative inline-block'>

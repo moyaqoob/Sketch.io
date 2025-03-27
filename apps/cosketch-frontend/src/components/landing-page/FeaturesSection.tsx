@@ -49,7 +49,10 @@ const featureItems = [
 
 export function Features() {
   return (
-    <section id='features' className='w-full scroll-mt-20 bg-[#F0F9FF] py-16'>
+    <section
+      id='features'
+      className='bg-background_blue w-full scroll-mt-20 py-16'
+    >
       <div className='mx-auto max-w-7xl px-6 text-center'>
         <h2 className='text-secondary mb-12 text-3xl font-bold md:text-5xl'>
           <Animation type='bracket' color='#3B82F6'>

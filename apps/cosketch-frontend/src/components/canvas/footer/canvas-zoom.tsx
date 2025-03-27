@@ -1,30 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useZoom } from '@/hook/useZoom';
 import { Minus, Plus } from 'lucide-react';
 
 const CanvasZoom = () => {
-  const [zoom, setZoom] = useState(10); // Default 100%
-
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 10, 300)); // Max 300%
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 10, 10)); // Min 10%
+  const { zoom, zoomIn, zoomOut } = useZoom();
 
   return (
-    <div className='flex items-center gap-4 rounded-lg bg-gray-100 px-3 py-1 shadow-md'>
+    <div className='bg-background flex items-center gap-4 rounded-lg shadow-md'>
       <button
-        onClick={handleZoomOut}
-        className='cursor-pointer rounded-full p-2 hover:bg-gray-200'
+        onClick={zoomOut}
+        disabled={zoom === 100}
+        className={`cursor-pointer rounded-l-lg p-2 ${
+          zoom === 100
+            ? 'cursor-not-allowed text-gray-400'
+            : 'hover:bg-light_background text-white'
+        }`}
       >
-        <Minus className='h-5 w-5 text-gray-600' />
+        <Minus className='h-5 w-5' />
       </button>
 
-      <span className='text-lg font-semibold'>{zoom}%</span>
+      <span className='text-lg font-semibold text-white'>{zoom}%</span>
 
       <button
-        onClick={handleZoomIn}
-        className='cursor-pointer rounded-full p-2 hover:bg-gray-200'
+        onClick={zoomIn}
+        disabled={zoom === 300}
+        className={`cursor-pointer rounded-r-lg p-2 ${
+          zoom === 300
+            ? 'cursor-not-allowed text-gray-400'
+            : 'hover:bg-light_background text-white'
+        }`}
       >
-        <Plus className='h-5 w-5 text-gray-600' />
+        <Plus className='h-5 w-5' />
       </button>
     </div>
   );

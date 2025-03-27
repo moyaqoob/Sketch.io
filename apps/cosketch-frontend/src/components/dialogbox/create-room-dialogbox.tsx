@@ -11,7 +11,7 @@ interface CreateRoomDialogBoxProps {
 
 const CreateRoomDialogBox = ({ onClose }: CreateRoomDialogBoxProps) => {
   const [roomName, setRoomName] = useState('');
-  const { createRoom } = useRooms(); // ✅ Hook inside the component
+  const { createRoom } = useRooms();
 
   const handleCreateRoom = async () => {
     onClose(false);
@@ -19,7 +19,7 @@ const CreateRoomDialogBox = ({ onClose }: CreateRoomDialogBoxProps) => {
     setRoomName('');
 
     toast.promise(
-      createRoom(roomName), // ✅ Corrected function call
+      createRoom(roomName),
       {
         loading: <span className='text-gray-800'>Creating room...</span>,
         success: (
