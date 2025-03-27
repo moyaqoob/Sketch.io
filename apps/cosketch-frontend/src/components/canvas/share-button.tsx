@@ -80,7 +80,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
   };
 
   return (
-    <div className='relative' ref={menuRef}>
+    <div className='relative hidden lg:block' ref={menuRef}>
       {/* Main Button */}
       <button
         onClick={() => setIsOpen(prev => !prev)}

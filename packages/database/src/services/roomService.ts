@@ -91,3 +91,10 @@ export const getRoomIfExists = async (roomId: string) => {
     where: { id: roomId },
   });
 };
+
+export const getRoomByRoomId = async (roomId: string) => {
+  return await client.room.findUnique({
+    where: { id: roomId },
+    include: { users: true },
+  });
+};

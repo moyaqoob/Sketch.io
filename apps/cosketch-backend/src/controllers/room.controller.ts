@@ -7,12 +7,12 @@ import {
   createRoom,
   deleteRoom,
   getRoomByName,
+  getRoomByRoomId,
   getRoomsByUserId,
   getRoomWithUsers,
   getRoomWithUsersById,
   removeUserFromRoom,
 } from "@repo/database";
-import { OK } from "zod";
 
 export const CreateRoom = async (req: AuthRequest, res: Response) => {
   try {
@@ -131,6 +131,50 @@ export const joinRoom = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const VerifyUserInRoom = async (req: AuthRequest, res: Response) => {
+  const userId = req.auth?.id;
+  const { roomId } = req.body;
+
+  if (!userId) {
+    res
+      .status(HttpStatus.UNAUTHORIZED)
+      .json({ success: false, error: "Unauthorized" });
+    return;
+  }
+
+  if (!roomId) {
+    res
+      .status(HttpStatus.BAD_REQUEST)
+      .json({ success: false, message: "Room ID required" });
+    return;
+  }
+
+  try {
+    const room = await getRoomByRoomId(roomId);
+
+    if (!room) {
+      res.status(HttpStatus.NOT_FOUND).json({ message: "Room not found" });
+      return;
+    }
+
+    const isUserInRoom = room.users.some((user) => user.id === userId);
+    if (!isUserInRoom) {
+      res.status(403).json({ message: "Access denied. Not in this room." });
+      return;
+    }
+
+    res
+      .status(HttpStatus.OK)
+      .json({ success: true, message: "User is in the room" });
+    return;
+  } catch {
+    res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Server error" });
+    return;
+  }
+};
+
 // Leaving a room
 export const leaveRoom = async (req: AuthRequest, res: Response) => {
   const userId = req.auth?.id;
@@ -239,3 +283,6 @@ export const getRooms = async (req: AuthRequest, res: Response) => {
     return;
   }
 };
+function isUserInRoom(roomId: any) {
+  throw new Error("Function not implemented.");
+}

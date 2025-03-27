@@ -1,33 +1,39 @@
 import { z } from "zod";
 
-// Define shape schema
+// shape
+export const shapeTypes = [
+  "Rectangle",
+  "Diamond",
+  "Circle",
+  "Arrow",
+  "Line",
+  "FreeDraw",
+  "Text",
+] as const;
+
+// Shape schema
 export const shapeSchema = z.object({
   id: z.number().optional(),
-  type: z.enum([
-    "Rectangle",
-    "Diamond",
-    "Circle",
-    "Arrow",
-    "Line",
-    "FreeDraw",
-    "Text",
-  ]),
+  type: z.enum(shapeTypes),
   x: z.number(),
   y: z.number(),
   color: z.string(),
-  radius: z.number().optional(), // Only for circles
-  width: z.number().optional(), // Only for rectangles
-  height: z.number().optional(), // Only for rectangles
-  points: z.array(z.number()).optional(), // Only for lines
+  opacity: z.number().min(0).max(1).optional(),
+  strokeWidth: z.number().optional(),
+  radius: z.number().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  text: z.string().optional(),
+  points: z.array(z.number()).optional(),
 });
 
-// The entire message schema
+// message schema
 export const canvasMessageSchema = z.object({
-  type: z.string(),
+  type: z.enum(["draw_canvas", "clear_canvas", "update", "erase"]),
   room: z.string(),
-  data: shapeSchema, // Data itself is a single shape
+  data: shapeSchema,
 });
 
-// **Infer TypeScript types from Zod schemas**
+// Infer types
 export type Shape = z.infer<typeof shapeSchema>;
 export type CanvasMessage = z.infer<typeof canvasMessageSchema>;

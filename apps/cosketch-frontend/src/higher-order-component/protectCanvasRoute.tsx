@@ -1,22 +1,23 @@
 'use client';
 
-import { authorize } from '@/api/auth';
+import { verifyUserInRoom } from '@/api/room';
 import Spinner from '@/components/spinner';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-interface ProtectRouteProps {
+interface ProtectCanvasRouteProps {
   children: React.ReactNode;
+  roomId: string;
 }
 
-const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
+const ProtectCanvasRoute = ({ children, roomId }: ProtectCanvasRouteProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  const authorizeMutation = useMutation({
-    mutationFn: authorize,
+  const verifyUserInRoomMutation = useMutation({
+    mutationFn: verifyUserInRoom,
     onSuccess: data => {
       toast.success(data.message || 'Authentication successful');
       setIsLoading(false);
@@ -33,13 +34,13 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
     if (!storedToken) {
       router.replace('/signin');
     } else {
-      authorizeMutation.mutate({ token: storedToken });
+      verifyUserInRoomMutation.mutate(roomId);
     }
 
     return () => setIsLoading(false);
   }, []);
 
-  if (isLoading || authorizeMutation.isPending) {
+  if (isLoading || verifyUserInRoomMutation.isPending) {
     return (
       <div className='bg-background_yellow flex h-screen items-center justify-center'>
         <div className='flex flex-col items-center space-y-4'>
@@ -55,4 +56,4 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-export default ProtectRoute;
+export default ProtectCanvasRoute;

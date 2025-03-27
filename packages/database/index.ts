@@ -16,6 +16,7 @@ import {
   getRoomWithUsers,
   connectUserWithRoom,
   getRoomIfExists,
+  getRoomByRoomId,
 } from "./src/services/roomService";
 
 export {
@@ -28,6 +29,7 @@ export {
   getRoomWithUsers,
   connectUserWithRoom,
   getRoomIfExists,
+  getRoomByRoomId,
 };
 
 import {

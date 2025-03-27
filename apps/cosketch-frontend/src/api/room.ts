@@ -89,3 +89,27 @@ export const getRooms = async () => {
     throw new Error('Unexpected error occurred while fetching rooms.');
   }
 };
+
+// Get Rooms
+export const verifyUserInRoom = async (roomId: string) => {
+  try {
+    const response = await axios.post(
+      `${HTTP_URL}/room/verify`,
+      { roomId },
+      { headers: getAuthHeaders() },
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    // console.error('Error fetching rooms:', error);
+
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        console.warn('Unauthorized! Redirecting to login...');
+      }
+      throw new Error(error.response?.data?.error || 'Failed to fetch rooms.');
+    }
+
+    throw new Error('Unexpected error occurred while fetching rooms.');
+  }
+};

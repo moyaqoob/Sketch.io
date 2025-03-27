@@ -7,7 +7,7 @@ export const metadata = getPageMetadata({
     'Jump into a live CoSketch canvas! Collaborate, sketch, and share ideas with your team instantly.',
 });
 
-const CanvasPage = () => {
+const CanvasPage = async () => {
   return <CanvasClient />;
 };
 

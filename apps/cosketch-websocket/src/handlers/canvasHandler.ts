@@ -84,7 +84,7 @@ export const handleCanvasEvent = async (
         );
         break;
 
-      case "eraser":
+      case "erase":
         try {
           const { id: shapeId } = shapeData;
 

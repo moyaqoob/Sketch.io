@@ -4,6 +4,7 @@ import {
   joinRoom,
   leaveRoom,
   getRooms,
+  VerifyUserInRoom,
 } from "../controllers/room.controller";
 
 import { auth } from "../middleware/auth";
@@ -15,6 +16,7 @@ router.use(auth);
 router.post("/create-room", CreateRoom);
 router.post("/join-room", joinRoom);
 router.post("/leave-or-delete", leaveRoom);
+router.post("/verify", VerifyUserInRoom);
 
 router.get("/rooms", getRooms);
 

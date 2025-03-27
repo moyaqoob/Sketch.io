@@ -9,7 +9,7 @@ import type { AuthRequest } from "../utils/request-type";
 
 export const signup = async (req: Request, res: Response) => {
   try {
-    // Validate request body using Zod
+    // Validate request
     const parsedData = CreateUserSchema.safeParse(req.body);
     if (!parsedData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
