@@ -3,7 +3,15 @@ import { z } from "zod";
 // Define shape schema
 export const shapeSchema = z.object({
   id: z.number().optional(),
-  type: z.enum(["circle", "rectangle", "line"]),
+  type: z.enum([
+    "Rectangle",
+    "Diamond",
+    "Circle",
+    "Arrow",
+    "Line",
+    "FreeDraw",
+    "Text",
+  ]),
   x: z.number(),
   y: z.number(),
   color: z.string(),

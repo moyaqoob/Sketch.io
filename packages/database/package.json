@@ -6,7 +6,8 @@
   "scripts": {
     "generate": "bun prisma generate",
     "reset": "bun prisma migrate reset",
-    "migrate": "bun prisma migrate dev"
+    "migrate": "bun prisma migrate dev",
+    "studio": "bunx prisma studio"
   },
   "devDependencies": {
     "@types/bun": "latest"

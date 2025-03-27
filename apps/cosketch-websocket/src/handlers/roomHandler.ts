@@ -64,7 +64,7 @@ export const handleUserLeaveCompletely = async (
 };
 
 // Remove User from Room (Optional Canvas Removal)
-const removeUserFromRoom = async (
+export const removeUserFromRoom = async (
   socket: WebSocket,
   room: string,
   userId: string,

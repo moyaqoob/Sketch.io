@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Share2, Copy, Check, Loader2, ChevronDown } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+// import { toast } from 'react-hot-toast';
 
 interface ShareButtonProps {
   roomId: string;
@@ -55,9 +55,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
         text: shareMessage,
         url: dashboardUrl,
       });
-      toast.success('Room link shared successfully!');
+      // toast.success('Room link shared successfully!');
     } catch {
-      toast.error('Failed to share the link.');
+      // toast.error('Failed to share the link.');
     } finally {
       setIsProcessing(false);
       setIsOpen(false);
@@ -69,10 +69,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
     try {
       await navigator.clipboard.writeText(shareMessage);
       setCopied(true);
-      toast.success('Room link copied to clipboard!');
+      // toast.success('Room link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy the link.');
+      // toast.error('Failed to copy the link.');
     } finally {
       setIsProcessing(false);
       setIsOpen(false);

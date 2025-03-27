@@ -77,6 +77,14 @@ To reset and reapply migrations:
 bun run reset
 ```
 
+Open Prisma Studio
+
+For an interactive database UI:
+
+```bash
+bun run studio
+```
+
 ## 🚀 Running the Project
 
 Make sure the database is running before starting the backend services:
