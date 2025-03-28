@@ -30,9 +30,13 @@ const tools = [
   { icon: Eraser, tool: 'Eraser', id: 9, tooltip: 'Eraser - 9' },
 ];
 
-const Toolbar = () => {
+interface ToolbarProps {
+  selectedTool: string;
+  setSelectedTool: (tool: string) => void;
+}
+
+const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
   const [isLocked, setIsLocked] = useState(false);
-  const [selectedTool, setSelectedTool] = useState('Selection'); // Default tool
 
   const toggleLock = () => {
     setIsLocked(prev => !prev);

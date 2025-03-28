@@ -57,6 +57,8 @@ export const authorize = async (userData: { token: string }) => {
       },
     });
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     return response.data;
   } catch (error) {
     const err = error as AuthError;

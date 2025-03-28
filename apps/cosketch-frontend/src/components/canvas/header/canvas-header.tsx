@@ -6,9 +6,15 @@ import Tooltip from '../toolbar/tooltip';
 
 interface HeaderProps {
   roomId: string;
+  selectedTool: string;
+  setSelectedTool: (tool: string) => void;
 }
 
-const CanvasHeader = ({ roomId }: HeaderProps) => {
+const CanvasHeader = ({
+  roomId,
+  selectedTool,
+  setSelectedTool,
+}: HeaderProps) => {
   return (
     <header className='fixed top-0 left-0 z-50 flex w-full items-center justify-between px-15 pt-6 lg:px-20'>
       <div className='group relative'>
@@ -17,7 +23,7 @@ const CanvasHeader = ({ roomId }: HeaderProps) => {
           <Tooltip tooltip='leave room' />
         </button>
       </div>
-      <Toolbar />
+      <Toolbar selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
       <ShareButton roomId={roomId} />
     </header>
   );

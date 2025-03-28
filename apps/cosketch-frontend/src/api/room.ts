@@ -73,7 +73,7 @@ export const getRooms = async () => {
       headers: getAuthHeaders(),
     });
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     return response.data;
   } catch (error: unknown) {
@@ -98,6 +98,8 @@ export const verifyUserInRoom = async (roomId: string) => {
       { roomId },
       { headers: getAuthHeaders() },
     );
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     return response.data;
   } catch (error: unknown) {
