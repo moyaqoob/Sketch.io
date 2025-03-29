@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { LucideIcon } from 'lucide-react';
 import {
   MousePointer,
   Square,
@@ -19,9 +20,8 @@ import {
 import ToolbarButton from './toolbar-button';
 import Tooltip from './tooltip';
 import { Tool } from '@/type/tool';
-import { Draw } from '@/canvas_engine/draw';
 
-const tools: { icon: any; tool: Tool; id: number; tooltip: string }[] = [
+const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
   { icon: MousePointer, tool: 'Selection', id: 1, tooltip: 'Selection - 1' },
   { icon: Square, tool: 'Rectangle', id: 2, tooltip: 'Rectangle - 2' },
   { icon: Diamond, tool: 'Diamond', id: 3, tooltip: 'Diamond - 3' },

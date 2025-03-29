@@ -2,19 +2,7 @@ import { getExistingShapes } from '@/api/canvas';
 import { Tool } from '@/type/tool';
 import rough from 'roughjs';
 import { RoughCanvas } from 'roughjs/bin/canvas';
-
-interface Shape {
-  type: Tool;
-  startX: number;
-  startY: number;
-  width?: number;
-  height?: number;
-  size?: number;
-  stroke: string;
-  endX?: number;
-  endY?: number;
-  roughness: number;
-}
+import type { Shape } from '@repo/types';
 
 export class Draw {
   private roomId: string;

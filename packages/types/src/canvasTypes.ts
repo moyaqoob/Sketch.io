@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-// shape
+// Shape types
 export const shapeTypes = [
   "Rectangle",
   "Diamond",
-  "Circle",
+  "Ellipse",
   "Arrow",
   "Line",
   "FreeDraw",
@@ -15,19 +15,18 @@ export const shapeTypes = [
 export const shapeSchema = z.object({
   id: z.number().optional(),
   type: z.enum(shapeTypes),
-  x: z.number(),
-  y: z.number(),
-  color: z.string(),
-  opacity: z.number().min(0).max(1).optional(),
-  strokeWidth: z.number().optional(),
-  radius: z.number().optional(),
+  startX: z.number(),
+  startY: z.number(),
+  endX: z.number().optional(),
+  endY: z.number().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
-  text: z.string().optional(),
-  points: z.array(z.number()).optional(),
+  size: z.number().optional(),
+  stroke: z.string(),
+  roughness: z.number(),
 });
 
-// message schema
+// Message schema
 export const canvasMessageSchema = z.object({
   type: z.enum(["draw_canvas", "clear_canvas", "update", "erase"]),
   room: z.string(),

@@ -3,7 +3,6 @@ import ShareButton from '../share-button';
 import { LogOut } from 'lucide-react';
 import Toolbar from '../toolbar/toolbar';
 import Tooltip from '../toolbar/tooltip';
-import { Draw } from '@/canvas_engine/draw';
 import { Tool } from '@/type/tool';
 
 interface HeaderProps {

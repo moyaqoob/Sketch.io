@@ -59,7 +59,7 @@ export const handleCanvasEvent = async (
           });
 
           logger.info(
-            `User ${userId} drew a ${shapeData.type} at (${shapeData.x}, ${shapeData.y}) in room ${room}`
+            `User ${userId} drew a ${shapeData.type} in room ${room}`
           );
           broadcastToRoom(
             room,
