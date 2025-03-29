@@ -8,6 +8,7 @@ export class Draw {
   private roomId: string;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
+
   private selectedTool: Tool = 'Selection';
   private existingShapes: Shape[] = [];
 
