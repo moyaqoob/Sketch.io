@@ -1,36 +1,57 @@
-'use client';
-
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import CanvasFooter from './footer/canvas-footer';
+import CanvasHeader from './header/canvas-header';
+import { Draw } from '@/canvas_engine/draw';
+import { Tool } from '@/type/tool';
 
 interface CanvasProps {
-  selectedTool: string;
+  roomId: string;
 }
 
-const Canvas: React.FC<CanvasProps> = ({ selectedTool }) => {
+const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const ctx = useRef<CanvasRenderingContext2D | null>(null);
+  const [canvasEngine, setCanvasEngine] = useState<Draw>();
+  const [selectedTool, setSelectedTool] = useState<Tool>('Selection');
 
-  const setupCanvas = () => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      ctx.current = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const draw = new Draw(canvas, roomId);
+      setCanvasEngine(draw);
+
+      return () => draw.destroy();
     }
-  };
+  }, [canvasRef]);
 
   useEffect(() => {
-    setupCanvas();
+    canvasEngine?.setSelectedTool(selectedTool);
+  }, [selectedTool]);
 
-    window.addEventListener('resize', setupCanvas);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const handleResize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
 
-    return window.removeEventListener('resize', setupCanvas);
-  }, []);
+      handleResize();
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [roomId, canvasRef]);
 
   return (
-    <canvas ref={canvasRef} className='bg-amber-50'>
-      CoSketch - Canvas{' '}
-    </canvas>
+    <>
+      <CanvasHeader
+        selectedTool={selectedTool}
+        setSelectedTool={setSelectedTool}
+        roomId={roomId}
+      />
+      <canvas ref={canvasRef} className='bg-black text-white'></canvas>
+      <CanvasFooter />
+    </>
   );
 };
 

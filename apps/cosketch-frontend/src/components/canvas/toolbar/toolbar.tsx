@@ -15,14 +15,17 @@ import {
   LockKeyhole,
   Circle,
 } from 'lucide-react';
+
 import ToolbarButton from './toolbar-button';
 import Tooltip from './tooltip';
+import { Tool } from '@/type/tool';
+import { Draw } from '@/canvas_engine/draw';
 
-const tools = [
+const tools: { icon: any; tool: Tool; id: number; tooltip: string }[] = [
   { icon: MousePointer, tool: 'Selection', id: 1, tooltip: 'Selection - 1' },
   { icon: Square, tool: 'Rectangle', id: 2, tooltip: 'Rectangle - 2' },
   { icon: Diamond, tool: 'Diamond', id: 3, tooltip: 'Diamond - 3' },
-  { icon: Circle, tool: 'Circle', id: 4, tooltip: 'Circle - 4' },
+  { icon: Circle, tool: 'Ellipse', id: 4, tooltip: 'Ellipse - 4' },
   { icon: MoveRight, tool: 'Arrow', id: 5, tooltip: 'Arrow - 5' },
   { icon: Minus, tool: 'Line', id: 6, tooltip: 'Line - 6' },
   { icon: Pencil, tool: 'FreeDraw', id: 7, tooltip: 'Draw - 7' },
@@ -30,27 +33,27 @@ const tools = [
   { icon: Eraser, tool: 'Eraser', id: 9, tooltip: 'Eraser - 9' },
 ];
 
-interface ToolbarProps {
-  selectedTool: string;
-  setSelectedTool: (tool: string) => void;
+export interface ToolbarProps {
+  selectedTool: Tool;
+  setSelectedTool: React.Dispatch<React.SetStateAction<Tool>>;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
   const [isLocked, setIsLocked] = useState(false);
 
-  const toggleLock = () => {
-    setIsLocked(prev => !prev);
+  const handleToolSelect = (tool: Tool) => {
+    setSelectedTool(tool);
   };
 
-  const handleToolSelect = (tool: string) => {
-    setSelectedTool(tool);
+  const toggleLock = () => {
+    setIsLocked(prev => !prev);
   };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key;
       if (key >= '1' && key <= '9') {
-        const tool = tools.find(t => t.id === Number(key));
+        const tool = tools.find(tool => tool.id === Number(key));
         if (tool) {
           handleToolSelect(tool.tool);
         }
@@ -70,7 +73,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('mouseup', resetTool);
     };
-  }, [isLocked]);
+  }, [isLocked, selectedTool]);
 
   return (
     <nav className='bg-background flex items-center justify-between gap-2 rounded-lg px-4 py-1 text-white shadow-md'>
@@ -84,16 +87,15 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
           aria-label='Toggle lock'
         >
           {isLocked ? <LockKeyhole size={16} /> : <LockKeyholeOpen size={16} />}
-          {/* Tooltip */}
-          <Tooltip tooltip={'Keep selected toom active after drawing'} />
+          <Tooltip tooltip={'Keep selected tool active after drawing'} />
         </button>
       </div>
 
       {/* Toolbar Buttons */}
       <div className='flex gap-2 border-x border-gray-700 px-4'>
-        {tools.map((tool, index) => (
+        {tools.map(tool => (
           <ToolbarButton
-            key={index}
+            key={tool.id}
             id={tool.id}
             icon={tool.icon}
             tooltip={tool.tooltip}
@@ -111,7 +113,6 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
         >
           <Trash size={16} className='text-red-500' />
         </button>
-        {/* Tooltip */}
         <Tooltip tooltip={'Clear Canvas'} />
       </div>
     </nav>

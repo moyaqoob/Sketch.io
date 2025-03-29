@@ -112,7 +112,7 @@ export const handleCanvasEvent = async (
           broadcastToRoom(
             room,
             {
-              type: "eraser",
+              type: "erase",
               userId,
               shapeId,
             },

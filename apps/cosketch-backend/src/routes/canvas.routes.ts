@@ -8,9 +8,9 @@ import {
 
 const router = express.Router();
 
-// router.post("/clear-canvas", clearCanvas);
-router.post("/get-canvas-desgin/:roomId", getCanvasDesigns);
-
 router.use(auth);
+
+// router.post("/clear-canvas", clearCanvas);
+router.get("/get-canvas-desgin/:roomId", getCanvasDesigns);
 
 export default router;

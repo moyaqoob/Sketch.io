@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { HTTP_URL } from '@/config';
 
-const getAuthHeaders = () => {
+export const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Unauthorized: No auth token found.');
 

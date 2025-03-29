@@ -45,8 +45,9 @@ export const getCanvasDesigns = async (req: AuthRequest, res: Response) => {
 
     res.json({ success: true, designs });
   } catch (error) {
-    res
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .json({ success: false, error: "Failed to fetch canvas designs" });
+    if (error)
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ success: false, error: "Failed to fetch canvas designs" });
   }
 };
