@@ -24,6 +24,7 @@ export const shapeSchema = z.object({
   size: z.number().optional(),
   stroke: z.string(),
   roughness: z.number(),
+  path: z.array(z.object({ x: z.number(), y: z.number() })).optional(),
 });
 
 // Message schema

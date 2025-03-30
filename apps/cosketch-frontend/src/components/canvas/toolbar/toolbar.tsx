@@ -61,7 +61,11 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
     };
 
     const resetTool = () => {
-      if (!isLocked) {
+      if (
+        !isLocked &&
+        selectedTool !== 'FreeDraw' &&
+        selectedTool !== 'Eraser'
+      ) {
         setSelectedTool('Selection');
       }
     };
@@ -86,7 +90,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
           }`}
           aria-label='Toggle lock'
         >
-          {isLocked ? <LockKeyhole size={16} /> : <LockKeyholeOpen size={16} />}
+          {isLocked ? <LockKeyhole size={20} /> : <LockKeyholeOpen size={20} />}
           <Tooltip tooltip={'Keep selected tool active after drawing'} />
         </button>
       </div>
@@ -111,7 +115,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
           className='hover:bg-light_background flex h-9 w-9 cursor-pointer items-center justify-center rounded p-2'
           aria-label='Clear canvas'
         >
-          <Trash size={16} className='text-red-500' />
+          <Trash size={20} className='text-red-500' />
         </button>
         <Tooltip tooltip={'Clear Canvas'} />
       </div>

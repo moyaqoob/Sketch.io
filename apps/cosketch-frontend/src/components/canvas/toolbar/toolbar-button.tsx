@@ -24,7 +24,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
           isSelected ? 'bg-tool_select' : 'hover:bg-light_background'
         }`}
       >
-        <Icon size={16} className='text-white' />
+        <Icon size={20} className='text-white' />
         <span className='absolute right-1 bottom-0 text-[9px] text-gray-400 opacity-80'>
           {id}
         </span>

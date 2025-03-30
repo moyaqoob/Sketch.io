@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { SidebarClose, SidebarOpen } from '@/data/icons/sidebar-icons';
+import { SidebarClose, SidebarOpen } from '@/data/icons/mobile_nav-icons';
 import {
   clearAllBodyScrollLocks,
   disableBodyScroll,
