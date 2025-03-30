@@ -15,7 +15,7 @@ export class Draw {
   private startX = 0;
   private startY = 0;
 
-  private isDrawing = false;
+  private action: 'none' | 'moving' | 'drawing' = 'none';
 
   private rc: RoughCanvas;
   private roughness: number = 0.5;
@@ -95,110 +95,115 @@ export class Draw {
     this.selectedTool = tool;
   }
 
+  getElementAtPosition() {
+    return;
+  }
+
   // Mouse Event Handlers
   private mouseDownHandler(event: MouseEvent) {
-    if (this.selectedTool === 'Selection') return;
-    this.isDrawing = true;
-
     const rect = this.canvas.getBoundingClientRect();
     this.startX = event.clientX - rect.left;
     this.startY = event.clientY - rect.top;
+
+    if (this.selectedTool === 'Selection') {
+      this.action = 'moving';
+      const element = this.getElementAtPosition();
+    } else {
+      this.action = 'drawing';
+    }
   }
 
   private mouseMoveHandler(event: MouseEvent) {
-    if (!this.isDrawing) return;
+    if (this.action === 'drawing') {
+      const rect = this.canvas.getBoundingClientRect();
+      const currentX = event.clientX - rect.left;
+      const currentY = event.clientY - rect.top;
 
-    const rect = this.canvas.getBoundingClientRect();
-    const currentX = event.clientX - rect.left;
-    const currentY = event.clientY - rect.top;
+      let newShape: Shape | null = null;
 
-    let newShape: Shape | null = null;
+      switch (this.selectedTool) {
+        case 'Rectangle':
+          newShape = {
+            type: 'Rectangle',
+            startX: this.startX,
+            startY: this.startY,
+            width: currentX - this.startX,
+            height: currentY - this.startY,
+            stroke: this.stroke,
+            roughness: this.roughness,
+          };
+          break;
+        case 'Diamond':
+          const width = Math.abs(currentX - this.startX);
+          const height = Math.abs(currentY - this.startY);
+          newShape = {
+            type: 'Diamond',
+            startX: Math.min(this.startX, currentX),
+            startY: Math.min(this.startY, currentY),
+            width,
+            height,
+            roughness: this.roughness,
+            stroke: this.stroke,
+          };
+          break;
+        case 'Ellipse':
+          const x1 = Math.min(this.startX, currentX);
+          const y1 = Math.min(this.startY, currentY);
+          const x2 = Math.max(this.startX, currentX);
+          const y2 = Math.max(this.startY, currentY);
 
-    switch (this.selectedTool) {
-      case 'Rectangle':
-        newShape = {
-          type: 'Rectangle',
-          startX: this.startX,
-          startY: this.startY,
-          width: currentX - this.startX,
-          height: currentY - this.startY,
-          stroke: this.stroke,
-          roughness: this.roughness,
-        };
-        break;
-      case 'Diamond':
-        const currSize = Math.max(
-          Math.abs(currentX - this.startX),
-          Math.abs(currentY - this.startY),
-        );
-        newShape = {
-          type: 'Diamond',
-          startX: this.startX,
-          startY: this.startY,
-          roughness: this.roughness,
-          stroke: this.stroke,
-          size: currSize,
-        };
-        break;
-      case 'Ellipse':
-        const x1 = Math.min(this.startX, currentX);
-        const y1 = Math.min(this.startY, currentY);
-        const x2 = Math.max(this.startX, currentX);
-        const y2 = Math.max(this.startY, currentY);
+          newShape = {
+            type: 'Ellipse',
+            startX: x1,
+            startY: y1,
+            width: x2 - x1,
+            height: y2 - y1,
+            stroke: this.stroke,
+            roughness: this.roughness,
+          };
+          break;
+        case 'Arrow':
+          newShape = {
+            type: 'Arrow',
+            startX: this.startX,
+            startY: this.startY,
+            endX: currentX,
+            endY: currentY,
+            stroke: this.stroke,
+            roughness: this.roughness,
+          };
+          break;
+        case 'Line':
+          newShape = {
+            type: 'Line',
+            startX: this.startX,
+            startY: this.startY,
+            endX: currentX,
+            endY: currentY,
+            stroke: this.stroke,
+            roughness: this.roughness,
+          };
+          break;
+        case 'FreeDraw':
+          break;
+        case 'Text':
+          break;
+      }
 
-        newShape = {
-          type: 'Ellipse',
-          startX: x1,
-          startY: y1,
-          width: x2 - x1,
-          height: y2 - y1,
-          stroke: this.stroke,
-          roughness: this.roughness,
-        };
-        break;
-      case 'Arrow':
-        newShape = {
-          type: 'Arrow',
-          startX: this.startX,
-          startY: this.startY,
-          endX: currentX,
-          endY: currentY,
-          stroke: this.stroke,
-          roughness: this.roughness,
-        };
-        break;
-      case 'Line':
-        newShape = {
-          type: 'Line',
-          startX: this.startX,
-          startY: this.startY,
-          endX: currentX,
-          endY: currentY,
-          stroke: this.stroke,
-          roughness: this.roughness,
-        };
-        break;
-      case 'FreeDraw':
-        break;
-      case 'Text':
-        break;
-    }
-
-    if (newShape) {
-      this.clearCanvas();
-      this.drawAllShapes();
-      if (this.selectedTool === 'Rectangle') this.drawRectangle(newShape);
-      if (this.selectedTool === 'Diamond') this.drawDiamond(newShape);
-      if (this.selectedTool === 'Ellipse') this.drawEllipse(newShape);
-      if (this.selectedTool === 'Arrow') this.drawArrow(newShape);
-      if (this.selectedTool === 'Line') this.drawLine(newShape);
+      if (newShape) {
+        this.clearCanvas();
+        this.drawAllShapes();
+        if (this.selectedTool === 'Rectangle') this.drawRectangle(newShape);
+        if (this.selectedTool === 'Diamond') this.drawDiamond(newShape);
+        if (this.selectedTool === 'Ellipse') this.drawEllipse(newShape);
+        if (this.selectedTool === 'Arrow') this.drawArrow(newShape);
+        if (this.selectedTool === 'Line') this.drawLine(newShape);
+      }
     }
   }
 
   private mouseUpHandler(event: MouseEvent) {
-    if (!this.isDrawing) return;
-    this.isDrawing = false;
-
+    this.action = 'none';
     const rect = this.canvas.getBoundingClientRect();
     const endX = event.clientX - rect.left;
     const endY = event.clientY - rect.top;
@@ -218,17 +223,16 @@ export class Draw {
         };
         break;
       case 'Diamond':
-        const finalSize = Math.max(
-          Math.abs(endX - this.startX),
-          Math.abs(endY - this.startY),
-        );
+        const finalWidth = Math.abs(endX - this.startX);
+        const finalHeight = Math.abs(endY - this.startY);
         newShape = {
           type: 'Diamond',
-          startX: this.startX,
-          startY: this.startY,
+          startX: Math.min(this.startX, endX),
+          startY: Math.min(this.startY, endY),
+          width: finalWidth,
+          height: finalHeight,
           roughness: this.roughness,
           stroke: this.stroke,
-          size: finalSize,
         };
         break;
       case 'Ellipse':
@@ -294,18 +298,21 @@ export class Draw {
   }
 
   private drawDiamond(shape: Shape) {
-    if (shape.type !== 'Diamond' || !shape.size) return;
+    if (shape.type !== 'Diamond' || !shape.width || !shape.height) return;
+
+    const centerX = shape.startX + shape.width / 2;
+    const centerY = shape.startY + shape.height / 2;
 
     const points: [number, number][] = [
-      [shape.startX, shape.startY - shape.size], // Top
-      [shape.startX + shape.size, shape.startY], // Right
-      [shape.startX, shape.startY + shape.size], // Bottom
-      [shape.startX - shape.size, shape.startY], // Left
+      [centerX, centerY - shape.height / 2], // Top
+      [centerX + shape.width / 2, centerY], // Right
+      [centerX, centerY + shape.height / 2], // Bottom
+      [centerX - shape.width / 2, centerY], // Left
     ];
 
     this.rc.polygon(points, {
-      stroke: 'white',
-      roughness: shape.roughness, // Reduces randomness
+      stroke: shape.stroke,
+      roughness: shape.roughness,
       seed: 42,
     });
   }
