@@ -30,9 +30,8 @@ interface SidebarProps {
     backgroundColor: string;
     strokeWidth: 'thin' | 'medium' | 'thick';
     strokeStyle: 'solid' | 'dashed' | 'dotted';
-    roughness: 'none' | 'normal' | 'high'; // Changed 'low' to 'none'
+    roughness: 'none' | 'normal' | 'high';
     fillStyle: 'hachure' | 'solid' | 'cross-hatch';
-    fillColor: string;
   };
   setStyles: React.Dispatch<React.SetStateAction<SidebarProps['styles']>>;
 }
@@ -44,9 +43,12 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <aside
+      onMouseUp={event => event.stopPropagation()}
       className={clsx(
         'bg-background fixed top-1/3 left-4 flex h-auto -translate-y-1/2 flex-col space-y-4 rounded-lg px-3 py-4 text-gray-400 shadow-md',
-        selectedTool === 'Eraser' && 'hidden',
+        selectedTool === 'Eraser' || selectedTool === 'Selection'
+          ? 'hidden'
+          : '',
       )}
     >
       {/* Stroke Settings */}

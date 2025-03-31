@@ -90,7 +90,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
           }`}
           aria-label='Toggle lock'
         >
-          {isLocked ? <LockKeyhole size={20} /> : <LockKeyholeOpen size={20} />}
+          {isLocked ? <LockKeyhole size={18} /> : <LockKeyholeOpen size={18} />}
           <Tooltip tooltip={'Keep selected tool active after drawing'} />
         </button>
       </div>
@@ -115,7 +115,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
           className='hover:bg-light_background flex h-9 w-9 cursor-pointer items-center justify-center rounded p-2'
           aria-label='Clear canvas'
         >
-          <Trash size={20} className='text-red-500' />
+          <Trash size={18} className='text-red-500' />
         </button>
         <Tooltip tooltip={'Clear Canvas'} />
       </div>

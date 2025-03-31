@@ -60,7 +60,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
           <button
             key={hex}
             className={clsx(
-              'flex h-8 w-8 items-center justify-center rounded border-2 transition-all',
+              'flex h-8 w-8 cursor-pointer items-center justify-center rounded border-2 transition-all',
               selectedColor === hex ? 'border-blue-500' : 'border-transparent',
             )}
             style={{
@@ -78,11 +78,11 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
         ))}
 
         {/* Open Full Palette Button */}
-        <div>
+        <div className='ml-2 border-l border-l-gray-700 pl-2'>
           <button
             onClick={() => setIsOpen(prev => !prev)}
             className={clsx(
-              'flex h-8 w-8 items-center justify-center rounded border-2 transition-all',
+              'flex h-8 w-8 cursor-pointer items-center justify-center rounded border-2 transition-all',
               selectedColor === 'transparent'
                 ? 'border-gray-500 bg-white'
                 : 'border-transparent',
@@ -115,7 +115,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
               <button
                 key={hex}
                 className={clsx(
-                  'flex h-8 w-8 items-center justify-center rounded border-2 transition-all',
+                  'flex h-8 w-8 cursor-pointer items-center justify-center rounded border-2 transition-all',
                   selectedColor === hex
                     ? 'border-blue-500'
                     : 'border-transparent',

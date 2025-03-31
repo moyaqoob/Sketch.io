@@ -25,10 +25,10 @@ const IconSelector = <T extends string>({
         <button
           key={key}
           className={clsx(
-            'flex h-10 w-10 items-center justify-center rounded transition-colors',
+            'flex h-10 w-10 cursor-pointer items-center justify-center rounded transition-colors',
             selectedIcon === key
               ? 'bg-tool_select'
-              : 'bg-transparent hover:bg-gray-700',
+              : 'bg-gray-900 hover:bg-gray-800',
           )}
           onClick={() => setSelectedIcon(key)}
           aria-label={`${title} - ${key}`} // Accessibility enhancement

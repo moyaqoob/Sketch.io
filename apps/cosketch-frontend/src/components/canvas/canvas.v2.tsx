@@ -34,11 +34,10 @@ const CanvasV2: React.FC<CanvasProps> = ({ roomId }) => {
   const [styles, setStyles] = useState({
     strokeColor: 'white',
     backgroundColor: 'transparent',
-    strokeWidth: 'medium' as 'thin' | 'medium' | 'thick',
+    strokeWidth: 'thin' as 'thin' | 'medium' | 'thick',
     strokeStyle: 'solid' as 'solid' | 'dashed' | 'dotted',
     roughness: 'none' as 'none' | 'normal' | 'high',
     fillStyle: 'hachure' as 'hachure' | 'solid' | 'cross-hatch',
-    fillColor: 'white',
   });
 
   useLayoutEffect(() => {
@@ -58,7 +57,7 @@ const CanvasV2: React.FC<CanvasProps> = ({ roomId }) => {
   useEffect(() => {
     if (canvasEngine) {
       canvasEngine.setStrokeColor(styles.strokeColor);
-      canvasEngine.setFillColor(styles.fillColor);
+      canvasEngine.setFillColor(styles.backgroundColor);
       canvasEngine.setStrokeWidth(styles.strokeWidth);
       canvasEngine.setStrokeStyle(styles.strokeStyle);
       canvasEngine.setRoughness(styles.roughness);

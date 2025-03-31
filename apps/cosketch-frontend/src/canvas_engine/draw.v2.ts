@@ -3,21 +3,15 @@ import rough from 'roughjs';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import { RoughGenerator } from 'roughjs/bin/generator';
 
-interface Shape {}
-
 export class DrawV2 {
-  // canvas
   private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D | null;
-
-  // toolbar tool
-  private selectedTool: Tool = 'Selection';
-
-  // roughjs
+  private context: CanvasRenderingContext2D;
   private rc: RoughCanvas;
   private generator: RoughGenerator;
 
-  // style shapes
+  private action: 'none' | 'moving' | 'drawing' = 'none';
+  private selectedTool: Tool = 'Selection';
+  private existingShapes: any[] = [];
 
   private strokeStyles = {
     solid: [],
@@ -31,11 +25,13 @@ export class DrawV2 {
     normal: 1,
     high: 3,
   };
-  private roughness: 'normal' | 'high' | 'none' = 'none';
+
+  private roughness: 'none' | 'normal' | 'high' = 'none';
+  private seed = 42;
 
   private strokeStyle: 'solid' | 'dashed' | 'dotted' = 'solid';
   private strokeColor: string = 'white';
-  private strokeWidth: 'thin' | 'medium' | 'thick' = 'medium';
+  private strokeWidth: 'thin' | 'medium' | 'thick' = 'thin';
 
   private strokeWidths = {
     thin: 1,
@@ -44,17 +40,49 @@ export class DrawV2 {
   };
 
   private fillStyle: 'hachure' | 'solid' | 'cross-hatch' = 'hachure';
-
   private fillColor: string = 'white';
 
-  private options = {
-    roughness: this.roughnessLevels[this.roughness],
-    stroke: this.strokeColor,
-    strokeWidth: this.strokeWidths[this.strokeWidth],
-    fill: this.fillColor,
-    fillStyle: this.fillStyle,
-    strokeLineDash: this.strokeStyles[this.strokeStyle], // For dashed/dotted lines
-  };
+  private startX: number = 0;
+  private startY: number = 0;
+  private endX: number = 0;
+  private endY: number = 0;
+
+  constructor(canvas: HTMLCanvasElement, roomId: string) {
+    this.canvas = canvas;
+    this.context = canvas.getContext('2d')!;
+    this.rc = rough.canvas(canvas);
+    this.generator = rough.generator();
+
+    this.initHandlers();
+  }
+
+  private initHandlers() {
+    this.canvas.addEventListener('mousedown', this.mouseDownHandler);
+    this.canvas.addEventListener('mousemove', this.mouseMoveHandler);
+    this.canvas.addEventListener('mouseup', this.mouseUpHandler);
+  }
+
+  destroy() {
+    this.canvas.removeEventListener('mousedown', this.mouseDownHandler);
+    this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
+    this.canvas.removeEventListener('mouseup', this.mouseUpHandler);
+  }
+
+  private getOptions() {
+    return {
+      roughness: this.roughnessLevels[this.roughness],
+      stroke: this.strokeColor,
+      strokeWidth: this.strokeWidths[this.strokeWidth],
+      fill: this.fillColor,
+      fillStyle: this.fillStyle,
+      strokeLineDash: this.strokeStyles[this.strokeStyle],
+      seed: this.seed,
+    };
+  }
+
+  setSelectedTool(tool: Tool) {
+    this.selectedTool = tool;
+  }
 
   setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
     this.strokeStyle = style;
@@ -80,36 +108,77 @@ export class DrawV2 {
     this.fillColor = color;
   }
 
-  constructor(canvas: HTMLCanvasElement, roomId: string) {
-    this.canvas = canvas;
-    this.context = canvas.getContext('2d');
-    this.rc = rough.canvas(canvas);
-    this.generator = rough.generator();
+  private mouseDownHandler = (event: MouseEvent) => {
+    const rect = this.canvas.getBoundingClientRect();
+    this.startX = event.clientX - rect.left;
+    this.startY = event.clientY - rect.top;
+
+    if (this.selectedTool === 'Selection') {
+      this.action = 'moving';
+    } else {
+      this.action = 'drawing';
+    }
+  };
+
+  private mouseMoveHandler = (event: MouseEvent) => {
+    if (this.action === 'drawing') {
+      const rect = this.canvas.getBoundingClientRect();
+      this.endX = event.clientX - rect.left;
+      this.endY = event.clientY - rect.top;
+
+      this.clearCanvas();
+      this.previewShape();
+    }
+  };
+
+  private mouseUpHandler = (event: MouseEvent) => {
+    if (this.action === 'drawing') {
+      const rect = this.canvas.getBoundingClientRect();
+      this.endX = event.clientX - rect.left;
+      this.endY = event.clientY - rect.top;
+
+      this.drawShape();
+      this.action = 'none';
+    }
+  };
+
+  private previewShape() {
+    if (this.selectedTool === 'Rectangle') {
+      const rect = this.generator.rectangle(
+        this.startX,
+        this.startY,
+        this.endX - this.startX,
+        this.endY - this.startY,
+        this.getOptions(),
+      );
+      this.rc.draw(rect);
+    }
   }
 
-  private initHandlers() {
-    // this.canvas.addEventListener('mousedown', this.mouseDownHandler.bind(this));
-    // this.canvas.addEventListener('mousemove', this.mouseMoveHandler.bind(this));
-    // this.canvas.addEventListener('mouseup', this.mouseUpHandler.bind(this));
+  private drawShape() {
+    if (this.selectedTool === 'Rectangle') {
+      const rect = this.generator.rectangle(
+        this.startX,
+        this.startY,
+        this.endX - this.startX,
+        this.endY - this.startY,
+        this.getOptions(),
+      );
+      this.rc.draw(rect);
+      this.existingShapes.push(rect);
+    }
   }
 
-  destroy() {
-    // this.canvas.removeEventListener(
-    //   'mousedown',
-    //   this.mouseDownHandler.bind(this),
-    // );
-    // this.canvas.removeEventListener(
-    //   'mousemove',
-    //   this.mouseMoveHandler.bind(this),
-    // );
-    // this.canvas.removeEventListener('mouseup', this.mouseUpHandler.bind(this));
+  private drawAllShapes() {
+    this.existingShapes.forEach(shape => {
+      this.rc.draw(shape);
+    });
   }
 
-  setSelectedTool(tool: Tool) {
-    this.selectedTool = tool;
-  }
-
-  drawShapes(shape: any) {
-    this.rc.draw(shape);
+  private clearCanvas() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.save();
+    this.drawAllShapes();
+    this.context.restore();
   }
 }
