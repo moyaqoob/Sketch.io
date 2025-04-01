@@ -107,7 +107,6 @@ export class Draw {
 
     if (this.selectedTool === 'Selection') {
       this.action = 'moving';
-      const element = this.getElementAtPosition();
     } else {
       this.action = 'drawing';
     }

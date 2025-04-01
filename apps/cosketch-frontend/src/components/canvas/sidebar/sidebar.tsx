@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     <aside
       onMouseUp={event => event.stopPropagation()}
       className={clsx(
-        'bg-background fixed top-1/3 left-4 flex h-auto -translate-y-1/2 flex-col space-y-4 rounded-lg px-3 py-4 text-gray-400 shadow-md',
+        'bg-background fixed top-2/5 left-4 flex h-auto -translate-y-1/2 flex-col space-y-4 rounded-lg px-3 py-4 text-gray-400 shadow-md',
         selectedTool === 'Eraser' || selectedTool === 'Selection'
           ? 'hidden'
           : '',
