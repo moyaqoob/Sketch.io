@@ -43,7 +43,7 @@ export const handleCanvasEvent = async (
     const shapeData = parsedData.data;
 
     switch (type) {
-      case "draw_canvas":
+      case "canvas:draw":
         // Ensure the room exists in the database to prevent FK constraint errors
         // const existingRoom = await getRoomIfExists(room);
         // if (!existingRoom) {
@@ -63,7 +63,7 @@ export const handleCanvasEvent = async (
           );
           broadcastToRoom(
             room,
-            { type: "draw_canvas", userId, data: shapeData },
+            { type: "canvas:draw", userId, data: shapeData },
             socket
           );
         } catch (dbError) {
@@ -72,19 +72,19 @@ export const handleCanvasEvent = async (
         }
         break;
 
-      case "clear_canvas":
+      case "canvas:clear":
         logger.info(`User ${userId} cleared the canvas in room ${room}`);
         broadcastToRoom(
           room,
           {
-            type: "clear_canvas",
+            type: "canvas:clear",
             message: `User ${userId} cleared the canvas`,
           },
           socket
         );
         break;
 
-      case "erase":
+      case "canvas:erase":
         try {
           const { id: shapeId } = shapeData;
 
@@ -112,7 +112,7 @@ export const handleCanvasEvent = async (
           broadcastToRoom(
             room,
             {
-              type: "erase",
+              type: "canvas:erase",
               userId,
               shapeId,
             },
@@ -122,7 +122,7 @@ export const handleCanvasEvent = async (
           logger.error(`Database error while erasing shape: ${dbError}`);
         }
         break;
-      case "update":
+      case "canvas:update":
         try {
           const { id: shapeId, ...updateData } = data; // Extract shape ID and update fields
 
@@ -159,7 +159,7 @@ export const handleCanvasEvent = async (
           broadcastToRoom(
             room,
             {
-              type: "update",
+              type: "canvas:update",
               userId,
               shapeId,
               data: updatedShape,

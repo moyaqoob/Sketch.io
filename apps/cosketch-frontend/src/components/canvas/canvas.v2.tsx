@@ -40,7 +40,7 @@ const CanvasV2: React.FC<CanvasProps> = ({ roomId }) => {
     fillStyle: 'hachure' as 'hachure' | 'solid' | 'cross-hatch',
   });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
       const draw = new DrawV2(canvas, roomId);

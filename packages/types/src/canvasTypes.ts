@@ -29,7 +29,12 @@ export const shapeSchema = z.object({
 
 // Message schema
 export const canvasMessageSchema = z.object({
-  type: z.enum(["draw_canvas", "clear_canvas", "update", "erase"]),
+  type: z.enum([
+    "canvas:draw",
+    "canvas:clear",
+    "canvas:update",
+    "canvas:erase",
+  ]),
   room: z.string(),
   data: shapeSchema,
 });

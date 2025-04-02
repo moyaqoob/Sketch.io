@@ -1,10 +1,13 @@
 import { Tool } from '@/type/tool';
+import cuid from 'cuid';
 import rough from 'roughjs';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import { Drawable } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
+import { selectionManager } from './selection_manager';
 
-interface Shape {
+export interface Shape {
+  id: string;
   type: Tool;
   x1: number;
   y1: number;
@@ -28,6 +31,7 @@ export class DrawV2 {
     dashed: [10, 5],
     dotted: [2, 6],
   };
+
   private roughnessLevels = {
     none: 0,
     low: 0.5,
@@ -48,6 +52,7 @@ export class DrawV2 {
   private strokeColor: string = 'white';
   private seed = 42;
   private roomId: string;
+  private selectionManger: selectionManager;
 
   private startX: number = 0;
   private startY: number = 0;
@@ -61,6 +66,7 @@ export class DrawV2 {
     this.rc = rough.canvas(canvas);
     this.generator = rough.generator();
     this.roomId = roomId;
+    this.selectionManger = new selectionManager();
     this.initHandlers();
   }
 
@@ -218,6 +224,7 @@ export class DrawV2 {
 
     if (shape) {
       this.existingShapes.push({
+        id: cuid(),
         type: type,
         x1: this.startX,
         y1: this.startY,

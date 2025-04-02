@@ -17,7 +17,7 @@ export const handleRoomEvent = async (
   const { type, room } = message;
 
   switch (type) {
-    case "join_room":
+    case "room:join":
       // const existingRoom = await getRoomIfExists(room);
       // if (!existingRoom) {
       //   logger.warn(`Room ${room} does not exist in the database.`);
@@ -29,14 +29,14 @@ export const handleRoomEvent = async (
       broadcastToRoom(
         room,
         {
-          type: "user_joined",
-          message: { type: "user_joined", message: `User ${userId} joined` },
+          type: "user:connected",
+          message: { type: "user:connected", message: `User ${userId} joined` },
         },
         socket
       );
       break;
 
-    case "leave_room":
+    case "room:leave":
       removeUserFromRoom(socket, room, userId, true);
       break;
   }
@@ -106,7 +106,7 @@ const cleanupRoom = (room: string, socket: WebSocket) => {
     broadcastToRoom(
       room,
       {
-        type: "user_left",
+        type: "user:disconnected",
         message: `A user left the room`,
       },
       socket
