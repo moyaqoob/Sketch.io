@@ -4,7 +4,8 @@ import rough from 'roughjs';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import { Drawable } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
-import { selectionManager } from './selection_manager';
+import { SelectionManager } from './selection_manager';
+import { getExistingShapes } from '@/api/canvas';
 
 export interface Shape {
   id: string;
@@ -14,6 +15,7 @@ export interface Shape {
   x2: number;
   y2: number;
   shape: Drawable | Drawable[];
+  paths?: [number, number];
 }
 
 export class DrawV2 {
@@ -24,7 +26,7 @@ export class DrawV2 {
 
   private action: 'none' | 'moving' | 'drawing' = 'none';
   private selectedTool: Tool = 'Selection';
-  private existingShapes: Shape[] = [];
+  existingShapes: Shape[] = [];
 
   private strokeStyles = {
     solid: [],
@@ -38,6 +40,7 @@ export class DrawV2 {
     normal: 1,
     high: 3,
   };
+
   private strokeWidths = {
     thin: 2,
     medium: 3,
@@ -52,7 +55,7 @@ export class DrawV2 {
   private strokeColor: string = 'white';
   private seed = 42;
   private roomId: string;
-  private selectionManger: selectionManager;
+  private selectionManger: SelectionManager;
 
   private startX: number = 0;
   private startY: number = 0;
@@ -66,8 +69,19 @@ export class DrawV2 {
     this.rc = rough.canvas(canvas);
     this.generator = rough.generator();
     this.roomId = roomId;
-    this.selectionManger = new selectionManager();
-    this.initHandlers();
+    this.selectionManger = new SelectionManager(this.canvas, this.context);
+
+    this.init().then(() => this.initHandlers());
+  }
+
+  getAllShapes() {
+    return this.existingShapes;
+  }
+
+  private async init() {
+    const shapes = await getExistingShapes(this.roomId);
+    console.log(shapes);
+    this.existingShapes = Array.isArray(shapes) ? shapes : [];
   }
 
   private initHandlers() {
