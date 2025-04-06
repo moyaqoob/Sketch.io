@@ -25,6 +25,7 @@ import IconSelector from './icon-selector';
 
 interface SidebarProps {
   selectedTool: Tool;
+  isShapeSelected: boolean;
   styles: {
     strokeColor: string;
     backgroundColor: string;
@@ -38,6 +39,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({
   selectedTool,
+  isShapeSelected,
   styles,
   setStyles,
 }) => {
@@ -45,8 +47,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     <section
       onMouseUp={event => event.stopPropagation()}
       className={clsx(
-        'bg-background absolute top-1/2 left-4 flex h-auto -translate-y-1/2 flex-col space-y-4 rounded-lg px-3 py-4 text-gray-400 shadow-md',
-        selectedTool === 'Eraser' || selectedTool === 'Selection'
+        'bg-background absolute left-4 flex h-auto flex-col space-y-4 rounded-lg px-3 py-4 text-gray-400 shadow-md',
+        'top-32',
+        !isShapeSelected &&
+          (selectedTool === 'Eraser' || selectedTool === 'Selection')
           ? 'hidden'
           : '',
       )}

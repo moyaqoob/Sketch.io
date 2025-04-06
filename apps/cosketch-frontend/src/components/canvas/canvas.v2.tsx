@@ -26,6 +26,7 @@ const cursorStyles = {
 const CanvasV2: React.FC<CanvasProps> = ({ roomId }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canvasEngine, setCanvasEngine] = useState<DrawV2>();
+  const [isShapeSelected, setIsShapeSelected] = useState(false);
 
   // Selected Tool
   const [selectedTool, setSelectedTool] = useState<Tool>('Selection');
@@ -46,7 +47,31 @@ const CanvasV2: React.FC<CanvasProps> = ({ roomId }) => {
       const draw = new DrawV2(canvas, roomId);
       setCanvasEngine(draw);
 
-      return () => draw.destroy();
+      // Update shape selection state when mouse events occur
+      const handleMouseDown = () => {
+        if (draw.getSelectedShape()) {
+          setIsShapeSelected(true);
+        } else {
+          setIsShapeSelected(false);
+        }
+      };
+
+      const handleMouseUp = () => {
+        if (draw.getSelectedShape()) {
+          setIsShapeSelected(true);
+        } else {
+          setIsShapeSelected(false);
+        }
+      };
+
+      canvas.addEventListener('mousedown', handleMouseDown);
+      canvas.addEventListener('mouseup', handleMouseUp);
+
+      return () => {
+        draw.destroy();
+        canvas.removeEventListener('mousedown', handleMouseDown);
+        canvas.removeEventListener('mouseup', handleMouseUp);
+      };
     }
   }, [canvasRef]);
 
@@ -97,6 +122,7 @@ const CanvasV2: React.FC<CanvasProps> = ({ roomId }) => {
 
       <Sidebar
         selectedTool={selectedTool}
+        isShapeSelected={isShapeSelected}
         styles={styles}
         setStyles={setStyles}
       />
