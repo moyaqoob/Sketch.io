@@ -258,41 +258,27 @@ export class SelectionManager {
 
     // Draw selection rectangle
     this.context.strokeStyle = '#625ee0';
-    this.context.lineWidth = 2;
+    this.context.lineWidth = 1;
     this.context.setLineDash([]);
 
     if (shape.type === 'Line' || shape.type === 'Arrow') {
-      // For lines and arrows, draw a selection box around the line
-      const padding = 12;
-      const angle = Math.atan2(y2 - y1, x2 - x1);
-      const perpendicular = angle + Math.PI / 2;
-
-      const points = [
-        [
-          x1 + padding * Math.cos(perpendicular),
-          y1 + padding * Math.sin(perpendicular),
-        ],
-        [
-          x2 + padding * Math.cos(perpendicular),
-          y2 + padding * Math.sin(perpendicular),
-        ],
-        [
-          x2 - padding * Math.cos(perpendicular),
-          y2 - padding * Math.sin(perpendicular),
-        ],
-        [
-          x1 - padding * Math.cos(perpendicular),
-          y1 - padding * Math.sin(perpendicular),
-        ],
+      // For lines and arrows, only draw endpoint handles
+      const handles = [
+        { x: x1, y: y1 },
+        { x: x2, y: y2 },
       ];
 
-      this.context.beginPath();
-      this.context.moveTo(points[0][0], points[0][1]);
-      points.forEach(point => this.context.lineTo(point[0], point[1]));
-      this.context.closePath();
-      this.context.stroke();
+      for (const pos of handles) {
+        this.context.beginPath();
+        this.context.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+        // this.context.fillStyle = '#625ee0';
+        // this.context.fill();
+        this.context.strokeStyle = '#625ee0';
+        this.context.lineWidth = 1.5;
+        this.context.stroke();
+      }
     } else {
-      // For other shapes, draw a rectangular selection box with padding
+      // For other shapes, draw rectangular selection box with padding
       const padding = 8;
       this.context.strokeRect(
         minX - padding,
@@ -300,17 +286,23 @@ export class SelectionManager {
         width + padding * 2,
         height + padding * 2,
       );
-    }
 
-    // Draw resize handles
-    const handles = this.getResizeHandles(shape);
-    for (const pos of Object.values(handles)) {
-      this.context.beginPath();
-      this.context.rect(pos.x - 4, pos.y - 4, 8, 8);
-      this.context.fillStyle = '#625ee0';
-      this.context.fill();
-      this.context.strokeStyle = '#625ee0';
-      this.context.stroke();
+      // Draw filled corner handles
+      const cornerHandles = [
+        { x: minX - padding, y: minY - padding }, // top-left
+        { x: minX + width + padding, y: minY - padding }, // top-right
+        { x: minX + width + padding, y: minY + height + padding }, // bottom-right
+        { x: minX - padding, y: minY + height + padding }, // bottom-left
+      ];
+
+      for (const pos of cornerHandles) {
+        this.context.beginPath();
+        this.context.rect(pos.x - 4, pos.y - 4, 8, 8);
+        this.context.fillStyle = '#625ee0';
+        this.context.fill();
+        this.context.strokeStyle = '#625ee0';
+        this.context.stroke();
+      }
     }
 
     this.context.restore();
@@ -335,7 +327,7 @@ export class SelectionManager {
           break;
         case 'top-right':
         case 'bottom-left':
-          this.canvas.style.cursor = 'nesw-resize';
+          this.canvas.style.cursor = 'ne-resize';
           break;
         case 'top':
         case 'bottom':

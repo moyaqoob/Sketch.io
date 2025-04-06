@@ -320,7 +320,7 @@ export class DrawV2 {
   /**
    * Clears the canvas and redraws all shapes and selection outlines
    */
-  private clearCanvas() {
+  public clearCanvas() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.save();
 
@@ -594,6 +594,13 @@ export class DrawV2 {
    */
   getAllShapes() {
     return this.existingShapes;
+  }
+
+  /**
+   * Gets the currently selected shape
+   */
+  public getSelectedShape(): Shape | null {
+    return this.selectionManger.getSelectedShape();
   }
 
   /**
