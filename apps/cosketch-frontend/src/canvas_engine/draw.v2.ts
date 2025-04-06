@@ -7,6 +7,9 @@ import { RoughGenerator } from 'roughjs/bin/generator';
 import { SelectionManager } from './selection_manager';
 import { getExistingShapes } from '@/api/canvas';
 
+/**
+ * Represents a shape on the canvas with its properties and rough.js drawable
+ */
 export interface Shape {
   id: string;
   type: Tool;
@@ -18,22 +21,29 @@ export interface Shape {
   paths?: [number, number];
 }
 
+/**
+ * Main drawing engine that handles shape creation, manipulation, and rendering
+ * Uses rough.js for hand-drawn style rendering
+ */
 export class DrawV2 {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private rc: RoughCanvas;
   private generator: RoughGenerator;
 
-  private action: 'none' | 'moving' | 'drawing' = 'none';
+  // Current action state (none, moving, drawing, or resizing)
+  private action: 'none' | 'moving' | 'drawing' | 'resizing' = 'none';
   private selectedTool: Tool = 'Selection';
-  existingShapes: Shape[] = [];
+  private existingShapes: Shape[] = [];
 
+  // Stroke style configurations
   private strokeStyles = {
     solid: [],
     dashed: [10, 5],
     dotted: [2, 6],
   };
 
+  // Roughness levels for hand-drawn style
   private roughnessLevels = {
     none: 0,
     low: 0.5,
@@ -41,12 +51,14 @@ export class DrawV2 {
     high: 3,
   };
 
+  // Stroke width options
   private strokeWidths = {
     thin: 2,
     medium: 3,
     thick: 5,
   };
 
+  // Current drawing style settings
   private roughness: 'none' | 'normal' | 'high' = 'none';
   private strokeStyle: 'solid' | 'dashed' | 'dotted' = 'solid';
   private strokeWidth: 'thin' | 'medium' | 'thick' = 'thin';
@@ -57,12 +69,15 @@ export class DrawV2 {
   private roomId: string;
   private selectionManger: SelectionManager;
 
-  private startX: number = 0;
-  private startY: number = 0;
+  // Drawing coordinates
+  private x1: number = 0;
+  private y1: number = 0;
+  private x2: number = 0;
+  private y2: number = 0;
 
-  private endX: number = 0;
-  private endY: number = 0;
-
+  /**
+   * Initializes the drawing engine with canvas and room context
+   */
   constructor(canvas: HTMLCanvasElement, roomId: string) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d')!;
@@ -74,28 +89,35 @@ export class DrawV2 {
     this.init().then(() => this.initHandlers());
   }
 
-  getAllShapes() {
-    return this.existingShapes;
-  }
-
+  /**
+   * Loads existing shapes from the server
+   */
   private async init() {
     const shapes = await getExistingShapes(this.roomId);
-    console.log(shapes);
     this.existingShapes = Array.isArray(shapes) ? shapes : [];
   }
 
+  /**
+   * Sets up mouse event handlers for drawing and selection
+   */
   private initHandlers() {
     this.canvas.addEventListener('mousedown', this.mouseDownHandler);
     this.canvas.addEventListener('mousemove', this.mouseMoveHandler);
     this.canvas.addEventListener('mouseup', this.mouseUpHandler);
   }
 
+  /**
+   * Cleans up event listeners when the drawing engine is destroyed
+   */
   destroy() {
     this.canvas.removeEventListener('mousedown', this.mouseDownHandler);
     this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
     this.canvas.removeEventListener('mouseup', this.mouseUpHandler);
   }
 
+  /**
+   * Returns the current drawing options for rough.js
+   */
   private getOptions() {
     return {
       roughness: this.roughnessLevels[this.roughness],
@@ -108,68 +130,97 @@ export class DrawV2 {
     };
   }
 
-  setSelectedTool(tool: Tool) {
-    this.selectedTool = tool;
-  }
-
-  setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
-    this.strokeStyle = style;
-  }
-
-  setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
-    this.strokeWidth = width;
-  }
-
-  setRoughness(level: 'none' | 'normal' | 'high') {
-    this.roughness = level;
-  }
-
-  setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
-    this.fillStyle = style;
-  }
-
-  setStrokeColor(color: string) {
-    this.strokeColor = color;
-  }
-
-  setFillColor(color: string) {
-    this.fillColor = color;
-  }
-
+  /**
+   * Handles mouse down events for drawing and selection
+   */
   private mouseDownHandler = (event: MouseEvent) => {
     const rect = this.canvas.getBoundingClientRect();
-    this.startX = event.clientX - rect.left;
-    this.startY = event.clientY - rect.top;
+    this.x1 = event.clientX - rect.left;
+    this.y1 = event.clientY - rect.top;
 
     if (this.selectedTool === 'Selection') {
-      this.action = 'moving';
+      const handle = this.selectionManger.getResizeHandleAtPoint(
+        this.x1,
+        this.y1,
+      );
+      if (handle) {
+        this.action = 'resizing';
+        this.selectionManger.beginResize(handle);
+      } else {
+        const shape = this.selectionManger.getShapeAtPoint(
+          this.x1,
+          this.y1,
+          this.existingShapes,
+        );
+        if (shape) {
+          this.action = 'moving';
+          this.selectionManger.beginDrag();
+        } else {
+          this.selectionManger.setSelectedShape(null);
+          this.clearCanvas();
+        }
+      }
     } else {
       this.action = 'drawing';
     }
   };
 
+  /**
+   * Handles mouse move events for drawing, moving, and resizing
+   */
   private mouseMoveHandler = (event: MouseEvent) => {
-    if (this.action === 'drawing') {
-      const rect = this.canvas.getBoundingClientRect();
-      this.endX = event.clientX - rect.left;
-      this.endY = event.clientY - rect.top;
+    const rect = this.canvas.getBoundingClientRect();
+    const currentX = event.clientX - rect.left;
+    const currentY = event.clientY - rect.top;
 
+    this.selectionManger.updateCursor(currentX, currentY);
+
+    if (this.action === 'drawing') {
+      this.x2 = currentX;
+      this.y2 = currentY;
       this.clearCanvas();
       this.previewShape();
+    } else if (this.action === 'moving') {
+      const deltaX = currentX - this.x1;
+      const deltaY = currentY - this.y1;
+      this.selectionManger.updateDrag(deltaX, deltaY);
+      this.x1 = currentX;
+      this.y1 = currentY;
+      this.clearCanvas();
+      this.redrawShapeAfterTransform(this.selectionManger.getSelectedShape());
+    } else if (this.action === 'resizing') {
+      const deltaX = currentX - this.x1;
+      const deltaY = currentY - this.y1;
+      this.selectionManger.updateResize(deltaX, deltaY);
+      this.x1 = currentX;
+      this.y1 = currentY;
+      this.clearCanvas();
+      this.redrawShapeAfterTransform(this.selectionManger.getSelectedShape());
     }
   };
 
+  /**
+   * Handles mouse up events to finalize drawing, moving, or resizing
+   */
   private mouseUpHandler = (event: MouseEvent) => {
     if (this.action === 'drawing') {
       const rect = this.canvas.getBoundingClientRect();
-      this.endX = event.clientX - rect.left;
-      this.endY = event.clientY - rect.top;
-
+      this.x2 = event.clientX - rect.left;
+      this.y2 = event.clientY - rect.top;
       this.drawShape();
-      this.action = 'none';
+    } else if (this.action === 'moving') {
+      this.selectionManger.endDrag();
+    } else if (this.action === 'resizing') {
+      this.selectionManger.endResize();
     }
+
+    this.action = 'none';
+    this.clearCanvas();
   };
 
+  /**
+   * Shows a preview of the shape while drawing
+   */
   private previewShape() {
     let shape: Drawable | Drawable[] | null = null;
 
@@ -194,17 +245,18 @@ export class DrawV2 {
         break;
     }
 
-    // If shape is an array of Drawables (like for Arrow)
     if (Array.isArray(shape)) {
       shape.forEach((drawable: Drawable) => {
         this.rc.draw(drawable);
       });
     } else if (shape) {
-      // If shape is a single Drawable
       this.rc.draw(shape);
     }
   }
 
+  /**
+   * Creates and adds a new shape to the canvas
+   */
   private drawShape() {
     let shape: Drawable | Drawable[] | null = null;
     let type: Tool = 'Rectangle';
@@ -213,23 +265,22 @@ export class DrawV2 {
       case 'Rectangle':
         shape = this.drawRectangle();
         type = 'Rectangle';
-        this.rc.draw(shape);
         break;
       case 'Diamond':
         shape = this.drawDiamond();
         type = 'Diamond';
         break;
       case 'Ellipse':
-        type = 'Ellipse';
         shape = this.drawEllipse();
+        type = 'Ellipse';
         break;
       case 'Arrow':
-        type = 'Arrow';
         shape = this.drawArrow();
+        type = 'Arrow';
         break;
       case 'Line':
-        type = 'Line';
         shape = this.drawLine();
+        type = 'Line';
         break;
       default:
         console.log('will add shape in future');
@@ -237,18 +288,23 @@ export class DrawV2 {
     }
 
     if (shape) {
-      this.existingShapes.push({
+      const newShape = {
         id: cuid(),
         type: type,
-        x1: this.startX,
-        y1: this.startY,
-        x2: this.endX,
-        y2: this.endY,
+        x1: this.x1,
+        y1: this.y1,
+        x2: this.x2,
+        y2: this.y2,
         shape: shape,
-      });
+      };
+      this.existingShapes.push(newShape);
+      this.clearCanvas();
     }
   }
 
+  /**
+   * Redraws all shapes on the canvas
+   */
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
       if (shape.type === 'Arrow' && Array.isArray(shape.shape)) {
@@ -261,56 +317,72 @@ export class DrawV2 {
     });
   }
 
+  /**
+   * Clears the canvas and redraws all shapes and selection outlines
+   */
   private clearCanvas() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.save();
-    this.drawAllShapes();
+
+    // Draw all shapes
+    this.existingShapes.forEach(shape => {
+      if (Array.isArray(shape.shape)) {
+        shape.shape.forEach(drawable => this.rc.draw(drawable));
+      } else {
+        this.rc.draw(shape.shape);
+      }
+    });
+
+    // Draw selection outline if a shape is selected
+    const selectedShape = this.selectionManger.getSelectedShape();
+    if (selectedShape) {
+      this.selectionManger.drawSelectionOutline(selectedShape);
+    }
+
     this.context.restore();
   }
 
+  /**
+   * Creates a rectangle shape
+   */
   private drawRectangle(): Drawable {
     return this.generator.rectangle(
-      Math.min(this.startX, this.endX),
-      Math.min(this.startY, this.endY),
-      Math.abs(this.endX - this.startX),
-      Math.abs(this.endY - this.startY),
+      Math.min(this.x1, this.x2),
+      Math.min(this.y1, this.y2),
+      Math.abs(this.x2 - this.x1),
+      Math.abs(this.y2 - this.y1),
       this.getOptions(),
     );
   }
 
+  /**
+   * Creates a diamond shape
+   */
   private drawDiamond(): Drawable {
-    const centerX = (this.startX + this.endX) / 2;
-    const centerY = (this.startY + this.endY) / 2;
-    const width = Math.abs(this.endX - this.startX);
-    const height = Math.abs(this.endY - this.startY);
+    const centerX = (this.x1 + this.x2) / 2;
+    const centerY = (this.y1 + this.y2) / 2;
+    const width = Math.abs(this.x2 - this.x1);
+    const height = Math.abs(this.y2 - this.y1);
 
-    // Diamond points (centered around centerX, centerY)
     const points: [number, number][] = [
-      [centerX, centerY - height / 2], // Top
-      [centerX + width / 2, centerY], // Right
-      [centerX, centerY + height / 2], // Bottom
-      [centerX - width / 2, centerY], // Left
+      [centerX, centerY - height / 2],
+      [centerX + width / 2, centerY],
+      [centerX, centerY + height / 2],
+      [centerX - width / 2, centerY],
     ];
 
-    return this.rc.polygon(points, this.getOptions());
+    return this.generator.polygon(points, this.getOptions());
   }
 
+  /**
+   * Creates an ellipse shape
+   */
   private drawEllipse(): Drawable {
-    // Calculate the bounding box for the ellipse
-    const x1 = Math.min(this.startX, this.endX);
-    const y1 = Math.min(this.startY, this.endY);
-    const x2 = Math.max(this.startX, this.endX);
-    const y2 = Math.max(this.startY, this.endY);
+    const centerX = (this.x1 + this.x2) / 2;
+    const centerY = (this.y1 + this.y2) / 2;
+    const width = Math.abs(this.x2 - this.x1);
+    const height = Math.abs(this.y2 - this.y1);
 
-    // Calculate the center of the ellipse
-    const centerX = x1 + (x2 - x1) / 2; // Midpoint of x1 and x2
-    const centerY = y1 + (y2 - y1) / 2; // Midpoint of y1 and y2
-
-    // Calculate the width and height of the ellipse
-    const width = x2 - x1;
-    const height = y2 - y1;
-
-    // Use the generator function to create the ellipse
     return this.generator.ellipse(
       centerX,
       centerY,
@@ -320,53 +392,218 @@ export class DrawV2 {
     );
   }
 
+  /**
+   * Creates an arrow shape (line with arrowhead)
+   */
   private drawArrow(): Drawable[] {
-    // Calculate the direction of the line
-    const angle = Math.atan2(this.endY - this.startY, this.endX - this.startX); // Angle of line
-
-    // Arrow size (length of the arrowhead)
+    const angle = Math.atan2(this.y2 - this.y1, this.x2 - this.x1);
     const arrowSize = 10;
+    const arrowLeftX = this.x2 - arrowSize * Math.cos(angle - Math.PI / 6);
+    const arrowLeftY = this.y2 - arrowSize * Math.sin(angle - Math.PI / 6);
+    const arrowRightX = this.x2 - arrowSize * Math.cos(angle + Math.PI / 6);
+    const arrowRightY = this.y2 - arrowSize * Math.sin(angle + Math.PI / 6);
 
-    // Arrowhead points
-    const arrowLeftX = this.endX - arrowSize * Math.cos(angle - Math.PI / 6);
-    const arrowLeftY = this.endY - arrowSize * Math.sin(angle - Math.PI / 6);
-    const arrowRightX = this.endX - arrowSize * Math.cos(angle + Math.PI / 6);
-    const arrowRightY = this.endY - arrowSize * Math.sin(angle + Math.PI / 6);
-
-    // Draw the main line, arrow left, and arrow right
     const line = this.generator.line(
-      this.startX,
-      this.startY,
-      this.endX,
-      this.endY,
+      this.x1,
+      this.y1,
+      this.x2,
+      this.y2,
       this.getOptions(),
     );
     const arrowLeft = this.generator.line(
-      this.endX,
-      this.endY,
+      this.x2,
+      this.y2,
       arrowLeftX,
       arrowLeftY,
       this.getOptions(),
     );
     const arrowRight = this.generator.line(
-      this.endX,
-      this.endY,
+      this.x2,
+      this.y2,
       arrowRightX,
       arrowRightY,
       this.getOptions(),
     );
 
-    // Return all the elements as an array to be stored
     return [line, arrowLeft, arrowRight];
   }
 
+  /**
+   * Creates a line shape
+   */
   private drawLine(): Drawable {
     return this.generator.line(
-      this.startX,
-      this.startY,
-      this.endX,
-      this.endY,
+      this.x1,
+      this.y1,
+      this.x2,
+      this.y2,
       this.getOptions(),
     );
+  }
+
+  /**
+   * Redraws a shape after it has been transformed (moved or resized)
+   */
+  private redrawShapeAfterTransform(shape: Shape | null) {
+    if (!shape) return;
+
+    const options = {
+      ...this.getOptions(),
+      stroke: this.strokeColor,
+    };
+
+    let newDrawable: Drawable | Drawable[] | null = null;
+
+    switch (shape.type) {
+      case 'Rectangle':
+        newDrawable = this.generator.rectangle(
+          Math.min(shape.x1, shape.x2),
+          Math.min(shape.y1, shape.y2),
+          Math.abs(shape.x2 - shape.x1),
+          Math.abs(shape.y2 - shape.y1),
+          options,
+        );
+        break;
+      case 'Diamond': {
+        const centerX = (shape.x1 + shape.x2) / 2;
+        const centerY = (shape.y1 + shape.y2) / 2;
+        const width = Math.abs(shape.x2 - shape.x1);
+        const height = Math.abs(shape.y2 - shape.y1);
+        const points: [number, number][] = [
+          [centerX, centerY - height / 2],
+          [centerX + width / 2, centerY],
+          [centerX, centerY + height / 2],
+          [centerX - width / 2, centerY],
+        ];
+        newDrawable = this.generator.polygon(points, options);
+        break;
+      }
+      case 'Ellipse': {
+        const centerX = (shape.x1 + shape.x2) / 2;
+        const centerY = (shape.y1 + shape.y2) / 2;
+        newDrawable = this.generator.ellipse(
+          centerX,
+          centerY,
+          Math.abs(shape.x2 - shape.x1),
+          Math.abs(shape.y2 - shape.y1),
+          options,
+        );
+        break;
+      }
+      case 'Line':
+        newDrawable = this.generator.line(
+          shape.x1,
+          shape.y1,
+          shape.x2,
+          shape.y2,
+          options,
+        );
+        break;
+      case 'Arrow': {
+        const angle = Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1);
+        const arrowSize = 10;
+        const arrowLeftX = shape.x2 - arrowSize * Math.cos(angle - Math.PI / 6);
+        const arrowLeftY = shape.y2 - arrowSize * Math.sin(angle - Math.PI / 6);
+        const arrowRightX =
+          shape.x2 - arrowSize * Math.cos(angle + Math.PI / 6);
+        const arrowRightY =
+          shape.y2 - arrowSize * Math.sin(angle + Math.PI / 6);
+        newDrawable = [
+          this.generator.line(shape.x1, shape.y1, shape.x2, shape.y2, options),
+          this.generator.line(
+            shape.x2,
+            shape.y2,
+            arrowLeftX,
+            arrowLeftY,
+            options,
+          ),
+          this.generator.line(
+            shape.x2,
+            shape.y2,
+            arrowRightX,
+            arrowRightY,
+            options,
+          ),
+        ];
+        break;
+      }
+    }
+
+    if (newDrawable) {
+      shape.shape = newDrawable;
+    }
+  }
+
+  /**
+   * Sets the current drawing tool
+   */
+  setSelectedTool(tool: Tool) {
+    this.selectedTool = tool;
+  }
+
+  /**
+   * Sets the stroke style (solid, dashed, dotted)
+   */
+  setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
+    this.strokeStyle = style;
+    this.updateSelectedShapeStyle();
+  }
+
+  /**
+   * Sets the stroke width (thin, medium, thick)
+   */
+  setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
+    this.strokeWidth = width;
+    this.updateSelectedShapeStyle();
+  }
+
+  /**
+   * Sets the roughness level (none, normal, high)
+   */
+  setRoughness(level: 'none' | 'normal' | 'high') {
+    this.roughness = level;
+    this.updateSelectedShapeStyle();
+  }
+
+  /**
+   * Sets the fill style (hachure, solid, cross-hatch)
+   */
+  setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
+    this.fillStyle = style;
+    this.updateSelectedShapeStyle();
+  }
+
+  /**
+   * Sets the stroke color
+   */
+  setStrokeColor(color: string) {
+    this.strokeColor = color;
+    this.updateSelectedShapeStyle();
+  }
+
+  /**
+   * Sets the fill color
+   */
+  setFillColor(color: string) {
+    this.fillColor = color;
+    this.updateSelectedShapeStyle();
+  }
+
+  /**
+   * Gets all shapes on the canvas
+   */
+  getAllShapes() {
+    return this.existingShapes;
+  }
+
+  /**
+   * Updates the style of the currently selected shape
+   */
+  private updateSelectedShapeStyle() {
+    const selectedShape = this.selectionManger.getSelectedShape();
+    if (selectedShape) {
+      this.redrawShapeAfterTransform(selectedShape);
+      this.clearCanvas();
+    }
   }
 }
