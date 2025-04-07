@@ -4,7 +4,7 @@ export class Eraser {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private shapes: Shape[];
-  private eraserSize: number = 20;
+  private eraserSize: number = 5;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -23,8 +23,8 @@ export class Eraser {
     const remainingShapes: Shape[] = [];
 
     for (const shape of this.shapes) {
-      if (!this.isShapeIntersectingEraser(shape, x, y)) {
-        remainingShapes.push(shape);
+      if (!this.isPointOnShape(shape, x, y)) {
+        remainingShapes.push(shape); // only keep if not touched
       }
     }
 
@@ -32,99 +32,75 @@ export class Eraser {
   }
 
   /**
-   * Checks if a shape intersects with the eraser
+   * Checks if a point is on a shape's stroke
    */
-  private isShapeIntersectingEraser(
-    shape: Shape,
-    x: number,
-    y: number,
-  ): boolean {
+  private isPointOnShape(shape: Shape, x: number, y: number): boolean {
+    this.context.save();
+    this.context.lineWidth = this.eraserSize;
+    this.context.lineCap = 'round';
+    this.context.lineJoin = 'round';
+    this.context.beginPath();
+
     switch (shape.type) {
       case 'Rectangle':
+        this.drawRectangle(shape);
+        break;
       case 'Diamond':
-        return this.isPointInRect(x, y, shape);
+        this.drawDiamond(shape);
+        break;
       case 'Ellipse':
-        return this.isPointInEllipse(x, y, shape);
+        this.drawEllipse(shape);
+        break;
       case 'Line':
       case 'Arrow':
-        return this.isPointNearLine(x, y, shape);
+        this.drawLine(shape);
+        break;
       default:
+        this.context.restore();
         return false;
     }
+
+    // Stroke to build the path for checking
+    this.context.stroke();
+
+    const isOnStroke = this.context.isPointInStroke(x, y);
+    this.context.restore();
+    return isOnStroke;
   }
 
-  /**
-   * Checks if a point is inside a rectangle or diamond
-   */
-  private isPointInRect(x: number, y: number, shape: Shape): boolean {
+  private drawRectangle(shape: Shape): void {
     const minX = Math.min(shape.x1, shape.x2);
-    const maxX = Math.max(shape.x1, shape.x2);
     const minY = Math.min(shape.y1, shape.y2);
-    const maxY = Math.max(shape.y1, shape.y2);
+    const width = Math.abs(shape.x2 - shape.x1);
+    const height = Math.abs(shape.y2 - shape.y1);
 
-    // Check if point is within eraser radius of the shape's boundaries
-    return (
-      x >= minX - this.eraserSize &&
-      x <= maxX + this.eraserSize &&
-      y >= minY - this.eraserSize &&
-      y <= maxY + this.eraserSize
-    );
+    this.context.rect(minX, minY, width, height);
   }
 
-  /**
-   * Checks if a point is inside an ellipse
-   */
-  private isPointInEllipse(x: number, y: number, shape: Shape): boolean {
+  private drawDiamond(shape: Shape): void {
+    const centerX = (shape.x1 + shape.x2) / 2;
+    const centerY = (shape.y1 + shape.y2) / 2;
+    const width = Math.abs(shape.x2 - shape.x1);
+    const height = Math.abs(shape.y2 - shape.y1);
+
+    this.context.moveTo(centerX, centerY - height / 2);
+    this.context.lineTo(centerX + width / 2, centerY);
+    this.context.lineTo(centerX, centerY + height / 2);
+    this.context.lineTo(centerX - width / 2, centerY);
+    this.context.closePath();
+  }
+
+  private drawEllipse(shape: Shape): void {
     const centerX = (shape.x1 + shape.x2) / 2;
     const centerY = (shape.y1 + shape.y2) / 2;
     const radiusX = Math.abs(shape.x2 - shape.x1) / 2;
     const radiusY = Math.abs(shape.y2 - shape.y1) / 2;
 
-    // Check if point is within eraser radius of the ellipse
-    const dx = x - centerX;
-    const dy = y - centerY;
-    return (
-      (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY) <= 1.5
-    );
+    this.context.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, Math.PI * 2);
   }
 
-  /**
-   * Checks if a point is near a line or arrow
-   */
-  private isPointNearLine(x: number, y: number, shape: Shape): boolean {
-    const x1 = shape.x1;
-    const y1 = shape.y1;
-    const x2 = shape.x2;
-    const y2 = shape.y2;
-
-    // Calculate distance from point to line
-    const A = x - x1;
-    const B = y - y1;
-    const C = x2 - x1;
-    const D = y2 - y1;
-
-    const dot = A * C + B * D;
-    const len_sq = C * C + D * D;
-    let param = -1;
-    if (len_sq !== 0) {
-      param = dot / len_sq;
-    }
-
-    let xx, yy;
-
-    if (param < 0) {
-      xx = x1;
-      yy = y1;
-    } else if (param > 1) {
-      xx = x2;
-      yy = y2;
-    } else {
-      xx = x1 + param * C;
-      yy = y1 + param * D;
-    }
-
-    const dx = x - xx;
-    const dy = y - yy;
-    return Math.sqrt(dx * dx + dy * dy) <= this.eraserSize;
+  private drawLine(shape: Shape): void {
+    this.context.moveTo(shape.x1, shape.y1);
+    this.context.lineTo(shape.x2, shape.y2);
   }
 }

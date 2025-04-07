@@ -157,7 +157,6 @@ export class DrawV2 {
           this.selectionManger.beginDrag();
         } else {
           this.selectionManger.setSelectedShape(null);
-          this.clearCanvas();
         }
       }
     } else {
@@ -307,12 +306,10 @@ export class DrawV2 {
    */
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
-      if (shape.type === 'Arrow' && Array.isArray(shape.shape)) {
-        shape.shape.forEach((drawable: Drawable) => {
-          this.rc.draw(drawable);
-        });
+      if (Array.isArray(shape.shape)) {
+        shape.shape.forEach(drawable => this.rc.draw(drawable));
       } else {
-        this.rc.draw(shape.shape as Drawable);
+        this.rc.draw(shape.shape);
       }
     });
   }
@@ -324,14 +321,7 @@ export class DrawV2 {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.save();
 
-    // Draw all shapes
-    this.existingShapes.forEach(shape => {
-      if (Array.isArray(shape.shape)) {
-        shape.shape.forEach(drawable => this.rc.draw(drawable));
-      } else {
-        this.rc.draw(shape.shape);
-      }
-    });
+    this.drawAllShapes();
 
     // Draw selection outline if a shape is selected
     const selectedShape = this.selectionManger.getSelectedShape();
