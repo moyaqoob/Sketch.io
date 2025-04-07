@@ -6,6 +6,7 @@ import { Drawable } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
 import { SelectionManager } from './selection_manager';
 import { getExistingShapes } from '@/api/canvas';
+import { Eraser } from './eraser';
 
 /**
  * Represents a shape on the canvas with its properties and rough.js drawable
@@ -86,6 +87,10 @@ export class DrawV2 {
   private x2: number = 0;
   private y2: number = 0;
 
+  private eraser: Eraser | null = null;
+  private isErasing: boolean = false;
+  private eraserSize: number = 20;
+
   /**
    * Initializes the drawing engine with canvas and room context
    */
@@ -96,6 +101,7 @@ export class DrawV2 {
     this.generator = rough.generator();
     this.roomId = roomId;
     this.selectionManager = new SelectionManager(this.canvas, this.context);
+    this.eraser = new Eraser(this.canvas, this.context, this.existingShapes);
 
     this.init().then(() => this.initHandlers());
   }
@@ -196,6 +202,12 @@ export class DrawV2 {
     this.x1 = event.clientX - rect.left;
     this.y1 = event.clientY - rect.top;
 
+    if (this.selectedTool === 'Eraser') {
+      this.isErasing = true;
+      this.eraseAtPoint(this.x1, this.y1);
+      return;
+    }
+
     if (this.selectedTool === 'Selection') {
       // Check if clicking on rotation handle
       if (this.selectionManager.isNearRotationHandle(this.x1, this.y1)) {
@@ -248,6 +260,17 @@ export class DrawV2 {
     const currentX = event.clientX - rect.left;
     const currentY = event.clientY - rect.top;
 
+    if (this.selectedTool === 'Eraser' && this.isErasing) {
+      this.eraseAtPoint(currentX, currentY);
+      this.drawEraserCursor(currentX, currentY);
+      return;
+    } else if (this.selectedTool === 'Eraser') {
+      // Just show the cursor when hovering with eraser tool
+      this.clearCanvas();
+      this.drawEraserCursor(currentX, currentY);
+      return;
+    }
+
     // Update cursor style based on what's under the cursor
     this.selectionManager.updateCursor(currentX, currentY);
 
@@ -292,6 +315,11 @@ export class DrawV2 {
    * Handles mouse up events to finalize drawing, moving, or resizing
    */
   private mouseUpHandler = (event: MouseEvent) => {
+    if (this.selectedTool === 'Eraser') {
+      this.isErasing = false;
+      return;
+    }
+
     if (this.action === 'drawing') {
       const rect = this.canvas.getBoundingClientRect();
       this.x2 = event.clientX - rect.left;
@@ -792,6 +820,47 @@ export class DrawV2 {
       const topShape = this.existingShapes[this.existingShapes.length - 1];
       this.selectionManager.setSelectedShape(topShape);
       this.clearCanvas();
+    }
+  }
+
+  /**
+   * Erases shapes at the specified point
+   */
+  private eraseAtPoint(x: number, y: number): void {
+    if (!this.eraser) return;
+
+    // Make sure eraser has the latest shapes
+    this.eraser = new Eraser(this.canvas, this.context, this.existingShapes);
+    this.eraser.setEraserSize(this.eraserSize);
+
+    // Perform erase operation
+    this.existingShapes = this.eraser.erase(x, y);
+
+    // Redraw canvas
+    this.clearCanvas();
+  }
+
+  /**
+   * Draws the eraser cursor
+   */
+  private drawEraserCursor(x: number, y: number): void {
+    this.context.save();
+    this.context.strokeStyle = 'white';
+    this.context.lineWidth = 1;
+    this.context.setLineDash([3, 3]);
+    this.context.beginPath();
+    this.context.arc(x, y, this.eraserSize / 2, 0, Math.PI * 2);
+    this.context.stroke();
+    this.context.restore();
+  }
+
+  /**
+   * Sets the eraser size
+   */
+  public setEraserSize(size: number): void {
+    this.eraserSize = size;
+    if (this.eraser) {
+      this.eraser.setEraserSize(size);
     }
   }
 }

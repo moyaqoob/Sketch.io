@@ -11,7 +11,7 @@ interface CanvasProps {
 }
 
 const cursorStyles = {
-  Eraser: `url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDQwIDQwIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxOCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PC9zdmc+") 20 20, auto`,
+  Eraser: '',
   FreeDraw: 'crosshair',
   Text: 'text',
   Selection: 'pointer',

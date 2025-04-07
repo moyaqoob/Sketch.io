@@ -351,7 +351,6 @@ export class SelectionManager {
     this.context.save();
     this.context.strokeStyle = '#625ee0';
     this.context.lineWidth = 1;
-    this.context.setLineDash([5, 5]);
     this.context.strokeRect(minX, minY, maxX - minX, maxY - minY);
     this.context.fillStyle = 'rgba(98, 94, 224, 0.1)';
     this.context.fillRect(minX, minY, maxX - minX, maxY - minY);
