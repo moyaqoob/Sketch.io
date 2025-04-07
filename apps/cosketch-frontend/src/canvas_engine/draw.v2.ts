@@ -18,7 +18,8 @@ export interface Shape {
   x2: number;
   y2: number;
   shape: Drawable | Drawable[];
-  paths?: [number, number];
+  rotation?: number; // Add rotation property to Shape interface
+  paths?: [number, number][];
 }
 
 /**
@@ -31,10 +32,20 @@ export class DrawV2 {
   private rc: RoughCanvas;
   private generator: RoughGenerator;
 
-  // Current action state (none, moving, drawing, or resizing)
-  private action: 'none' | 'moving' | 'drawing' | 'resizing' = 'none';
+  // Current action state
+  private action:
+    | 'none'
+    | 'moving'
+    | 'drawing'
+    | 'resizing'
+    | 'rotating'
+    | 'marquee-selecting' = 'none';
   private selectedTool: Tool = 'Selection';
   private existingShapes: Shape[] = [];
+
+  // Keyboard state for modifiers
+  private isShiftKeyPressed = false;
+  private isCtrlKeyPressed = false;
 
   // Stroke style configurations
   private strokeStyles = {
@@ -67,7 +78,7 @@ export class DrawV2 {
   private strokeColor: string = 'white';
   private seed = 42;
   private roomId: string;
-  private selectionManger: SelectionManager;
+  private selectionManager: SelectionManager;
 
   // Drawing coordinates
   private x1: number = 0;
@@ -84,7 +95,7 @@ export class DrawV2 {
     this.rc = rough.canvas(canvas);
     this.generator = rough.generator();
     this.roomId = roomId;
-    this.selectionManger = new SelectionManager(this.canvas, this.context);
+    this.selectionManager = new SelectionManager(this.canvas, this.context);
 
     this.init().then(() => this.initHandlers());
   }
@@ -98,12 +109,16 @@ export class DrawV2 {
   }
 
   /**
-   * Sets up mouse event handlers for drawing and selection
+   * Sets up mouse and keyboard event handlers for drawing and selection
    */
   private initHandlers() {
     this.canvas.addEventListener('mousedown', this.mouseDownHandler);
     this.canvas.addEventListener('mousemove', this.mouseMoveHandler);
     this.canvas.addEventListener('mouseup', this.mouseUpHandler);
+
+    // Add keyboard event listeners for modifier keys
+    window.addEventListener('keydown', this.keyDownHandler);
+    window.addEventListener('keyup', this.keyUpHandler);
   }
 
   /**
@@ -113,6 +128,49 @@ export class DrawV2 {
     this.canvas.removeEventListener('mousedown', this.mouseDownHandler);
     this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
     this.canvas.removeEventListener('mouseup', this.mouseUpHandler);
+
+    window.removeEventListener('keydown', this.keyDownHandler);
+    window.removeEventListener('keyup', this.keyUpHandler);
+  }
+
+  /**
+   * Handles key down events for modifier keys
+   */
+  private keyDownHandler = (event: KeyboardEvent) => {
+    if (event.key === 'Control' || event.key === 'Meta') {
+      this.isCtrlKeyPressed = true;
+    }
+
+    // Delete key for deleting selected shape
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      this.deleteSelectedShape();
+    }
+  };
+
+  /**
+   * Handles key up events for modifier keys
+   */
+  private keyUpHandler = (event: KeyboardEvent) => {
+    if (event.key === 'Control' || event.key === 'Meta') {
+      this.isCtrlKeyPressed = false;
+    }
+  };
+
+  /**
+   * Deletes selected shapes
+   */
+  private deleteSelectedShape() {
+    const selectedShape = this.selectionManager.getSelectedShape();
+    if (selectedShape) {
+      // Remove the selected shape from existingShapes
+      this.existingShapes = this.existingShapes.filter(
+        shape => shape.id !== selectedShape.id,
+      );
+
+      // Clear selection
+      this.selectionManager.setSelectedShape(null);
+      this.clearCanvas();
+    }
   }
 
   /**
@@ -139,27 +197,45 @@ export class DrawV2 {
     this.y1 = event.clientY - rect.top;
 
     if (this.selectedTool === 'Selection') {
-      const handle = this.selectionManger.getResizeHandleAtPoint(
+      // Check if clicking on rotation handle
+      if (this.selectionManager.isNearRotationHandle(this.x1, this.y1)) {
+        this.action = 'rotating';
+        this.selectionManager.beginRotation(this.x1, this.y1);
+        return;
+      }
+
+      // Check if clicking on resize handle
+      const handle = this.selectionManager.getResizeHandleAtPoint(
         this.x1,
         this.y1,
       );
+
       if (handle) {
         this.action = 'resizing';
-        this.selectionManger.beginResize(handle);
+        this.selectionManager.beginResize(handle);
       } else {
-        const shape = this.selectionManger.getShapeAtPoint(
+        // Check if clicking on existing shape
+        const shape = this.selectionManager.getShapeAtPoint(
           this.x1,
           this.y1,
           this.existingShapes,
         );
+
         if (shape) {
+          // Set as selected shape
+          this.selectionManager.setSelectedShape(shape);
           this.action = 'moving';
-          this.selectionManger.beginDrag();
+          this.selectionManager.beginDrag();
         } else {
-          this.selectionManger.setSelectedShape(null);
+          // If not clicking on any shape, start marquee selection or clear selection
+          this.action = 'marquee-selecting';
+          this.selectionManager.beginMarqueeSelection(this.x1, this.y1);
+          // Or simply:
+          // this.selectionManager.setSelectedShape(null);
         }
       }
     } else {
+      // Begin drawing new shape
       this.action = 'drawing';
     }
   };
@@ -172,7 +248,8 @@ export class DrawV2 {
     const currentX = event.clientX - rect.left;
     const currentY = event.clientY - rect.top;
 
-    this.selectionManger.updateCursor(currentX, currentY);
+    // Update cursor style based on what's under the cursor
+    this.selectionManager.updateCursor(currentX, currentY);
 
     if (this.action === 'drawing') {
       this.x2 = currentX;
@@ -182,19 +259,32 @@ export class DrawV2 {
     } else if (this.action === 'moving') {
       const deltaX = currentX - this.x1;
       const deltaY = currentY - this.y1;
-      this.selectionManger.updateDrag(deltaX, deltaY);
+      this.selectionManager.updateDrag(deltaX, deltaY);
       this.x1 = currentX;
       this.y1 = currentY;
       this.clearCanvas();
-      this.redrawShapeAfterTransform(this.selectionManger.getSelectedShape());
+
+      // Redraw selected shape
+      const selectedShape = this.selectionManager.getSelectedShape();
+      if (selectedShape) {
+        this.redrawShapeAfterTransform(selectedShape);
+      }
     } else if (this.action === 'resizing') {
       const deltaX = currentX - this.x1;
       const deltaY = currentY - this.y1;
-      this.selectionManger.updateResize(deltaX, deltaY);
+      this.selectionManager.updateResize(deltaX, deltaY);
       this.x1 = currentX;
       this.y1 = currentY;
       this.clearCanvas();
-      this.redrawShapeAfterTransform(this.selectionManger.getSelectedShape());
+      this.redrawShapeAfterTransform(this.selectionManager.getSelectedShape());
+    } else if (this.action === 'rotating') {
+      this.selectionManager.updateRotation(currentX, currentY);
+      this.clearCanvas();
+      this.redrawShapeAfterTransform(this.selectionManager.getSelectedShape());
+    } else if (this.action === 'marquee-selecting') {
+      this.selectionManager.updateMarqueeSelection(currentX, currentY);
+      this.clearCanvas();
+      this.selectionManager.drawMarqueeSelection();
     }
   };
 
@@ -208,9 +298,13 @@ export class DrawV2 {
       this.y2 = event.clientY - rect.top;
       this.drawShape();
     } else if (this.action === 'moving') {
-      this.selectionManger.endDrag();
+      this.selectionManager.endDrag();
     } else if (this.action === 'resizing') {
-      this.selectionManger.endResize();
+      this.selectionManager.endResize();
+    } else if (this.action === 'rotating') {
+      this.selectionManager.endRotation();
+    } else if (this.action === 'marquee-selecting') {
+      this.selectionManager.completeMarqueeSelection(this.existingShapes);
     }
 
     this.action = 'none';
@@ -295,8 +389,10 @@ export class DrawV2 {
         x2: this.x2,
         y2: this.y2,
         shape: shape,
+        rotation: 0, // Default rotation
       };
       this.existingShapes.push(newShape);
+
       this.clearCanvas();
     }
   }
@@ -306,10 +402,24 @@ export class DrawV2 {
    */
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
+      // Apply rotation if needed
+      if (shape.rotation) {
+        this.context.save();
+        const centerX = (shape.x1 + shape.x2) / 2;
+        const centerY = (shape.y1 + shape.y2) / 2;
+        this.context.translate(centerX, centerY);
+        this.context.rotate((shape.rotation * Math.PI) / 180);
+        this.context.translate(-centerX, -centerY);
+      }
+
       if (Array.isArray(shape.shape)) {
         shape.shape.forEach(drawable => this.rc.draw(drawable));
       } else {
         this.rc.draw(shape.shape);
+      }
+
+      if (shape.rotation) {
+        this.context.restore();
       }
     });
   }
@@ -323,11 +433,14 @@ export class DrawV2 {
 
     this.drawAllShapes();
 
-    // Draw selection outline if a shape is selected
-    const selectedShape = this.selectionManger.getSelectedShape();
+    // Draw selection outline for selected shape
+    const selectedShape = this.selectionManager.getSelectedShape();
     if (selectedShape) {
-      this.selectionManger.drawSelectionOutline(selectedShape);
+      this.selectionManager.drawSelectionOutline(selectedShape);
     }
+
+    // Draw marquee selection if active
+    this.selectionManager.drawMarqueeSelection();
 
     this.context.restore();
   }
@@ -432,7 +545,7 @@ export class DrawV2 {
   }
 
   /**
-   * Redraws a shape after it has been transformed (moved or resized)
+   * Redraws a shape after it has been transformed (moved, resized, or rotated)
    */
   private redrawShapeAfterTransform(shape: Shape | null) {
     if (!shape) return;
@@ -529,6 +642,72 @@ export class DrawV2 {
    */
   setSelectedTool(tool: Tool) {
     this.selectedTool = tool;
+
+    // When switching to Selection tool, maintain current selection
+    // When switching to other tools, clear selection
+    if (tool !== 'Selection') {
+      this.selectionManager.setSelectedShape(null);
+      this.clearCanvas();
+    }
+  }
+
+  /**
+   * Duplicates the currently selected shape
+   */
+  duplicateSelectedShape() {
+    const selectedShape = this.selectionManager.getSelectedShape();
+    if (!selectedShape) return;
+
+    const offset = 20; // Offset for duplicate shape
+
+    const newShape = {
+      ...selectedShape,
+      id: cuid(),
+      x1: selectedShape.x1 + offset,
+      y1: selectedShape.y1 + offset,
+      x2: selectedShape.x2 + offset,
+      y2: selectedShape.y2 + offset,
+    };
+
+    // Recreate the drawable for the new shape
+    this.redrawShapeAfterTransform(newShape);
+
+    this.existingShapes.push(newShape);
+
+    // Select the new shape
+    this.selectionManager.setSelectedShape(newShape);
+
+    this.clearCanvas();
+  }
+
+  /**
+   * Brings the selected shape to the front (top of z-index)
+   */
+  bringToFront() {
+    const selectedShape = this.selectionManager.getSelectedShape();
+    if (!selectedShape) return;
+
+    const index = this.existingShapes.findIndex(s => s.id === selectedShape.id);
+    if (index !== -1) {
+      this.existingShapes.splice(index, 1);
+      this.existingShapes.push(selectedShape);
+      this.clearCanvas();
+    }
+  }
+
+  /**
+   * Sends the selected shape to the back (bottom of z-index)
+   */
+  sendToBack() {
+    const selectedShape = this.selectionManager.getSelectedShape();
+    if (!selectedShape) return;
+
+    const index = this.existingShapes.findIndex(s => s.id === selectedShape.id);
+    if (index !== -1) {
+      this.existingShapes.splice(index, 1);
+      this.existingShapes.unshift(selectedShape);
+      this.clearCanvas();
+    }
   }
 
   /**
@@ -590,16 +769,28 @@ export class DrawV2 {
    * Gets the currently selected shape
    */
   public getSelectedShape(): Shape | null {
-    return this.selectionManger.getSelectedShape();
+    return this.selectionManager.getSelectedShape();
   }
 
   /**
    * Updates the style of the currently selected shape
    */
   private updateSelectedShapeStyle() {
-    const selectedShape = this.selectionManger.getSelectedShape();
+    const selectedShape = this.selectionManager.getSelectedShape();
     if (selectedShape) {
       this.redrawShapeAfterTransform(selectedShape);
+      this.clearCanvas();
+    }
+  }
+
+  /**
+   * Selects all shapes on the canvas (now just selects the top-most shape)
+   */
+  selectAll() {
+    if (this.existingShapes.length > 0) {
+      // Just select the top-most shape (last in the array)
+      const topShape = this.existingShapes[this.existingShapes.length - 1];
+      this.selectionManager.setSelectedShape(topShape);
       this.clearCanvas();
     }
   }
