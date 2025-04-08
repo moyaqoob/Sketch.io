@@ -172,17 +172,51 @@ export class SelectionManager {
   }
 
   /**
-   * Finds which resize handle (if any) is at the given point
+   * Finds which resize handle (if any) is at the given point, accounting for rotation
    */
   public getResizeHandleAtPoint(x: number, y: number): ResizeHandle | null {
     if (!this.selectedShape) return null;
-    const handles = this.getResizeHandles(this.selectedShape);
+
+    const shape = this.selectedShape;
+    const handles = this.getResizeHandles(shape);
+
+    // If shape is rotated, transform the mouse coordinates
+    let transformedX = x;
+    let transformedY = y;
+
+    if (shape.rotation) {
+      const centerX = (shape.x1 + shape.x2) / 2;
+      const centerY = (shape.y1 + shape.y2) / 2;
+
+      // Convert rotation from degrees to radians (in reverse direction)
+      const angleRad = -(shape.rotation * Math.PI) / 180;
+
+      // Translate point to origin (center of shape)
+      const translatedX = x - centerX;
+      const translatedY = y - centerY;
+
+      // Rotate point
+      transformedX =
+        centerX +
+        translatedX * Math.cos(angleRad) -
+        translatedY * Math.sin(angleRad);
+      transformedY =
+        centerY +
+        translatedX * Math.sin(angleRad) +
+        translatedY * Math.cos(angleRad);
+    }
+
     for (const [name, pos] of Object.entries(handles) as [
       ResizeHandle,
       { x: number; y: number },
     ][]) {
-      if (Math.abs(x - pos.x) <= 6 && Math.abs(y - pos.y) <= 6) return name;
+      if (
+        Math.abs(transformedX - pos.x) <= 6 &&
+        Math.abs(transformedY - pos.y) <= 6
+      )
+        return name;
     }
+
     return null;
   }
 
@@ -202,12 +236,39 @@ export class SelectionManager {
   }
 
   /**
-   * Checks if a point is near the rotation handle
+   * Checks if a point is near the rotation handle, accounting for shape rotation
    */
   public isNearRotationHandle(x: number, y: number): boolean {
     if (!this.selectedShape) return false;
 
-    const handle = this.getRotationHandle(this.selectedShape);
+    const shape = this.selectedShape;
+    const handle = this.getRotationHandle(shape);
+
+    // If shape is rotated, we need to transform the mouse coordinates
+    if (shape.rotation) {
+      const centerX = (shape.x1 + shape.x2) / 2;
+      const centerY = (shape.y1 + shape.y2) / 2;
+
+      // Convert rotation from degrees to radians (in reverse direction)
+      const angleRad = -(shape.rotation * Math.PI) / 180;
+
+      // Translate point to origin (center of shape)
+      const translatedX = x - centerX;
+      const translatedY = y - centerY;
+
+      // Rotate point
+      const rotatedX =
+        translatedX * Math.cos(angleRad) - translatedY * Math.sin(angleRad);
+      const rotatedY =
+        translatedX * Math.sin(angleRad) + translatedY * Math.cos(angleRad);
+
+      // Translate back
+      const transformedX = centerX + rotatedX;
+      const transformedY = centerY + rotatedY;
+
+      return Math.hypot(transformedX - handle.x, transformedY - handle.y) <= 8;
+    }
+
     return Math.hypot(x - handle.x, y - handle.y) <= 8;
   }
 
@@ -253,21 +314,51 @@ export class SelectionManager {
 
   /**
    * Finds which shape (if any) is at the given point
-   * Returns the topmost shape at that position
+   * Returns the most appropriate shape at that position, prioritizing smaller shapes
+   * to handle nested shapes correctly
    */
   public getShapeAtPoint(x: number, y: number, shapes: Shape[]): Shape | null {
-    for (let i = shapes.length - 1; i >= 0; i--) {
-      const shape = shapes[i];
-      if (this.isPointInsideShape(shape, x, y)) {
-        this.selectedShape = shape;
-        // Move the shape to the end of the array (top of the stack)
-        shapes.splice(i, 1);
-        shapes.push(shape);
-        return shape;
-      }
+    // Find all shapes containing the point
+    const containingShapes = shapes.filter(shape =>
+      this.isPointInsideShape(shape, x, y),
+    );
+
+    if (containingShapes.length === 0) {
+      this.selectedShape = null;
+      return null;
     }
-    this.selectedShape = null;
-    return null;
+
+    // Calculate area for each shape
+    const shapesWithArea = containingShapes.map(shape => {
+      const width = Math.abs(shape.x2 - shape.x1);
+      const height = Math.abs(shape.y2 - shape.y1);
+      const area = width * height;
+      return { shape, area };
+    });
+
+    // Sort by area (ascending) and then by z-index (descending)
+    shapesWithArea.sort((a, b) => {
+      // If areas are significantly different, prefer the smaller one
+      if (Math.abs(a.area - b.area) > 100) {
+        return a.area - b.area; // Smaller area first
+      }
+
+      // Otherwise, use z-index (based on array position)
+      const aIndex = shapes.indexOf(a.shape);
+      const bIndex = shapes.indexOf(b.shape);
+      return bIndex - aIndex; // Higher index (top) first
+    });
+
+    // Select the best match (smallest area that contains the point)
+    const selectedShape = shapesWithArea[0].shape;
+    this.selectedShape = selectedShape;
+
+    // Move the shape to the end of the array (top of the stack)
+    const index = shapes.indexOf(selectedShape);
+    shapes.splice(index, 1);
+    shapes.push(selectedShape);
+
+    return selectedShape;
   }
 
   /**
@@ -313,6 +404,7 @@ export class SelectionManager {
 
   /**
    * Completes marquee selection and selects all shapes inside the marquee
+   * Modified to prioritize smaller shapes for better nested shape handling
    */
   public completeMarqueeSelection(shapes: Shape[]) {
     if (!this.isMarqueeSelecting) return;
@@ -325,14 +417,39 @@ export class SelectionManager {
     // Clear current selection
     this.selectedShape = null;
 
-    // Find the top-most shape that intersects with marquee
-    for (let i = shapes.length - 1; i >= 0; i--) {
-      const shape = shapes[i];
-      if (this.doesShapeIntersectRect(shape, minX, minY, maxX, maxY)) {
-        this.selectedShape = shape;
-        break; // Select only the top-most shape
-      }
+    // Find all shapes that intersect with marquee
+    const intersectingShapes = shapes.filter(shape =>
+      this.doesShapeIntersectRect(shape, minX, minY, maxX, maxY),
+    );
+
+    if (intersectingShapes.length === 0) {
+      this.isMarqueeSelecting = false;
+      return;
     }
+
+    // Calculate area for each shape
+    const shapesWithArea = intersectingShapes.map(shape => {
+      const width = Math.abs(shape.x2 - shape.x1);
+      const height = Math.abs(shape.y2 - shape.y1);
+      const area = width * height;
+      return { shape, area };
+    });
+
+    // Sort by area (ascending) and then by z-index (descending)
+    shapesWithArea.sort((a, b) => {
+      // If areas are significantly different, prefer the smaller one
+      if (Math.abs(a.area - b.area) > 100) {
+        return a.area - b.area; // Smaller area first
+      }
+
+      // Otherwise, use z-index (based on array position)
+      const aIndex = shapes.indexOf(a.shape);
+      const bIndex = shapes.indexOf(b.shape);
+      return bIndex - aIndex; // Higher index (top) first
+    });
+
+    // Select the best match (smallest shape in the marquee)
+    this.selectedShape = shapesWithArea[0].shape;
 
     this.isMarqueeSelecting = false;
   }
