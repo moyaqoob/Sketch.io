@@ -7,36 +7,7 @@ import { RoughGenerator } from 'roughjs/bin/generator';
 import { SelectionManager } from './selection_manager';
 import { getExistingShapes } from '@/api/canvas';
 import { Eraser } from './eraser';
-
-import { Shape, ShapeOptions } from '@repo/types';
-
-// /**
-//  * Style options interface for shape appearance
-//  */
-// export interface ShapeOptions {
-//   roughness: 'none' | 'normal' | 'high';
-//   strokeStyle: 'solid' | 'dashed' | 'dotted';
-//   strokeWidth: 'thin' | 'medium' | 'thick';
-//   fillStyle: 'hachure' | 'solid' | 'cross-hatch';
-//   fillColor: string;
-//   strokeColor: string;
-//   seed: number;
-// }
-
-// /**
-//  * Represents a shape on the canvas with its properties
-//  */
-// export interface Shape {
-//   id: string;
-//   type: Tool;
-//   x1: number;
-//   y1: number;
-//   x2: number;
-//   y2: number;
-//   rotation?: number;
-//   paths?: [number, number][];
-//   options: ShapeOptions;
-// }
+import type { Shape, ShapeOptions } from '@repo/types';
 
 /**
  * Main drawing engine that handles shape creation, manipulation, and rendering
@@ -113,7 +84,7 @@ export class DrawV2 {
     this.generator = rough.generator();
     this.roomId = roomId;
     this.selectionManager = new SelectionManager(this.canvas, this.context);
-    this.eraser = new Eraser(this.context, this.existingShapes);
+    this.eraser = new Eraser(this.context, this.existingShapes, roomId);
 
     this.init().then(() => this.initHandlers());
   }
@@ -701,7 +672,7 @@ export class DrawV2 {
     if (!this.eraser) return;
 
     // Make sure eraser has the latest shapes
-    this.eraser = new Eraser(this.context, this.existingShapes);
+    this.eraser = new Eraser(this.context, this.existingShapes, this.roomId);
     this.eraser.setEraserSize(this.eraserSize);
 
     // Perform erase operation

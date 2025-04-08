@@ -4,10 +4,16 @@ export class Eraser {
   private context: CanvasRenderingContext2D;
   private shapes: Shape[];
   private eraserSize: number = 20;
+  private roomId;
 
-  constructor(context: CanvasRenderingContext2D, shapes: Shape[]) {
+  constructor(
+    context: CanvasRenderingContext2D,
+    shapes: Shape[],
+    roomId: string,
+  ) {
     this.context = context;
     this.shapes = shapes;
+    this.roomId = roomId;
   }
 
   /**
@@ -26,6 +32,8 @@ export class Eraser {
     for (const shape of this.shapes) {
       if (!this.isPointOnShape(shape, x, y)) {
         remainingShapes.push(shape); // only keep shapes not touched by eraser
+      } else {
+        console.log(shape.id, this.roomId);
       }
     }
 
