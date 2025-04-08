@@ -1,17 +1,11 @@
 import { Shape } from './draw.v2';
 
 export class Eraser {
-  // private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private shapes: Shape[];
   private eraserSize: number = 20;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
-    shapes: Shape[],
-  ) {
-    // this.canvas = canvas;
+  constructor(context: CanvasRenderingContext2D, shapes: Shape[]) {
     this.context = context;
     this.shapes = shapes;
   }

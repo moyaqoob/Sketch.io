@@ -41,12 +41,9 @@ export class DrawV2 {
     | 'resizing'
     | 'rotating'
     | 'marquee-selecting' = 'none';
+
   private selectedTool: Tool = 'Selection';
   private existingShapes: Shape[] = [];
-
-  // Keyboard state for modifiers
-  private isShiftKeyPressed = false;
-  private isCtrlKeyPressed = false;
 
   // Stroke style configurations
   private strokeStyles = {
@@ -101,7 +98,7 @@ export class DrawV2 {
     this.generator = rough.generator();
     this.roomId = roomId;
     this.selectionManager = new SelectionManager(this.canvas, this.context);
-    this.eraser = new Eraser(this.canvas, this.context, this.existingShapes);
+    this.eraser = new Eraser(this.context, this.existingShapes);
 
     this.init().then(() => this.initHandlers());
   }
@@ -112,6 +109,9 @@ export class DrawV2 {
   private async init() {
     const shapes = await getExistingShapes(this.roomId);
     this.existingShapes = Array.isArray(shapes) ? shapes : [];
+    if (this.existingShapes.length > 0) {
+      this.drawAllShapes();
+    }
   }
 
   /**
@@ -124,7 +124,6 @@ export class DrawV2 {
 
     // Add keyboard event listeners for modifier keys
     window.addEventListener('keydown', this.keyDownHandler);
-    window.addEventListener('keyup', this.keyUpHandler);
   }
 
   /**
@@ -136,29 +135,15 @@ export class DrawV2 {
     this.canvas.removeEventListener('mouseup', this.mouseUpHandler);
 
     window.removeEventListener('keydown', this.keyDownHandler);
-    window.removeEventListener('keyup', this.keyUpHandler);
   }
 
   /**
    * Handles key down events for modifier keys
    */
   private keyDownHandler = (event: KeyboardEvent) => {
-    if (event.key === 'Control' || event.key === 'Meta') {
-      this.isCtrlKeyPressed = true;
-    }
-
     // Delete key for deleting selected shape
     if (event.key === 'Delete' || event.key === 'Backspace') {
       this.deleteSelectedShape();
-    }
-  };
-
-  /**
-   * Handles key up events for modifier keys
-   */
-  private keyUpHandler = (event: KeyboardEvent) => {
-    if (event.key === 'Control' || event.key === 'Meta') {
-      this.isCtrlKeyPressed = false;
     }
   };
 
@@ -830,7 +815,7 @@ export class DrawV2 {
     if (!this.eraser) return;
 
     // Make sure eraser has the latest shapes
-    this.eraser = new Eraser(this.canvas, this.context, this.existingShapes);
+    this.eraser = new Eraser(this.context, this.existingShapes);
     this.eraser.setEraserSize(this.eraserSize);
 
     // Perform erase operation

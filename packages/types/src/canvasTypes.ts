@@ -15,15 +15,12 @@ export const shapeTypes = [
 export const shapeSchema = z.object({
   id: z.number().optional(),
   type: z.enum(shapeTypes),
-  startX: z.number(),
-  startY: z.number(),
-  endX: z.number().optional(),
-  endY: z.number().optional(),
-  width: z.number().optional(),
-  height: z.number().optional(),
-  size: z.number().optional(),
-  stroke: z.string(),
-  roughness: z.number(),
+  x1: z.number(),
+  y1: z.number(),
+  x2: z.number(),
+  y2: z.number(),
+  shape: z.any(),
+  rotation: z.number().optional(),
   path: z.array(z.object({ x: z.number(), y: z.number() })).optional(),
 });
 
