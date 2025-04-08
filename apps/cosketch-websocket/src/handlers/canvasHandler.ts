@@ -96,7 +96,7 @@ export const handleCanvasEvent = async (
           }
 
           // Fetch the shape to ensure it exists and belongs to the user
-          const existingShape = await getCanvasShape(shapeId);
+          const existingShape = await getCanvasShape(String(shapeId));
 
           if (!existingShape) {
             logger.warn(`Shape ${shapeId} not found in room ${room}`);
@@ -104,7 +104,7 @@ export const handleCanvasEvent = async (
           }
 
           // Delete shape from database
-          await deleteCanvasShape(shapeId);
+          await deleteCanvasShape(String(shapeId));
 
           logger.info(`User ${userId} erased shape ${shapeId} in room ${room}`);
 
@@ -124,7 +124,7 @@ export const handleCanvasEvent = async (
         break;
       case "canvas:update":
         try {
-          const { id: shapeId, ...updateData } = data; // Extract shape ID and update fields
+          const { id: shapeId } = data; // Extract shape ID and update fields
 
           if (!shapeId) {
             logger.warn(
@@ -134,7 +134,7 @@ export const handleCanvasEvent = async (
           }
 
           // Validate update data
-          const parsedData = shapeSchema.partial().safeParse(updateData);
+          const parsedData = shapeSchema.partial().safeParse(data);
           if (!parsedData.success) {
             logger.warn(
               `Invalid update data from user ${userId}: ${JSON.stringify(parsedData.error.format())}`
@@ -143,14 +143,14 @@ export const handleCanvasEvent = async (
           }
 
           // Ensure shape exists in DB
-          const existingShape = await getCanvasShape(shapeId);
+          const existingShape = await getCanvasShape(String(shapeId));
           if (!existingShape) {
             logger.warn(`Shape ${shapeId} not found in room ${room}`);
             return;
           }
 
           // Perform the update in the database
-          const updatedShape = await updateCanvasShape(shapeId, updateData);
+          const updatedShape = await updateCanvasShape(String(shapeId), data);
           logger.info(
             `User ${userId} updated shape ${shapeId} in room ${room}`
           );

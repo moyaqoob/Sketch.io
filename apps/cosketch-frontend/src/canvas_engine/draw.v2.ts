@@ -142,6 +142,7 @@ export class DrawV2 {
         shape => shape.id !== selectedShape.id,
       );
 
+      // socket
       // Clear selection
       this.selectionManager.setSelectedShape(null);
       this.clearCanvas();
@@ -362,6 +363,8 @@ export class DrawV2 {
       };
 
       this.existingShapes.push(newShape);
+      // socket
+
       this.clearCanvas();
     }
   }
@@ -515,62 +518,6 @@ export class DrawV2 {
   }
 
   /**
-   * Duplicates the currently selected shape
-   */
-  duplicateSelectedShape() {
-    const selectedShape = this.selectionManager.getSelectedShape();
-    if (!selectedShape) return;
-
-    const offset = 20; // Offset for duplicate shape
-
-    const newShape = {
-      ...selectedShape,
-      id: cuid(),
-      x1: selectedShape.x1 + offset,
-      y1: selectedShape.y1 + offset,
-      x2: selectedShape.x2 + offset,
-      y2: selectedShape.y2 + offset,
-    };
-
-    this.existingShapes.push(newShape);
-
-    // Select the new shape
-    this.selectionManager.setSelectedShape(newShape);
-
-    this.clearCanvas();
-  }
-
-  /**
-   * Brings the selected shape to the front (top of z-index)
-   */
-  bringToFront() {
-    const selectedShape = this.selectionManager.getSelectedShape();
-    if (!selectedShape) return;
-
-    const index = this.existingShapes.findIndex(s => s.id === selectedShape.id);
-    if (index !== -1) {
-      this.existingShapes.splice(index, 1);
-      this.existingShapes.push(selectedShape);
-      this.clearCanvas();
-    }
-  }
-
-  /**
-   * Sends the selected shape to the back (bottom of z-index)
-   */
-  sendToBack() {
-    const selectedShape = this.selectionManager.getSelectedShape();
-    if (!selectedShape) return;
-
-    const index = this.existingShapes.findIndex(s => s.id === selectedShape.id);
-    if (index !== -1) {
-      this.existingShapes.splice(index, 1);
-      this.existingShapes.unshift(selectedShape);
-      this.clearCanvas();
-    }
-  }
-
-  /**
    * Sets the stroke style (solid, dashed, dotted)
    */
   setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
@@ -689,7 +636,7 @@ export class DrawV2 {
     this.context.save();
     this.context.strokeStyle = 'white';
     this.context.lineWidth = 1;
-    this.context.setLineDash([3, 3]);
+    // this.context.setLineDash([3, 3]);
     this.context.beginPath();
     this.context.arc(x, y, this.eraserSize / 2, 0, Math.PI * 2);
     this.context.stroke();

@@ -1,4 +1,4 @@
-import type { CanvasMessage, Shape } from "@repo/types";
+import type { Shape } from "@repo/types";
 import { client } from "..";
 
 export const createCanvas = async ({
@@ -12,6 +12,7 @@ export const createCanvas = async ({
 }) => {
   return await client.canvas.create({
     data: {
+      id: String(design.id),
       roomId,
       userId,
       design,
@@ -69,8 +70,10 @@ export const deleteCanvasShape = async (shapeId: string) => {
 };
 
 export const updateCanvasShape = async (shapeId: string, updateData: Shape) => {
-  // return await client.canvas.update({
-  //   where: { id: shapeId },
-  //   data: updateData,
-  // });
+  return await client.canvas.update({
+    where: { id: shapeId },
+    data: {
+      design: updateData,
+    },
+  });
 };

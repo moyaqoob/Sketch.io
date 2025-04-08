@@ -118,6 +118,7 @@ export class SelectionManager {
         return false;
     }
   }
+
   /**
    * Enhanced version of checking if a point is near a line segment
    * Uses improved distance calculation for better line selection experience
@@ -225,7 +226,7 @@ export class SelectionManager {
    */
   private getRotationHandle(shape: Shape): { x: number; y: number } {
     const centerX = (shape.x1 + shape.x2) / 2;
-    const centerY = (shape.y1 + shape.y2) / 2;
+    // const centerY = (shape.y1 + shape.y2) / 2;
     const minY = Math.min(shape.y1, shape.y2);
 
     // Place rotation handle above the shape

@@ -24,51 +24,81 @@ export class Eraser {
   }
 
   /**
-   * Erases shapes that intersect with the eraser
+   * Erases the shape whose stroke/outline is closest to the eraser point
    */
   public erase(x: number, y: number): Shape[] {
-    const remainingShapes: Shape[] = [];
+    const shapeDistances: Array<{ shape: Shape; distance: number }> = [];
 
+    // Find all shapes whose stroke/outline intersects with the eraser
     for (const shape of this.shapes) {
-      if (!this.isPointOnShape(shape, x, y)) {
-        remainingShapes.push(shape); // only keep shapes not touched by eraser
-      } else {
-        console.log(shape.id, this.roomId);
+      const strokeIntersection = this.isPointOnShapeStroke(shape, x, y);
+      if (strokeIntersection.onStroke) {
+        shapeDistances.push({
+          shape,
+          distance: strokeIntersection.distance,
+        });
       }
     }
+
+    if (shapeDistances.length === 0) {
+      return this.shapes; // No shapes to erase
+    }
+
+    // Sort by distance - shapes that are closer to the point come first
+    shapeDistances.sort((a, b) => a.distance - b.distance);
+
+    // Get the closest shape
+    const closestShape = shapeDistances[0].shape;
+
+    // Create a new array without the erased shape
+    const remainingShapes = this.shapes.filter(
+      shape => shape.id !== closestShape.id,
+    );
+
+    // socket
+    console.log('Erased shape:', closestShape.id, this.roomId);
 
     return remainingShapes;
   }
 
   /**
-   * Checks if a point is on a shape's stroke
+   * Checks if a point is specifically on a shape's stroke (not fill)
+   * Returns {onStroke: boolean, distance: number}
    */
-  private isPointOnShape(shape: Shape, x: number, y: number): boolean {
+  private isPointOnShapeStroke(
+    shape: Shape,
+    x: number,
+    y: number,
+  ): { onStroke: boolean; distance: number } {
     // Apply rotation if the shape has rotation
+    let pointX = x;
+    let pointY = y;
+
     if (shape.rotation) {
       const centerX = (shape.x1 + shape.x2) / 2;
       const centerY = (shape.y1 + shape.y2) / 2;
 
       // Transform point to account for shape rotation
       const rotatedPoint = this.rotatePoint(
-        x,
-        y,
+        pointX,
+        pointY,
         centerX,
         centerY,
         -shape.rotation,
       );
-      x = rotatedPoint.x;
-      y = rotatedPoint.y;
+      pointX = rotatedPoint.x;
+      pointY = rotatedPoint.y;
     }
 
     this.context.save();
 
-    // Use a larger line width to make erasing easier
-    this.context.lineWidth = this.eraserSize;
+    // Configure the context for stroke detection
+    this.context.lineWidth = Math.max(this.eraserSize, 10); // Minimum stroke width for easier erasing
     this.context.lineCap = 'round';
     this.context.lineJoin = 'round';
     this.context.beginPath();
 
+    // Draw the appropriate path based on shape type
     switch (shape.type) {
       case 'Rectangle':
         this.drawRectanglePath(shape);
@@ -87,19 +117,83 @@ export class Eraser {
         break;
       default:
         this.context.restore();
-        return false;
+        return { onStroke: false, distance: Infinity };
     }
 
-    // Stroke to build the path for checking
+    // Create the stroke path for intersection testing
     this.context.stroke();
 
-    // Check if the point is on the stroke or inside the fill area
-    const isOnStroke = this.context.isPointInStroke(x, y);
-    const isInFill = this.context.isPointInPath(x, y);
+    // Check if the point is on the stroke (not inside the fill)
+    const isOnStroke = this.context.isPointInStroke(pointX, pointY);
+
+    // Calculate distance to stroke center
+    let distance = Infinity;
+    if (isOnStroke) {
+      // For lines and arrows, use perpendicular distance to the line
+      if (shape.type === 'Line' || shape.type === 'Arrow') {
+        distance = this.getDistanceToLine(
+          pointX,
+          pointY,
+          shape.x1,
+          shape.y1,
+          shape.x2,
+          shape.y2,
+        );
+      } else {
+        // For closed shapes, can use center distance as tiebreaker
+        const centerX = (shape.x1 + shape.x2) / 2;
+        const centerY = (shape.y1 + shape.y2) / 2;
+        distance = Math.sqrt(
+          Math.pow(pointX - centerX, 2) + Math.pow(pointY - centerY, 2),
+        );
+      }
+    }
 
     this.context.restore();
+    return { onStroke: isOnStroke, distance };
+  }
 
-    return isOnStroke || isInFill;
+  /**
+   * Calculate distance from a point to a line
+   */
+  private getDistanceToLine(
+    x: number,
+    y: number,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+  ): number {
+    const A = x - x1;
+    const B = y - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = -1;
+
+    if (lenSq !== 0) {
+      param = dot / lenSq;
+    }
+
+    let xx, yy;
+
+    if (param < 0) {
+      xx = x1;
+      yy = y1;
+    } else if (param > 1) {
+      xx = x2;
+      yy = y2;
+    } else {
+      xx = x1 + param * C;
+      yy = y1 + param * D;
+    }
+
+    const dx = x - xx;
+    const dy = y - yy;
+
+    return Math.sqrt(dx * dx + dy * dy);
   }
 
   /**
