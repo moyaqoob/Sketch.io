@@ -33,7 +33,7 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
         const message = JSON.parse(data.toString());
 
         switch (message.type) {
-          case "room:join ":
+          case "room:join":
           case "room:leave":
             handleRoomEvent(socket, message, userId);
             break;
@@ -42,7 +42,6 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
           case "canvas:clear":
           case "canvas:erase":
           case "canvas:update":
-            // handleCanvasEvent(socket, message, userId);
             handleCanvasEvent(socket, message, userId);
             break;
 

@@ -23,17 +23,21 @@ export const handleRoomEvent = async (
       //   logger.warn(`Room ${room} does not exist in the database.`);
       //   return;
       // }
-
-      addUserToRoom(socket, room);
-      logger.info(`User ${userId} joined room ${room}`);
-      broadcastToRoom(
-        room,
-        {
-          type: "user:connected",
-          message: { type: "user:connected", message: `User ${userId} joined` },
-        },
-        socket
-      );
+      if (!isUserInRoom(socket, room)) {
+        addUserToRoom(socket, room);
+        logger.info(`User ${userId} joined room ${room}`);
+        broadcastToRoom(
+          room,
+          {
+            type: "user:connected",
+            message: {
+              type: "user:connected",
+              message: `User ${userId} joined`,
+            },
+          },
+          socket
+        );
+      }
       break;
 
     case "room:leave":

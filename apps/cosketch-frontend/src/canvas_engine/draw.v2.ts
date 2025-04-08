@@ -9,7 +9,20 @@ import { getExistingShapes } from '@/api/canvas';
 import { Eraser } from './eraser';
 
 /**
- * Represents a shape on the canvas with its properties and rough.js drawable
+ * Style options interface for shape appearance
+ */
+export interface ShapeOptions {
+  roughness: 'none' | 'normal' | 'high';
+  strokeStyle: 'solid' | 'dashed' | 'dotted';
+  strokeWidth: 'thin' | 'medium' | 'thick';
+  fillStyle: 'hachure' | 'solid' | 'cross-hatch';
+  fillColor: string;
+  strokeColor: string;
+  seed: number;
+}
+
+/**
+ * Represents a shape on the canvas with its properties
  */
 export interface Shape {
   id: string;
@@ -18,9 +31,9 @@ export interface Shape {
   y1: number;
   x2: number;
   y2: number;
-  shape: Drawable | Drawable[];
-  rotation?: number; // Add rotation property to Shape interface
+  rotation?: number;
   paths?: [number, number][];
+  options: ShapeOptions;
 }
 
 /**
@@ -109,9 +122,7 @@ export class DrawV2 {
   private async init() {
     const shapes = await getExistingShapes(this.roomId);
     this.existingShapes = Array.isArray(shapes) ? shapes : [];
-    if (this.existingShapes.length > 0) {
-      this.drawAllShapes();
-    }
+    this.clearCanvas();
   }
 
   /**
@@ -165,17 +176,32 @@ export class DrawV2 {
   }
 
   /**
-   * Returns the current drawing options for rough.js
+   * Creates a new ShapeOptions object for new shapes
    */
-  private getOptions() {
+  private getShapeOptions(): ShapeOptions {
     return {
-      roughness: this.roughnessLevels[this.roughness],
-      stroke: this.strokeColor,
-      strokeWidth: this.strokeWidths[this.strokeWidth],
-      fill: this.fillColor,
+      roughness: this.roughness,
+      strokeStyle: this.strokeStyle,
+      strokeWidth: this.strokeWidth,
       fillStyle: this.fillStyle,
-      strokeLineDash: this.strokeStyles[this.strokeStyle],
+      fillColor: this.fillColor,
+      strokeColor: this.strokeColor,
       seed: this.seed,
+    };
+  }
+
+  /**
+   * Converts ShapeOptions to RoughJS format
+   */
+  private convertToRoughOptions(options: ShapeOptions) {
+    return {
+      roughness: this.roughnessLevels[options.roughness],
+      stroke: options.strokeColor,
+      strokeWidth: this.strokeWidths[options.strokeWidth],
+      fill: options.fillColor,
+      fillStyle: options.fillStyle,
+      strokeLineDash: this.strokeStyles[options.strokeStyle],
+      seed: options.seed,
     };
   }
 
@@ -271,12 +297,6 @@ export class DrawV2 {
       this.x1 = currentX;
       this.y1 = currentY;
       this.clearCanvas();
-
-      // Redraw selected shape
-      const selectedShape = this.selectionManager.getSelectedShape();
-      if (selectedShape) {
-        this.redrawShapeAfterTransform(selectedShape);
-      }
     } else if (this.action === 'resizing') {
       const deltaX = currentX - this.x1;
       const deltaY = currentY - this.y1;
@@ -284,11 +304,9 @@ export class DrawV2 {
       this.x1 = currentX;
       this.y1 = currentY;
       this.clearCanvas();
-      this.redrawShapeAfterTransform(this.selectionManager.getSelectedShape());
     } else if (this.action === 'rotating') {
       this.selectionManager.updateRotation(currentX, currentY);
       this.clearCanvas();
-      this.redrawShapeAfterTransform(this.selectionManager.getSelectedShape());
     } else if (this.action === 'marquee-selecting') {
       this.selectionManager.updateMarqueeSelection(currentX, currentY);
       this.clearCanvas();
@@ -328,35 +346,25 @@ export class DrawV2 {
    * Shows a preview of the shape while drawing
    */
   private previewShape() {
-    let shape: Drawable | Drawable[] | null = null;
+    const shapeOptions = this.getShapeOptions();
+    const roughOptions = this.convertToRoughOptions(shapeOptions);
+    let drawable = this.generateDrawableFromShapeData(
+      {
+        id: 'preview',
+        type: this.selectedTool,
+        x1: this.x1,
+        y1: this.y1,
+        x2: this.x2,
+        y2: this.y2,
+        options: shapeOptions,
+      },
+      roughOptions,
+    );
 
-    switch (this.selectedTool) {
-      case 'Rectangle':
-        shape = this.drawRectangle();
-        break;
-      case 'Diamond':
-        shape = this.drawDiamond();
-        break;
-      case 'Ellipse':
-        shape = this.drawEllipse();
-        break;
-      case 'Arrow':
-        shape = this.drawArrow();
-        break;
-      case 'Line':
-        shape = this.drawLine();
-        break;
-      default:
-        console.log('will add shape in future');
-        break;
-    }
-
-    if (Array.isArray(shape)) {
-      shape.forEach((drawable: Drawable) => {
-        this.rc.draw(drawable);
-      });
-    } else if (shape) {
-      this.rc.draw(shape);
+    if (Array.isArray(drawable)) {
+      drawable.forEach(d => this.rc.draw(d));
+    } else if (drawable) {
+      this.rc.draw(drawable);
     }
   }
 
@@ -364,48 +372,23 @@ export class DrawV2 {
    * Creates and adds a new shape to the canvas
    */
   private drawShape() {
-    let shape: Drawable | Drawable[] | null = null;
-    let type: Tool = 'Rectangle';
-
-    switch (this.selectedTool) {
-      case 'Rectangle':
-        shape = this.drawRectangle();
-        type = 'Rectangle';
-        break;
-      case 'Diamond':
-        shape = this.drawDiamond();
-        type = 'Diamond';
-        break;
-      case 'Ellipse':
-        shape = this.drawEllipse();
-        type = 'Ellipse';
-        break;
-      case 'Arrow':
-        shape = this.drawArrow();
-        type = 'Arrow';
-        break;
-      case 'Line':
-        shape = this.drawLine();
-        type = 'Line';
-        break;
-      default:
-        console.log('will add shape in future');
-        break;
-    }
-
-    if (shape) {
-      const newShape = {
+    if (
+      ['Rectangle', 'Diamond', 'Ellipse', 'Arrow', 'Line'].includes(
+        this.selectedTool,
+      )
+    ) {
+      const newShape: Shape = {
         id: cuid(),
-        type: type,
+        type: this.selectedTool as Tool,
         x1: this.x1,
         y1: this.y1,
         x2: this.x2,
         y2: this.y2,
-        shape: shape,
         rotation: 0, // Default rotation
+        options: this.getShapeOptions(),
       };
-      this.existingShapes.push(newShape);
 
+      this.existingShapes.push(newShape);
       this.clearCanvas();
     }
   }
@@ -415,6 +398,10 @@ export class DrawV2 {
    */
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
+      // Generate drawable from shape data using the shape's own options
+      const roughOptions = this.convertToRoughOptions(shape.options);
+      const drawable = this.generateDrawableFromShapeData(shape, roughOptions);
+
       // Apply rotation if needed
       if (shape.rotation) {
         this.context.save();
@@ -425,16 +412,98 @@ export class DrawV2 {
         this.context.translate(-centerX, -centerY);
       }
 
-      if (Array.isArray(shape.shape)) {
-        shape.shape.forEach(drawable => this.rc.draw(drawable));
-      } else {
-        this.rc.draw(shape.shape);
+      // Draw the shape
+      if (Array.isArray(drawable)) {
+        drawable.forEach(d => this.rc.draw(d));
+      } else if (drawable) {
+        this.rc.draw(drawable);
       }
 
       if (shape.rotation) {
         this.context.restore();
       }
     });
+  }
+
+  /**
+   * Generates a drawable from shape data
+   */
+  private generateDrawableFromShapeData(
+    shape: Shape,
+    options: any,
+  ): Drawable | Drawable[] {
+    switch (shape.type) {
+      case 'Rectangle':
+        return this.generator.rectangle(
+          Math.min(shape.x1, shape.x2),
+          Math.min(shape.y1, shape.y2),
+          Math.abs(shape.x2 - shape.x1),
+          Math.abs(shape.y2 - shape.y1),
+          options,
+        );
+      case 'Diamond': {
+        const centerX = (shape.x1 + shape.x2) / 2;
+        const centerY = (shape.y1 + shape.y2) / 2;
+        const width = Math.abs(shape.x2 - shape.x1);
+        const height = Math.abs(shape.y2 - shape.y1);
+        const points: [number, number][] = [
+          [centerX, centerY - height / 2],
+          [centerX + width / 2, centerY],
+          [centerX, centerY + height / 2],
+          [centerX - width / 2, centerY],
+        ];
+        return this.generator.polygon(points, options);
+      }
+      case 'Ellipse': {
+        const centerX = (shape.x1 + shape.x2) / 2;
+        const centerY = (shape.y1 + shape.y2) / 2;
+        return this.generator.ellipse(
+          centerX,
+          centerY,
+          Math.abs(shape.x2 - shape.x1),
+          Math.abs(shape.y2 - shape.y1),
+          options,
+        );
+      }
+      case 'Line':
+        return this.generator.line(
+          shape.x1,
+          shape.y1,
+          shape.x2,
+          shape.y2,
+          options,
+        );
+      case 'Arrow': {
+        const angle = Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1);
+        const arrowSize = 10;
+        const arrowLeftX = shape.x2 - arrowSize * Math.cos(angle - Math.PI / 6);
+        const arrowLeftY = shape.y2 - arrowSize * Math.sin(angle - Math.PI / 6);
+        const arrowRightX =
+          shape.x2 - arrowSize * Math.cos(angle + Math.PI / 6);
+        const arrowRightY =
+          shape.y2 - arrowSize * Math.sin(angle + Math.PI / 6);
+
+        return [
+          this.generator.line(shape.x1, shape.y1, shape.x2, shape.y2, options),
+          this.generator.line(
+            shape.x2,
+            shape.y2,
+            arrowLeftX,
+            arrowLeftY,
+            options,
+          ),
+          this.generator.line(
+            shape.x2,
+            shape.y2,
+            arrowRightX,
+            arrowRightY,
+            options,
+          ),
+        ];
+      }
+      default:
+        return this.generator.rectangle(0, 0, 0, 0, options); // Fallback
+    }
   }
 
   /**
@@ -456,198 +525,6 @@ export class DrawV2 {
     this.selectionManager.drawMarqueeSelection();
 
     this.context.restore();
-  }
-
-  /**
-   * Creates a rectangle shape
-   */
-  private drawRectangle(): Drawable {
-    return this.generator.rectangle(
-      Math.min(this.x1, this.x2),
-      Math.min(this.y1, this.y2),
-      Math.abs(this.x2 - this.x1),
-      Math.abs(this.y2 - this.y1),
-      this.getOptions(),
-    );
-  }
-
-  /**
-   * Creates a diamond shape
-   */
-  private drawDiamond(): Drawable {
-    const centerX = (this.x1 + this.x2) / 2;
-    const centerY = (this.y1 + this.y2) / 2;
-    const width = Math.abs(this.x2 - this.x1);
-    const height = Math.abs(this.y2 - this.y1);
-
-    const points: [number, number][] = [
-      [centerX, centerY - height / 2],
-      [centerX + width / 2, centerY],
-      [centerX, centerY + height / 2],
-      [centerX - width / 2, centerY],
-    ];
-
-    return this.generator.polygon(points, this.getOptions());
-  }
-
-  /**
-   * Creates an ellipse shape
-   */
-  private drawEllipse(): Drawable {
-    const centerX = (this.x1 + this.x2) / 2;
-    const centerY = (this.y1 + this.y2) / 2;
-    const width = Math.abs(this.x2 - this.x1);
-    const height = Math.abs(this.y2 - this.y1);
-
-    return this.generator.ellipse(
-      centerX,
-      centerY,
-      width,
-      height,
-      this.getOptions(),
-    );
-  }
-
-  /**
-   * Creates an arrow shape (line with arrowhead)
-   */
-  private drawArrow(): Drawable[] {
-    const angle = Math.atan2(this.y2 - this.y1, this.x2 - this.x1);
-    const arrowSize = 10;
-    const arrowLeftX = this.x2 - arrowSize * Math.cos(angle - Math.PI / 6);
-    const arrowLeftY = this.y2 - arrowSize * Math.sin(angle - Math.PI / 6);
-    const arrowRightX = this.x2 - arrowSize * Math.cos(angle + Math.PI / 6);
-    const arrowRightY = this.y2 - arrowSize * Math.sin(angle + Math.PI / 6);
-
-    const line = this.generator.line(
-      this.x1,
-      this.y1,
-      this.x2,
-      this.y2,
-      this.getOptions(),
-    );
-    const arrowLeft = this.generator.line(
-      this.x2,
-      this.y2,
-      arrowLeftX,
-      arrowLeftY,
-      this.getOptions(),
-    );
-    const arrowRight = this.generator.line(
-      this.x2,
-      this.y2,
-      arrowRightX,
-      arrowRightY,
-      this.getOptions(),
-    );
-
-    return [line, arrowLeft, arrowRight];
-  }
-
-  /**
-   * Creates a line shape
-   */
-  private drawLine(): Drawable {
-    return this.generator.line(
-      this.x1,
-      this.y1,
-      this.x2,
-      this.y2,
-      this.getOptions(),
-    );
-  }
-
-  /**
-   * Redraws a shape after it has been transformed (moved, resized, or rotated)
-   */
-  private redrawShapeAfterTransform(shape: Shape | null) {
-    if (!shape) return;
-
-    const options = {
-      ...this.getOptions(),
-      stroke: this.strokeColor,
-    };
-
-    let newDrawable: Drawable | Drawable[] | null = null;
-
-    switch (shape.type) {
-      case 'Rectangle':
-        newDrawable = this.generator.rectangle(
-          Math.min(shape.x1, shape.x2),
-          Math.min(shape.y1, shape.y2),
-          Math.abs(shape.x2 - shape.x1),
-          Math.abs(shape.y2 - shape.y1),
-          options,
-        );
-        break;
-      case 'Diamond': {
-        const centerX = (shape.x1 + shape.x2) / 2;
-        const centerY = (shape.y1 + shape.y2) / 2;
-        const width = Math.abs(shape.x2 - shape.x1);
-        const height = Math.abs(shape.y2 - shape.y1);
-        const points: [number, number][] = [
-          [centerX, centerY - height / 2],
-          [centerX + width / 2, centerY],
-          [centerX, centerY + height / 2],
-          [centerX - width / 2, centerY],
-        ];
-        newDrawable = this.generator.polygon(points, options);
-        break;
-      }
-      case 'Ellipse': {
-        const centerX = (shape.x1 + shape.x2) / 2;
-        const centerY = (shape.y1 + shape.y2) / 2;
-        newDrawable = this.generator.ellipse(
-          centerX,
-          centerY,
-          Math.abs(shape.x2 - shape.x1),
-          Math.abs(shape.y2 - shape.y1),
-          options,
-        );
-        break;
-      }
-      case 'Line':
-        newDrawable = this.generator.line(
-          shape.x1,
-          shape.y1,
-          shape.x2,
-          shape.y2,
-          options,
-        );
-        break;
-      case 'Arrow': {
-        const angle = Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1);
-        const arrowSize = 10;
-        const arrowLeftX = shape.x2 - arrowSize * Math.cos(angle - Math.PI / 6);
-        const arrowLeftY = shape.y2 - arrowSize * Math.sin(angle - Math.PI / 6);
-        const arrowRightX =
-          shape.x2 - arrowSize * Math.cos(angle + Math.PI / 6);
-        const arrowRightY =
-          shape.y2 - arrowSize * Math.sin(angle + Math.PI / 6);
-        newDrawable = [
-          this.generator.line(shape.x1, shape.y1, shape.x2, shape.y2, options),
-          this.generator.line(
-            shape.x2,
-            shape.y2,
-            arrowLeftX,
-            arrowLeftY,
-            options,
-          ),
-          this.generator.line(
-            shape.x2,
-            shape.y2,
-            arrowRightX,
-            arrowRightY,
-            options,
-          ),
-        ];
-        break;
-      }
-    }
-
-    if (newDrawable) {
-      shape.shape = newDrawable;
-    }
   }
 
   /**
@@ -681,9 +558,6 @@ export class DrawV2 {
       x2: selectedShape.x2 + offset,
       y2: selectedShape.y2 + offset,
     };
-
-    // Recreate the drawable for the new shape
-    this.redrawShapeAfterTransform(newShape);
 
     this.existingShapes.push(newShape);
 
@@ -791,7 +665,17 @@ export class DrawV2 {
   private updateSelectedShapeStyle() {
     const selectedShape = this.selectionManager.getSelectedShape();
     if (selectedShape) {
-      this.redrawShapeAfterTransform(selectedShape);
+      // Update the options object with current style settings
+      selectedShape.options = {
+        ...selectedShape.options,
+        roughness: this.roughness,
+        strokeStyle: this.strokeStyle,
+        strokeWidth: this.strokeWidth,
+        fillStyle: this.fillStyle,
+        fillColor: this.fillColor,
+        strokeColor: this.strokeColor,
+      };
+
       this.clearCanvas();
     }
   }
