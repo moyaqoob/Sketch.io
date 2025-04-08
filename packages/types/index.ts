@@ -21,6 +21,13 @@ import {
   canvasMessageSchema,
   type CanvasMessage,
   type Shape,
+  type ShapeOptions,
 } from "./src/canvasTypes";
 
-export { shapeSchema, canvasMessageSchema, type CanvasMessage, type Shape };
+export {
+  shapeSchema,
+  canvasMessageSchema,
+  type CanvasMessage,
+  type Shape,
+  type ShapeOptions,
+};

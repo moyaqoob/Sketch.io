@@ -1,4 +1,4 @@
-import { Shape } from './draw.v2';
+import { Shape } from '@repo/types';
 
 export class Eraser {
   private context: CanvasRenderingContext2D;

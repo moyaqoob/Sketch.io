@@ -1,4 +1,4 @@
-import { Shape } from './draw.v2';
+import { Shape } from '@repo/types';
 
 // Types of resize handles available for shapes
 type ResizeHandle =
