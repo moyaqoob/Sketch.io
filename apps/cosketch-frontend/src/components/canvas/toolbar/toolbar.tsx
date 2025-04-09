@@ -20,6 +20,7 @@ import {
 import ToolbarButton from './toolbar-button';
 import Tooltip from './tooltip';
 import { Tool } from '@/type/tool';
+import { useToolStore } from '@/stores/tool.store';
 
 const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
   { icon: MousePointer, tool: 'Selection', id: 1, tooltip: 'Selection - 1' },
@@ -33,13 +34,9 @@ const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
   { icon: Eraser, tool: 'Eraser', id: 9, tooltip: 'Eraser - 9' },
 ];
 
-export interface ToolbarProps {
-  selectedTool: Tool;
-  setSelectedTool: React.Dispatch<React.SetStateAction<Tool>>;
-}
-
-const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
+const Toolbar: React.FC = () => {
   const [isLocked, setIsLocked] = useState(false);
+  const { selectedTool, setSelectedTool } = useToolStore();
 
   const handleToolSelect = (tool: Tool) => {
     setSelectedTool(tool);
@@ -54,7 +51,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
       const key = event.key;
       if (key >= '1' && key <= '9') {
         const tool = tools.find(tool => tool.id === Number(key));
-        if (tool) {
+        if (tool && tool.tool !== selectedTool) {
           handleToolSelect(tool.tool);
         }
       }
@@ -64,7 +61,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ selectedTool, setSelectedTool }) => {
       if (
         !isLocked &&
         selectedTool !== 'FreeDraw' &&
-        selectedTool !== 'Eraser'
+        selectedTool !== 'Eraser' &&
+        selectedTool !== 'Selection'
       ) {
         setSelectedTool('Selection');
       }

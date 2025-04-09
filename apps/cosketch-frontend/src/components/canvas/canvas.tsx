@@ -1,14 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import CanvasFooter from './footer/canvas-footer';
 import CanvasHeader from './header/canvas-header';
-
 import { DrawController } from '@/canvas_engine/draw_controller';
-import { Tool } from '@/type/tool';
 import Sidebar from './sidebar/sidebar';
+import { useCanvasEngineStore } from '@/stores/canvas.store';
+import { useIsShapeSelectedStore } from '@/stores/shape_selected.store';
+import { useCanvasStyleStore } from '@/stores/canvas_style.store';
+import { useToolStore } from '@/stores/tool.store';
 
 interface CanvasProps {
   roomId: string;
-  // socket: WebSocket;
 }
 
 const cursorStyles = {
@@ -26,87 +27,83 @@ const cursorStyles = {
 
 const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [canvasEngine, setCanvasEngine] = useState<DrawController>();
-  const [isShapeSelected, setIsShapeSelected] = useState(false);
+  const { canvasEngine, setCanvasEngine } = useCanvasEngineStore();
 
-  console.log('in');
-  // Selected Tool
-  const [selectedTool, setSelectedTool] = useState<Tool>('Selection');
+  // Canvas style properties
+  const {
+    strokeColor,
+    backgroundColor,
+    strokeWidth,
+    strokeStyle,
+    roughness,
+    fillStyle,
+  } = useCanvasStyleStore();
 
-  // Shape Styling
-  const [styles, setStyles] = useState({
-    strokeColor: 'white',
-    backgroundColor: 'transparent',
-    strokeWidth: 'thin' as 'thin' | 'medium' | 'thick',
-    strokeStyle: 'solid' as 'solid' | 'dashed' | 'dotted',
-    roughness: 'none' as 'none' | 'normal' | 'high',
-    fillStyle: 'hachure' as 'hachure' | 'solid' | 'cross-hatch',
+  const prevStyleRef = useRef({
+    strokeColor,
+    backgroundColor,
+    strokeWidth,
+    strokeStyle,
+    roughness,
+    fillStyle,
   });
 
+  const selectedTool = useToolStore(s => s.selectedTool);
+
+  // Initialize canvas and controllers
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      const draw = new DrawController(canvas, roomId);
-      setCanvasEngine(draw);
+    if (!canvas) return;
 
-      // Update shape selection state when mouse events occur
-      const handleMouseDown = () => {
-        if (draw.getSelectedShape()) {
-          setIsShapeSelected(true);
-        } else {
-          setIsShapeSelected(false);
-        }
-      };
+    const draw = new DrawController(canvas, roomId);
+    setCanvasEngine(draw);
 
-      const handleMouseUp = () => {
-        if (draw.getSelectedShape()) {
-          setIsShapeSelected(true);
-        } else {
-          setIsShapeSelected(false);
-        }
-      };
+    // Mouse event handlers with optimized state updates
+    const handleMouseEvent = () => {
+      const currentSelection = draw.getSelectedShape();
+      const isSelected = !!currentSelection;
+      const currentState = useIsShapeSelectedStore.getState().isShapeSelected;
+      if (isSelected !== currentState) {
+        useIsShapeSelectedStore.setState({ isShapeSelected: isSelected });
+      }
+    };
 
-      canvas.addEventListener('mousedown', handleMouseDown);
-      canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mousedown', handleMouseEvent);
+    canvas.addEventListener('mouseup', handleMouseEvent);
 
-      return () => {
-        draw.destroy();
-        canvas.removeEventListener('mousedown', handleMouseDown);
-        canvas.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [canvasRef]);
+    return () => {
+      draw.destroy();
+      canvas.removeEventListener('mousedown', handleMouseEvent);
+      canvas.removeEventListener('mouseup', handleMouseEvent);
+    };
+  }, []);
 
+  // Update selected tool
   useEffect(() => {
-    canvasEngine?.setSelectedTool(selectedTool);
-  }, [selectedTool]);
+    if (!canvasEngine) return;
 
-  useEffect(() => {
-    if (canvasEngine) {
-      canvasEngine.setStrokeColor(styles.strokeColor);
-      canvasEngine.setFillColor(styles.backgroundColor);
-      canvasEngine.setStrokeWidth(styles.strokeWidth);
-      canvasEngine.setStrokeStyle(styles.strokeStyle);
-      canvasEngine.setRoughness(styles.roughness);
-      canvasEngine.setFillStyle(styles.fillStyle);
+    const currentTool = canvasEngine.getSelectedTool();
+    if (currentTool !== selectedTool) {
+      canvasEngine.setSelectedTool(selectedTool);
     }
-  }, [styles]);
+  }, [canvasEngine, selectedTool]);
 
+  // Canvas sizing
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      const handleResize = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      };
+    if (!canvas) return;
 
-      handleResize();
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
 
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, [roomId, canvasRef]);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
+  // Cursor style
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -114,25 +111,55 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
     }
   }, [selectedTool]);
 
+  // Style properties update
+  useEffect(() => {
+    if (!canvasEngine) return;
+
+    const prev = prevStyleRef.current;
+
+    const hasChanged =
+      prev.strokeColor !== strokeColor ||
+      prev.backgroundColor !== backgroundColor ||
+      prev.strokeWidth !== strokeWidth ||
+      prev.strokeStyle !== strokeStyle ||
+      prev.roughness !== roughness ||
+      prev.fillStyle !== fillStyle;
+
+    if (!hasChanged) return;
+
+    canvasEngine.setStrokeColor(strokeColor);
+    canvasEngine.setFillColor(backgroundColor);
+    canvasEngine.setStrokeWidth(strokeWidth);
+    canvasEngine.setStrokeStyle(strokeStyle);
+    canvasEngine.setRoughness(roughness);
+    canvasEngine.setFillStyle(fillStyle);
+
+    prevStyleRef.current = {
+      strokeColor,
+      backgroundColor,
+      strokeWidth,
+      strokeStyle,
+      roughness,
+      fillStyle,
+    };
+  }, [
+    canvasEngine,
+    strokeColor,
+    backgroundColor,
+    strokeWidth,
+    strokeStyle,
+    roughness,
+    fillStyle,
+  ]);
+
   return (
     <>
-      <CanvasHeader
-        selectedTool={selectedTool}
-        setSelectedTool={setSelectedTool}
-        roomId={roomId}
-      />
-
-      <Sidebar
-        selectedTool={selectedTool}
-        isShapeSelected={isShapeSelected}
-        styles={styles}
-        setStyles={setStyles}
-      />
-
-      <canvas ref={canvasRef} className='bg-black text-white'></canvas>
+      <CanvasHeader roomId={roomId} />
+      <Sidebar selectedTool={selectedTool} />
+      <canvas ref={canvasRef} className='bg-black text-white' />
       <CanvasFooter />
     </>
   );
 };
 
-export default Canvas;
+export default React.memo(Canvas);

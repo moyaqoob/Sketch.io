@@ -22,27 +22,31 @@ import {
 
 import ColorPalette from './color-palette';
 import IconSelector from './icon-selector';
+import { useCanvasStyleStore } from '@/stores/canvas_style.store';
+import { useIsShapeSelectedStore } from '@/stores/shape_selected.store';
 
 interface SidebarProps {
   selectedTool: Tool;
-  isShapeSelected: boolean;
-  styles: {
-    strokeColor: string;
-    backgroundColor: string;
-    strokeWidth: 'thin' | 'medium' | 'thick';
-    strokeStyle: 'solid' | 'dashed' | 'dotted';
-    roughness: 'none' | 'normal' | 'high';
-    fillStyle: 'hachure' | 'solid' | 'cross-hatch';
-  };
-  setStyles: React.Dispatch<React.SetStateAction<SidebarProps['styles']>>;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  selectedTool,
-  isShapeSelected,
-  styles,
-  setStyles,
-}) => {
+const Sidebar: React.FC<SidebarProps> = ({ selectedTool }) => {
+  const {
+    strokeColor,
+    setStrokeColor,
+    backgroundColor,
+    setBackgroundColor,
+    strokeWidth,
+    setStrokeWidth,
+    strokeStyle,
+    setStrokeStyle,
+    roughness,
+    setRoughness,
+    fillStyle,
+    setFillStyle,
+  } = useCanvasStyleStore();
+
+  const { isShapeSelected } = useIsShapeSelectedStore();
+
   return (
     <section
       onMouseUp={event => event.stopPropagation()}
@@ -58,18 +62,14 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Stroke Settings */}
       <div>
         <ColorPalette
-          selectedColor={styles.strokeColor}
-          setColor={color =>
-            setStyles(prev => ({ ...prev, strokeColor: color }))
-          }
+          selectedColor={strokeColor}
+          setColor={setStrokeColor}
           type='Stroke'
         />
 
         <ColorPalette
-          selectedColor={styles.backgroundColor}
-          setColor={color =>
-            setStyles(prev => ({ ...prev, backgroundColor: color }))
-          }
+          selectedColor={backgroundColor}
+          setColor={setBackgroundColor}
           type='Background'
         />
 
@@ -80,10 +80,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             { Icon: CrossHatchSquareIcon, key: 'cross-hatch' },
             { Icon: SquareIcon, key: 'solid' },
           ]}
-          selectedIcon={styles.fillStyle}
-          setSelectedIcon={(fillStyle: SidebarProps['styles']['fillStyle']) =>
-            setStyles(prev => ({ ...prev, fillStyle }))
-          }
+          selectedIcon={fillStyle}
+          setSelectedIcon={setFillStyle}
         />
 
         <IconSelector
@@ -93,10 +91,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             { Icon: BoldHorizontalLineIcon, key: 'medium' },
             { Icon: ThickHorizontalLineIcon, key: 'thick' },
           ]}
-          selectedIcon={styles.strokeWidth}
-          setSelectedIcon={(
-            strokeWidth: SidebarProps['styles']['strokeWidth'],
-          ) => setStyles(prev => ({ ...prev, strokeWidth }))}
+          selectedIcon={strokeWidth}
+          setSelectedIcon={setStrokeWidth}
         />
 
         <IconSelector
@@ -106,23 +102,19 @@ const Sidebar: React.FC<SidebarProps> = ({
             { Icon: DashedLineIcon, key: 'dashed' },
             { Icon: DottedLineIcon, key: 'dotted' },
           ]}
-          selectedIcon={styles.strokeStyle}
-          setSelectedIcon={(
-            strokeStyle: SidebarProps['styles']['strokeStyle'],
-          ) => setStyles(prev => ({ ...prev, strokeStyle }))}
+          selectedIcon={strokeStyle}
+          setSelectedIcon={setStrokeStyle}
         />
 
         <IconSelector
           title='Roughness'
           icons={[
-            { Icon: SquiggleLineIcon, key: 'none' }, // Changed 'low' to 'none'
+            { Icon: SquiggleLineIcon, key: 'none' },
             { Icon: ComplexSquiggleIcon, key: 'normal' },
             { Icon: SketchyLineIcon, key: 'high' },
           ]}
-          selectedIcon={styles.roughness}
-          setSelectedIcon={(roughness: SidebarProps['styles']['roughness']) =>
-            setStyles(prev => ({ ...prev, roughness }))
-          }
+          selectedIcon={roughness}
+          setSelectedIcon={setRoughness}
         />
       </div>
     </section>

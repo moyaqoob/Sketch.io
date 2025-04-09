@@ -533,6 +533,10 @@ export class DrawController {
     }
   }
 
+  getSelectedTool() {
+    return this.selectedTool;
+  }
+
   /**
    * Sets the stroke style (solid, dashed, dotted)
    */
