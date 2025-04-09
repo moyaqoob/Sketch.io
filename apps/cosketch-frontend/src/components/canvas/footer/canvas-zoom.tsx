@@ -1,6 +1,6 @@
 'use client';
 
-import { useZoom } from '@/hook/useZoom';
+import { useZoom } from '@/hooks/useZoom';
 import { Minus, Plus } from 'lucide-react';
 
 const CanvasZoom = () => {

@@ -30,10 +30,7 @@ export const handleRoomEvent = async (
           room,
           {
             type: "user:connected",
-            message: {
-              type: "user:connected",
-              message: `User ${userId} joined`,
-            },
+            message: `User ${userId} joined`,
           },
           socket
         );

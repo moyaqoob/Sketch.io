@@ -18,6 +18,8 @@ type ResizeHandle =
 export class SelectionManager {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
+  // private socket: WebSocket;
+
   private selectedShape: Shape | null = null; // Currently selected shape
 
   private isDragging = false; // Whether a shape is being dragged
@@ -35,9 +37,14 @@ export class SelectionManager {
   // For rotation
   private rotationCenter = { x: 0, y: 0 };
 
-  constructor(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
+    // socket: WebSocket,
+  ) {
     this.canvas = canvas;
     this.context = context;
+    // this.socket = socket;
   }
 
   /**
@@ -311,6 +318,15 @@ export class SelectionManager {
    */
   public endRotation() {
     this.isRotating = false;
+
+    // Add WebSocket code here to emit rotation updates
+    // if (this.selectedShape) {
+    //   socket.emit('updateShape', {
+    //     roomId: this.roomId,
+    //     shapeId: this.selectedShape.id,
+    //     updates: { rotation: this.selectedShape.rotation }
+    //   });
+    // }
   }
 
   /**
@@ -525,6 +541,20 @@ export class SelectionManager {
    */
   public endDrag() {
     this.isDragging = false;
+
+    // Add WebSocket code here to emit position updates for the moved shape
+    // if (this.selectedShape) {
+    //   socket.emit('updateShape', {
+    //     roomId: this.roomId,
+    //     shapeId: this.selectedShape.id,
+    //     updates: {
+    //       x1: this.selectedShape.x1,
+    //       y1: this.selectedShape.y1,
+    //       x2: this.selectedShape.x2,
+    //       y2: this.selectedShape.y2
+    //     }
+    //   });
+    // }
   }
 
   /**
@@ -583,6 +613,20 @@ export class SelectionManager {
   public endResize() {
     this.isResizing = false;
     this.activeHandle = null;
+
+    // Add WebSocket code here to emit dimension updates for the resized shape
+    // if (this.selectedShape) {
+    //   socket.emit('updateShape', {
+    //     roomId: this.roomId,
+    //     shapeId: this.selectedShape.id,
+    //     updates: {
+    //       x1: this.selectedShape.x1,
+    //       y1: this.selectedShape.y1,
+    //       x2: this.selectedShape.x2,
+    //       y2: this.selectedShape.y2
+    //     }
+    //   });
+    // }
   }
 
   /**

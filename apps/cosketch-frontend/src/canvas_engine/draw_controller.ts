@@ -13,7 +13,7 @@ import type { Shape, ShapeOptions } from '@repo/types';
  * Main drawing engine that handles shape creation, manipulation, and rendering
  * Uses rough.js for hand-drawn style rendering
  */
-export class DrawV2 {
+export class DrawController {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private rc: RoughCanvas;
@@ -61,7 +61,9 @@ export class DrawV2 {
   private fillColor: string = 'transparent';
   private strokeColor: string = 'white';
   private seed = 42;
+
   private roomId: string;
+
   private selectionManager: SelectionManager;
 
   // Drawing coordinates
@@ -83,8 +85,10 @@ export class DrawV2 {
     this.rc = rough.canvas(canvas);
     this.generator = rough.generator();
     this.roomId = roomId;
+
     this.selectionManager = new SelectionManager(this.canvas, this.context);
-    this.eraser = new Eraser(this.context, this.existingShapes, roomId);
+
+    this.eraser = new Eraser(this.context, this.existingShapes, this.roomId);
 
     this.init().then(() => this.initHandlers());
   }
@@ -142,7 +146,9 @@ export class DrawV2 {
         shape => shape.id !== selectedShape.id,
       );
 
-      // socket
+      // socket  <-- Add WebSocket code here to emit shape deletion
+      // Example: socket.emit('deleteShape', { roomId: this.roomId, shapeId: selectedShape.id });
+
       // Clear selection
       this.selectionManager.setSelectedShape(null);
       this.clearCanvas();
@@ -363,7 +369,9 @@ export class DrawV2 {
       };
 
       this.existingShapes.push(newShape);
-      // socket
+
+      // socket  <-- Add WebSocket code here to emit the new shape
+      // Example: socket.emit('createShape', { roomId: this.roomId, shape: newShape });
 
       this.clearCanvas();
     }
@@ -596,6 +604,10 @@ export class DrawV2 {
         strokeColor: this.strokeColor,
       };
 
+      // socket  <-- Add WebSocket code here to emit style updates
+      // Example: socket.emit('updateShape', { roomId: this.roomId, shapeId: selectedShape.id, updates: { options: selectedShape.options } });
+
+      console.log(selectedShape.id);
       this.clearCanvas();
     }
   }
@@ -619,7 +631,12 @@ export class DrawV2 {
     if (!this.eraser) return;
 
     // Make sure eraser has the latest shapes
-    this.eraser = new Eraser(this.context, this.existingShapes, this.roomId);
+    this.eraser = new Eraser(
+      this.context,
+      this.existingShapes,
+      this.roomId,
+      // this.socket,
+    );
     this.eraser.setEraserSize(this.eraserSize);
 
     // Perform erase operation

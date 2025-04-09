@@ -24,7 +24,7 @@ const ProtectCanvasRoute = ({ children, roomId }: ProtectCanvasRouteProps) => {
     },
     onError: (err: Error) => {
       toast.error(err.message || 'Unauthorized access');
-      router.replace('/signin');
+      router.replace('/dashboard');
     },
   });
 

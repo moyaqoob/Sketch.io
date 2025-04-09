@@ -1,6 +1,6 @@
 import DashboardBody from '@/components/dashboard/dashboard-body';
 import DashboardHeader from '@/components/dashboard/header';
-import ProtectRoute from '@/higher-order-component/protectRoute';
+import ProtectRoute from '@/components/guards/protectRoute';
 import React from 'react';
 import getPageMetadata from '@/lib/getPageMetadata';
 

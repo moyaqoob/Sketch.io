@@ -4,16 +4,19 @@ export class Eraser {
   private context: CanvasRenderingContext2D;
   private shapes: Shape[];
   private eraserSize: number = 20;
-  private roomId;
+  private roomId: string;
+  // private socket: WebSocket;
 
   constructor(
     context: CanvasRenderingContext2D,
     shapes: Shape[],
     roomId: string,
+    // socket: WebSocket,
   ) {
     this.context = context;
     this.shapes = shapes;
     this.roomId = roomId;
+    // this.socket = socket;
   }
 
   /**

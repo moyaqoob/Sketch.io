@@ -10,9 +10,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import RoomParticipants from './room-participants';
-import { RoomData } from '@/hook/useRooms';
+import { RoomData } from '@/hooks/useRooms';
 import DeleteRoomDialogBox from '@/components/dialogbox/delete-room-dialogbox';
-import useJoinRoomMutation from '@/hook/useJoinRoom';
+import useJoinRoomMutation from '@/hooks/useJoinRoom';
 
 export interface RoomCardProps {
   username?: string;

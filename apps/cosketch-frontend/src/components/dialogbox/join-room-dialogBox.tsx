@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Input } from '../forms/input';
 import toast from 'react-hot-toast';
-import useJoinRoomMutation from '@/hook/useJoinRoom';
+import useJoinRoomMutation from '@/hooks/useJoinRoom';
 
 interface JoinRoomDialogBoxProps {
   onClose: (e: boolean) => void;

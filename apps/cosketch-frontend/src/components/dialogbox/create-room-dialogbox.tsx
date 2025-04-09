@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Input } from '../forms/input';
-import { useRooms } from '@/hook/useRooms';
+import { useRooms } from '@/hooks/useRooms';
 import { toast } from 'react-hot-toast';
 
 interface CreateRoomDialogBoxProps {

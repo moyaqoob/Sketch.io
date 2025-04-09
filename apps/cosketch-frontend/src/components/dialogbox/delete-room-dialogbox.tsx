@@ -1,6 +1,6 @@
 'use client';
 
-import { useRooms } from '@/hook/useRooms';
+import { useRooms } from '@/hooks/useRooms';
 import React from 'react';
 import { toast } from 'react-hot-toast';
 

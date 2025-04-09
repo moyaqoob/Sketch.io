@@ -2,7 +2,7 @@
 
 import React from 'react';
 import RoomCard from './room-card';
-import { useRooms } from '@/hook/useRooms';
+import { useRooms } from '@/hooks/useRooms';
 import { ScaleLoader } from 'react-spinners';
 import Animation from '@/components/animation';
 
