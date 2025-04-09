@@ -30,7 +30,9 @@ const IconSelector = <T extends string>({
               ? 'bg-tool_select'
               : 'bg-gray-900 hover:bg-gray-800',
           )}
-          onClick={() => setSelectedIcon(key)}
+          onClick={() => {
+            if (selectedIcon !== key) setSelectedIcon(key);
+          }}
           aria-label={`${title} - ${key}`} // Accessibility enhancement
         >
           <Icon className='h-6 w-6' />

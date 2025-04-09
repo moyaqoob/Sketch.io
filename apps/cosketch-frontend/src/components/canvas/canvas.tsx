@@ -39,15 +39,6 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
     fillStyle,
   } = useCanvasStyleStore();
 
-  const prevStyleRef = useRef({
-    strokeColor,
-    backgroundColor,
-    strokeWidth,
-    strokeStyle,
-    roughness,
-    fillStyle,
-  });
-
   const selectedTool = useToolStore(s => s.selectedTool);
 
   // Initialize canvas and controllers
@@ -115,33 +106,12 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
   useEffect(() => {
     if (!canvasEngine) return;
 
-    const prev = prevStyleRef.current;
-
-    const hasChanged =
-      prev.strokeColor !== strokeColor ||
-      prev.backgroundColor !== backgroundColor ||
-      prev.strokeWidth !== strokeWidth ||
-      prev.strokeStyle !== strokeStyle ||
-      prev.roughness !== roughness ||
-      prev.fillStyle !== fillStyle;
-
-    if (!hasChanged) return;
-
     canvasEngine.setStrokeColor(strokeColor);
     canvasEngine.setFillColor(backgroundColor);
     canvasEngine.setStrokeWidth(strokeWidth);
     canvasEngine.setStrokeStyle(strokeStyle);
     canvasEngine.setRoughness(roughness);
     canvasEngine.setFillStyle(fillStyle);
-
-    prevStyleRef.current = {
-      strokeColor,
-      backgroundColor,
-      strokeWidth,
-      strokeStyle,
-      roughness,
-      fillStyle,
-    };
   }, [
     canvasEngine,
     strokeColor,

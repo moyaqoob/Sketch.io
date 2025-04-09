@@ -72,7 +72,11 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
               backgroundSize: '6px 6px',
               backgroundPosition: '0 0, 3px 3px',
             }}
-            onClick={() => setColor(hex)}
+            onClick={() => {
+              if (selectedColor !== hex) {
+                setColor(hex);
+              }
+            }}
             title={hex === 'transparent' ? 'Transparent' : hex}
           ></button>
         ))}
@@ -130,7 +134,9 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
                   backgroundPosition: '0 0, 3px 3px',
                 }}
                 onClick={() => {
-                  setColor(hex);
+                  if (selectedColor !== hex) {
+                    setColor(hex);
+                  }
                   // setIsOpen(false); // Close after selection
                 }}
                 title={hex === 'transparent' ? 'Transparent' : hex}
