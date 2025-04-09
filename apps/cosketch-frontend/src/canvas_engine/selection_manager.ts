@@ -283,7 +283,7 @@ export class SelectionManager {
   /**
    * Begin rotation of the selected shape
    */
-  public beginRotation(x: number, y: number) {
+  public beginRotation() {
     if (!this.selectedShape) return;
 
     this.isRotating = true;
@@ -519,7 +519,7 @@ export class SelectionManager {
   /**
    * Starts dragging a shape
    */
-  public beginDrag(x1?: number, y1?: number) {
+  public beginDrag() {
     this.isDragging = true;
   }
 

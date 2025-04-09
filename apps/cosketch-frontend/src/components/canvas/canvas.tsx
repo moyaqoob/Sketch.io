@@ -1,11 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CanvasFooter from './footer/canvas-footer';
 import CanvasHeader from './header/canvas-header';
 
 import { DrawController } from '@/canvas_engine/draw_controller';
 import { Tool } from '@/type/tool';
 import Sidebar from './sidebar/sidebar';
-import { useSocketContext } from '@/contexts/socket_context';
 
 interface CanvasProps {
   roomId: string;
@@ -33,7 +32,6 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
   console.log('in');
   // Selected Tool
   const [selectedTool, setSelectedTool] = useState<Tool>('Selection');
-  // const context = useSocketContext();
 
   // Shape Styling
   const [styles, setStyles] = useState({

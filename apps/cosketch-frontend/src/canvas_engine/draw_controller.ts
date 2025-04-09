@@ -203,7 +203,7 @@ export class DrawController {
       // Check if clicking on rotation handle
       if (this.selectionManager.isNearRotationHandle(this.x1, this.y1)) {
         this.action = 'rotating';
-        this.selectionManager.beginRotation(this.x1, this.y1);
+        this.selectionManager.beginRotation();
         return;
       }
 
@@ -328,7 +328,7 @@ export class DrawController {
   private previewShape() {
     const shapeOptions = this.getShapeOptions();
     const roughOptions = this.convertToRoughOptions(shapeOptions);
-    let drawable = this.generateDrawableFromShapeData(
+    const drawable = this.generateDrawableFromShapeData(
       {
         id: 'preview',
         type: this.selectedTool,
@@ -414,7 +414,15 @@ export class DrawController {
    */
   private generateDrawableFromShapeData(
     shape: Shape,
-    options: any,
+    options: {
+      roughness: number;
+      stroke: string;
+      strokeWidth: number;
+      fill: string;
+      fillStyle: 'solid' | 'hachure' | 'cross-hatch';
+      strokeLineDash: number[] | never[];
+      seed: number;
+    },
   ): Drawable | Drawable[] {
     switch (shape.type) {
       case 'Rectangle':
