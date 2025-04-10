@@ -2,6 +2,7 @@ import type { Response } from "express";
 import { HttpStatus } from "../utils/HttpStatus";
 import type { AuthRequest } from "../utils/request-type";
 import { getRoomCanvas } from "@repo/database";
+import { shapeSchema, type Shape } from "@repo/types";
 
 // //  Clear the canvas by deleting all designs for a specific room
 // export const clearCanvas = async (req: AuthRequest, res: Response) => {
@@ -43,7 +44,18 @@ export const getCanvasDesigns = async (req: AuthRequest, res: Response) => {
   try {
     const designs = await getRoomCanvas(roomId);
 
-    res.json({ success: true, designs });
+    const Shapes: Shape[] = [];
+
+    for (const d of designs) {
+      const parsed = shapeSchema.safeParse(d.design);
+      if (parsed.success) {
+        Shapes.push(parsed.data);
+      } else {
+        console.warn(`Invalid shape in design ${d.id}`, parsed.error);
+      }
+    }
+
+    res.json({ success: true, Shapes });
   } catch (error) {
     if (error)
       res

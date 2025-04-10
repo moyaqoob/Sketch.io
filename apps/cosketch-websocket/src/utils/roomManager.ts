@@ -1,4 +1,4 @@
-import type { BroadcastMessage } from "@repo/types";
+import type { BroadcastMessage, OutgoinMessage } from "@repo/types";
 import { WebSocket } from "ws";
 
 interface Rooms {
@@ -33,7 +33,7 @@ export const isUserInRoom = (socket: WebSocket, roomId: string): boolean => {
 //  Broadcast message to all users in a room
 export const broadcastToRoom = (
   roomId: string,
-  message: BroadcastMessage,
+  message: OutgoinMessage,
   excludeSocket?: WebSocket
 ) => {
   if (!rooms[roomId]) return;

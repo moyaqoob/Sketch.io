@@ -9,7 +9,7 @@ export const getExistingShapes = async (roomId: string) => {
       { headers: getAuthHeaders() },
     );
 
-    return response.data;
+    return response.data.Shapes;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(

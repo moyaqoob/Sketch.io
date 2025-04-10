@@ -97,7 +97,7 @@ export class DrawController {
    * Loads existing shapes from the server
    */
   private async init() {
-    const shapes = await getExistingShapes(this.roomId);
+    const shapes: Shape[] = await getExistingShapes(this.roomId);
     this.existingShapes = Array.isArray(shapes) ? shapes : [];
     this.clearCanvas();
   }
@@ -621,7 +621,6 @@ export class DrawController {
       // socket  <-- Add WebSocket code here to emit style updates
       // Example: socket.emit('updateShape', { roomId: this.roomId, shapeId: selectedShape.id, updates: { options: selectedShape.options } });
 
-      console.log(selectedShape.id);
       this.clearCanvas();
     }
   }

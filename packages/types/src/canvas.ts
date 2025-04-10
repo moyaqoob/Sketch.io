@@ -59,24 +59,43 @@ export const canvasMessageSchema = z.object({
 export type CanvasMessage = z.infer<typeof canvasMessageSchema>;
 
 /* --------------------- Broadcast Message (to frontend) --------------------- */
-export type BroadcastMessage =
-  | {
-      type: "canvas:draw";
-      userId: string;
-      data: Shape;
-    }
-  | {
-      type: "canvas:update";
-      userId: string;
-      shapeId: string | number;
-      data: Shape;
-    }
-  | {
-      type: "canvas:erase";
-      userId: string;
-      shapeId: string | number;
-    }
-  | {
-      type: "canvas:clear";
-      message: string;
-    };
+
+export const BroadcastMessage = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("canvas:draw"),
+    userId: z.string(),
+    data: shapeSchema,
+  }),
+  z.object({
+    type: z.literal("canvas:update"),
+    userId: z.string(),
+    shapeId: z.string(),
+    data: shapeSchema,
+  }),
+  z.object({
+    type: z.literal("canvas:erase"),
+    userId: z.string(),
+    shapeId: z.string(),
+  }),
+  z.object({
+    type: z.literal("canvas:clear"),
+    message: z.string(),
+  }),
+  z.object({
+    type: z.literal("user:connected"),
+    message: z.string(),
+    userId: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("user:disconnected"),
+    message: z.string(),
+    userId: z.string().optional(),
+  }),
+  z.object({
+    type: z.literal("error"),
+    message: z.string(),
+  }),
+]);
+
+export type OutgoinMessage = z.infer<typeof BroadcastMessage>;
+export type IncomingMessage = z.infer<typeof BroadcastMessage>;
