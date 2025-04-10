@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Tool/Shape types
+/* --------------------- Tool Types --------------------- */
 export const shapeTypes = [
   "Rectangle",
   "Diamond",
@@ -15,7 +15,7 @@ export const shapeTypes = [
 
 export type Tool = (typeof shapeTypes)[number];
 
-// Style options for shapes
+/* --------------------- Shape Options --------------------- */
 export const shapeOptionsSchema = z.object({
   roughness: z.enum(["none", "normal", "high"]),
   strokeStyle: z.enum(["solid", "dashed", "dotted"]),
@@ -26,9 +26,11 @@ export const shapeOptionsSchema = z.object({
   seed: z.number(),
 });
 
-// Shape schema
+export type ShapeOptions = z.infer<typeof shapeOptionsSchema>;
+
+/* --------------------- Shape Schema --------------------- */
 export const shapeSchema = z.object({
-  id: z.union([z.string(), z.number()]),
+  id: z.string(),
   type: z.enum(shapeTypes),
   x1: z.number(),
   y1: z.number(),
@@ -40,7 +42,9 @@ export const shapeSchema = z.object({
   options: shapeOptionsSchema,
 });
 
-// Canvas message schema
+export type Shape = z.infer<typeof shapeSchema>;
+
+/* --------------------- Incoming Canvas Message (from frontend) --------------------- */
 export const canvasMessageSchema = z.object({
   type: z.enum([
     "canvas:draw",
@@ -52,7 +56,27 @@ export const canvasMessageSchema = z.object({
   data: shapeSchema,
 });
 
-// Infer types
-export type ShapeOptions = z.infer<typeof shapeOptionsSchema>;
-export type Shape = z.infer<typeof shapeSchema>;
 export type CanvasMessage = z.infer<typeof canvasMessageSchema>;
+
+/* --------------------- Broadcast Message (to frontend) --------------------- */
+export type BroadcastMessage =
+  | {
+      type: "canvas:draw";
+      userId: string;
+      data: Shape;
+    }
+  | {
+      type: "canvas:update";
+      userId: string;
+      shapeId: string | number;
+      data: Shape;
+    }
+  | {
+      type: "canvas:erase";
+      userId: string;
+      shapeId: string | number;
+    }
+  | {
+      type: "canvas:clear";
+      message: string;
+    };

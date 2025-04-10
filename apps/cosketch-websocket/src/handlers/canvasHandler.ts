@@ -35,7 +35,7 @@ export const handleCanvasEvent = async (
     const parsedData = shapeSchema.safeParse(data);
     if (!parsedData.success) {
       logger.warn(
-        `Invalid shape data from user ${userId}: ${JSON.stringify(parsedData.error.format())}`
+        `Invalid shape data from user ${userId}: ${JSON.stringify(parsedData.error.format())} start`
       );
       return;
     }
@@ -134,7 +134,7 @@ export const handleCanvasEvent = async (
           }
 
           // Validate update data
-          const parsedData = shapeSchema.partial().safeParse(data);
+          const parsedData = shapeSchema.safeParse(data);
           if (!parsedData.success) {
             logger.warn(
               `Invalid update data from user ${userId}: ${JSON.stringify(parsedData.error.format())}`
@@ -162,7 +162,7 @@ export const handleCanvasEvent = async (
               type: "canvas:update",
               userId,
               shapeId,
-              data: updatedShape,
+              data: data,
             },
             socket
           );

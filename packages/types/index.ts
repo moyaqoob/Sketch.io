@@ -1,33 +1,6 @@
-import {
-  CreateRoomSchema,
-  CreateUserSchema,
-  nameSchema,
-  emailSchema,
-  passwordSchema,
-  SigninSchema,
-} from "./src/types";
+// Centralized exports for shared types and schemas
+// - Canvas: drawing types, shape schemas, WebSocket message types
+// - ValidationSchemas: auth and room-related input validation
 
-export {
-  CreateRoomSchema,
-  CreateUserSchema,
-  nameSchema,
-  emailSchema,
-  passwordSchema,
-  SigninSchema,
-};
-
-import {
-  shapeSchema,
-  canvasMessageSchema,
-  type CanvasMessage,
-  type Shape,
-  type ShapeOptions,
-} from "./src/canvasTypes";
-
-export {
-  shapeSchema,
-  canvasMessageSchema,
-  type CanvasMessage,
-  type Shape,
-  type ShapeOptions,
-};
+export * from "./src/canvas";
+export * from "./src/validationSchemas";

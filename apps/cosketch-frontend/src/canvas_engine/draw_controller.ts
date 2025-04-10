@@ -357,23 +357,25 @@ export class DrawController {
         this.selectedTool,
       )
     ) {
-      const newShape: Shape = {
-        id: cuid(),
-        type: this.selectedTool as Tool,
-        x1: this.x1,
-        y1: this.y1,
-        x2: this.x2,
-        y2: this.y2,
-        rotation: 0, // Default rotation
-        options: this.getShapeOptions(),
-      };
+      if (!(this.x1 === this.x2 && this.y1 === this.y2)) {
+        const newShape: Shape = {
+          id: cuid(),
+          type: this.selectedTool as Tool,
+          x1: this.x1,
+          y1: this.y1,
+          x2: this.x2,
+          y2: this.y2,
+          rotation: 0, // Default rotation
+          options: this.getShapeOptions(),
+        };
 
-      this.existingShapes.push(newShape);
+        this.existingShapes.push(newShape);
 
-      // socket  <-- Add WebSocket code here to emit the new shape
-      // Example: socket.emit('createShape', { roomId: this.roomId, shape: newShape });
+        // socket  <-- Add WebSocket code here to emit the new shape
+        // Example: socket.emit('createShape', { roomId: this.roomId, shape: newShape });
 
-      this.clearCanvas();
+        this.clearCanvas();
+      }
     }
   }
 
