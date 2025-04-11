@@ -8,6 +8,7 @@ import { SelectionManager } from './selection_manager';
 import { getExistingShapes } from '@/api/canvas';
 import { Eraser } from './eraser';
 import type { Shape, ShapeOptions } from '@repo/types';
+import { CanvasMessage } from '@/hooks/useSocket';
 
 /**
  * Main drawing engine that handles shape creation, manipulation, and rendering
@@ -18,6 +19,7 @@ export class DrawController {
   private context: CanvasRenderingContext2D;
   private rc: RoughCanvas;
   private generator: RoughGenerator;
+  private sendMessage: (message: CanvasMessage) => void;
 
   // Current action state
   private action:
@@ -79,16 +81,31 @@ export class DrawController {
   /**
    * Initializes the drawing engine with canvas and room context
    */
-  constructor(canvas: HTMLCanvasElement, roomId: string) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    roomId: string,
+    sendMessage: (message: CanvasMessage) => void,
+  ) {
     this.canvas = canvas;
     this.context = canvas.getContext('2d')!;
     this.rc = rough.canvas(canvas);
     this.generator = rough.generator();
     this.roomId = roomId;
+    this.sendMessage = sendMessage;
 
-    this.selectionManager = new SelectionManager(this.canvas, this.context);
+    this.selectionManager = new SelectionManager(
+      this.canvas,
+      this.context,
+      sendMessage,
+      roomId,
+    );
 
-    this.eraser = new Eraser(this.context, this.existingShapes, this.roomId);
+    this.eraser = new Eraser(
+      this.context,
+      this.existingShapes,
+      this.roomId,
+      sendMessage,
+    );
 
     this.init().then(() => this.initHandlers());
   }
@@ -98,6 +115,7 @@ export class DrawController {
    */
   private async init() {
     const shapes: Shape[] = await getExistingShapes(this.roomId);
+    console.log(shapes);
     this.existingShapes = Array.isArray(shapes) ? shapes : [];
     this.clearCanvas();
   }
@@ -146,8 +164,11 @@ export class DrawController {
         shape => shape.id !== selectedShape.id,
       );
 
-      // socket  <-- Add WebSocket code here to emit shape deletion
-      // Example: socket.emit('deleteShape', { roomId: this.roomId, shapeId: selectedShape.id });
+      this.sendMessage({
+        type: 'canvas:erase',
+        room: this.roomId,
+        shapeId: selectedShape.id,
+      });
 
       // Clear selection
       this.selectionManager.setSelectedShape(null);
@@ -371,8 +392,11 @@ export class DrawController {
 
         this.existingShapes.push(newShape);
 
-        // socket  <-- Add WebSocket code here to emit the new shape
-        // Example: socket.emit('createShape', { roomId: this.roomId, shape: newShape });
+        this.sendMessage({
+          type: 'canvas:draw',
+          room: this.roomId,
+          data: newShape,
+        });
 
         this.clearCanvas();
       }
@@ -618,8 +642,11 @@ export class DrawController {
         strokeColor: this.strokeColor,
       };
 
-      // socket  <-- Add WebSocket code here to emit style updates
-      // Example: socket.emit('updateShape', { roomId: this.roomId, shapeId: selectedShape.id, updates: { options: selectedShape.options } });
+      this.sendMessage({
+        type: 'canvas:update',
+        room: this.roomId,
+        data: selectedShape,
+      });
 
       this.clearCanvas();
     }
@@ -648,7 +675,7 @@ export class DrawController {
       this.context,
       this.existingShapes,
       this.roomId,
-      // this.socket,
+      this.sendMessage,
     );
     this.eraser.setEraserSize(this.eraserSize);
 
@@ -681,5 +708,33 @@ export class DrawController {
     if (this.eraser) {
       this.eraser.setEraserSize(size);
     }
+  }
+
+  // handle OnMessageEvent of WebSocket
+  public onDrawMessage(data: Shape) {
+    this.existingShapes.push(data);
+    this.clearCanvas();
+  }
+
+  public OnUpdateMessage(data: Shape): void {
+    const index = this.existingShapes.findIndex(shape => shape.id === data.id);
+    if (index !== -1) {
+      this.existingShapes[index] = { ...this.existingShapes[index], ...data };
+      this.clearCanvas();
+    }
+  }
+
+  public onEraseMessage(shapeId: string): void {
+    const index = this.existingShapes.findIndex(shape => shape.id === shapeId);
+    console.log('erase');
+    if (index !== -1) {
+      this.existingShapes.splice(index, 1);
+      this.clearCanvas();
+    }
+  }
+
+  public OnClearMessage() {
+    this.existingShapes = [];
+    this.clearCanvas();
   }
 }

@@ -17,7 +17,6 @@ const useJoinRoomMutation = () => {
       const roomId = data?.roomId;
 
       if (typeof roomId === 'string' && roomId.trim() !== '') {
-        // console.log('Navigating to:', `/canvas/${roomId}`);
         router.push(`/canvas/${roomId}`);
       } else {
         console.error('Room ID is missing or invalid', data);

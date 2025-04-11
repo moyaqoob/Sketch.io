@@ -17,7 +17,7 @@ export const handleCanvasEvent = async (
   userId: string
 ) => {
   try {
-    const { type, room, data } = message;
+    const { type, room, data, shapeId } = message;
 
     // Check if the room exists in memory
     if (!room || !rooms[room]) {
@@ -31,25 +31,18 @@ export const handleCanvasEvent = async (
       return;
     }
 
-    // Validate incoming shape data
-    const parsedData = shapeSchema.safeParse(data);
-    if (!parsedData.success) {
-      logger.warn(
-        `Invalid shape data from user ${userId}: ${JSON.stringify(parsedData.error.format())} start`
-      );
-      return;
-    }
-
-    const shapeData = parsedData.data;
-
     switch (type) {
-      case "canvas:draw":
-        // Ensure the room exists in the database to prevent FK constraint errors
-        // const existingRoom = await getRoomIfExists(room);
-        // if (!existingRoom) {
-        //   logger.warn(`Room ${room} does not exist in the database.`);
-        //   return;
-        // }
+      case "canvas:draw": {
+        // Validate shape data
+        const parsedData = shapeSchema.safeParse(data);
+        if (!parsedData.success) {
+          logger.warn(
+            `Invalid shape data from user ${userId}: ${JSON.stringify(parsedData.error.format())}`
+          );
+          return;
+        }
+
+        const shapeData = parsedData.data;
 
         try {
           await createCanvas({
@@ -71,6 +64,7 @@ export const handleCanvasEvent = async (
           return;
         }
         break;
+      }
 
       case "canvas:clear":
         logger.info(`User ${userId} cleared the canvas in room ${room}`);
@@ -86,8 +80,6 @@ export const handleCanvasEvent = async (
 
       case "canvas:erase":
         try {
-          const { id: shapeId } = shapeData;
-
           if (!shapeId) {
             logger.warn(
               `User ${userId} attempted to erase without providing a shape ID.`
@@ -95,20 +87,15 @@ export const handleCanvasEvent = async (
             return;
           }
 
-          // Fetch the shape to ensure it exists and belongs to the user
           const existingShape = await getCanvasShape(String(shapeId));
-
           if (!existingShape) {
             logger.warn(`Shape ${shapeId} not found in room ${room}`);
             return;
           }
 
-          // Delete shape from database
           await deleteCanvasShape(String(shapeId));
-
           logger.info(`User ${userId} erased shape ${shapeId} in room ${room}`);
 
-          // Notify other users to remove the shape from their canvas
           broadcastToRoom(
             room,
             {
@@ -122,47 +109,41 @@ export const handleCanvasEvent = async (
           logger.error(`Database error while erasing shape: ${dbError}`);
         }
         break;
-      case "canvas:update":
+
+      case "canvas:update": {
+        if (!data?.id) {
+          logger.warn(`Update event received without a shape ID.`);
+          return;
+        }
+
+        // Validate shape data
+        const parsedData = shapeSchema.safeParse(data);
+        if (!parsedData.success) {
+          logger.warn(
+            `Invalid update data from user ${userId}: ${JSON.stringify(parsedData.error.format())}`
+          );
+          return;
+        }
+
         try {
-          const { id: shapeId } = data; // Extract shape ID and update fields
-
-          if (!shapeId) {
-            logger.warn(
-              `User ${userId} attempted to update without providing a shape ID.`
-            );
-            return;
-          }
-
-          // Validate update data
-          const parsedData = shapeSchema.safeParse(data);
-          if (!parsedData.success) {
-            logger.warn(
-              `Invalid update data from user ${userId}: ${JSON.stringify(parsedData.error.format())}`
-            );
-            return;
-          }
-
-          // Ensure shape exists in DB
-          const existingShape = await getCanvasShape(String(shapeId));
+          const existingShape = await getCanvasShape(String(data.id));
           if (!existingShape) {
-            logger.warn(`Shape ${shapeId} not found in room ${room}`);
+            logger.warn(`Shape ${data.id} not found in room ${room}`);
             return;
           }
 
-          // Perform the update in the database
-          const updatedShape = await updateCanvasShape(String(shapeId), data);
+          const updatedShape = await updateCanvasShape(String(data.id), data);
           logger.info(
-            `User ${userId} updated shape ${shapeId} in room ${room}`
+            `User ${userId} updated shape ${data.id} in room ${room}`
           );
 
-          // Broadcast update to all users in the room
           broadcastToRoom(
             room,
             {
               type: "canvas:update",
               userId,
-              shapeId,
-              data: data,
+              shapeId: data.id,
+              data,
             },
             socket
           );
@@ -170,6 +151,8 @@ export const handleCanvasEvent = async (
           logger.error(`Database error while updating shape: ${dbError}`);
         }
         break;
+      }
+
       default:
         logger.warn(`Unknown canvas event type: ${type}`);
     }

@@ -28,6 +28,47 @@ cosketch/
 
 ---
 
+## 🧩 Features
+
+CoSketch offers a rich set of features for real-time collaborative sketching:
+
+- 🎨 **Shape Drawing**  
+  Supports essential diagramming shapes:
+
+  - Rectangle
+  - Ellipse
+  - Diamond
+  - Arrow
+  - Line
+
+- ✏️ **Interactive Editing**
+
+  - Select, drag, and resize shapes with ease
+  - Modify shape styles including color, stroke width, and fill
+
+- 🗑️ **Shape Management**
+
+  - Delete individual shapes
+  - Clear entire canvas in one click
+
+- 🔄 **Real-Time Synchronization**
+
+  - Update and broadcast shape state across all users using **WebSockets**
+
+- 🌐 **Multi-User Collaboration**
+
+  - Seamless live editing experience for multiple participants
+
+- ☁️ **Persistent Storage**
+
+  - Store and retrieve all shapes from a **PostgreSQL** database via **Prisma ORM**
+
+- ⚙️ **Modular Architecture**
+  - Built with a scalable monorepo structure using **Turborepo** and **Bun**
+  - Decoupled apps for frontend, backend, and WebSocket server
+
+---
+
 ## 🚀 Getting Started
 
 ### 1️⃣ Install Dependencies

@@ -53,7 +53,8 @@ export const canvasMessageSchema = z.object({
     "canvas:erase",
   ]),
   room: z.string(),
-  data: shapeSchema,
+  data: shapeSchema.optional(),
+  shapeId: z.string().optional(),
 });
 
 export type CanvasMessage = z.infer<typeof canvasMessageSchema>;

@@ -1,3 +1,4 @@
+import { CanvasMessage } from '@/hooks/useSocket';
 import { Shape } from '@repo/types';
 
 // Types of resize handles available for shapes
@@ -18,7 +19,8 @@ type ResizeHandle =
 export class SelectionManager {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
-  // private socket: WebSocket;
+  private sendMessage: (message: CanvasMessage) => void;
+  private roomId: string;
 
   private selectedShape: Shape | null = null; // Currently selected shape
 
@@ -40,11 +42,13 @@ export class SelectionManager {
   constructor(
     canvas: HTMLCanvasElement,
     context: CanvasRenderingContext2D,
-    // socket: WebSocket,
+    sendMessage: (message: CanvasMessage) => void,
+    roomId: string,
   ) {
     this.canvas = canvas;
     this.context = context;
-    // this.socket = socket;
+    this.sendMessage = sendMessage;
+    this.roomId = roomId;
   }
 
   /**
@@ -319,14 +323,14 @@ export class SelectionManager {
   public endRotation() {
     this.isRotating = false;
 
-    // Add WebSocket code here to emit rotation updates
-    // if (this.selectedShape) {
-    //   socket.emit('updateShape', {
-    //     roomId: this.roomId,
-    //     shapeId: this.selectedShape.id,
-    //     updates: { rotation: this.selectedShape.rotation }
-    //   });
-    // }
+    // Send rotation updates
+    if (this.selectedShape) {
+      this.sendMessage({
+        type: 'canvas:update',
+        room: this.roomId,
+        data: this.selectedShape,
+      });
+    }
   }
 
   /**
@@ -374,6 +378,11 @@ export class SelectionManager {
     const index = shapes.indexOf(selectedShape);
     shapes.splice(index, 1);
     shapes.push(selectedShape);
+    // this.sendMessage({
+    //   type: 'canvas:update',
+    //   room: this.roomId,
+    //   data: selectedShape,
+    // });
 
     return selectedShape;
   }
@@ -468,6 +477,15 @@ export class SelectionManager {
     // Select the best match (smallest shape in the marquee)
     this.selectedShape = shapesWithArea[0].shape;
 
+    // At the end of the method, add:
+    if (this.selectedShape) {
+      this.sendMessage({
+        type: 'canvas:update',
+        room: this.roomId,
+        data: this.selectedShape,
+      });
+    }
+
     this.isMarqueeSelecting = false;
   }
 
@@ -542,19 +560,14 @@ export class SelectionManager {
   public endDrag() {
     this.isDragging = false;
 
-    // Add WebSocket code here to emit position updates for the moved shape
-    // if (this.selectedShape) {
-    //   socket.emit('updateShape', {
-    //     roomId: this.roomId,
-    //     shapeId: this.selectedShape.id,
-    //     updates: {
-    //       x1: this.selectedShape.x1,
-    //       y1: this.selectedShape.y1,
-    //       x2: this.selectedShape.x2,
-    //       y2: this.selectedShape.y2
-    //     }
-    //   });
-    // }
+    // Send position updates for the moved shape
+    if (this.selectedShape) {
+      this.sendMessage({
+        type: 'canvas:update',
+        room: this.roomId,
+        data: this.selectedShape,
+      });
+    }
   }
 
   /**
@@ -614,19 +627,14 @@ export class SelectionManager {
     this.isResizing = false;
     this.activeHandle = null;
 
-    // Add WebSocket code here to emit dimension updates for the resized shape
-    // if (this.selectedShape) {
-    //   socket.emit('updateShape', {
-    //     roomId: this.roomId,
-    //     shapeId: this.selectedShape.id,
-    //     updates: {
-    //       x1: this.selectedShape.x1,
-    //       y1: this.selectedShape.y1,
-    //       x2: this.selectedShape.x2,
-    //       y2: this.selectedShape.y2
-    //     }
-    //   });
-    // }
+    // Send dimension updates for the resized shape
+    if (this.selectedShape) {
+      this.sendMessage({
+        type: 'canvas:update',
+        room: this.roomId,
+        data: this.selectedShape,
+      });
+    }
   }
 
   /**
