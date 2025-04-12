@@ -42,12 +42,12 @@ const ProtectCanvasRoute = ({ children, roomId }: ProtectCanvasRouteProps) => {
 
   if (isLoading || verifyUserInRoomMutation.isPending) {
     return (
-      <div className='bg-background_yellow flex h-screen items-center justify-center'>
+      <div className='flex h-screen items-center justify-center bg-black'>
         <div className='flex flex-col items-center space-y-4'>
-          {/* Animated Spinner */}
           <Spinner />
-          {/* Loading Text */}
-          <p className='text-xl font-medium text-gray-700'>Verifying...</p>
+          <p className='text-xl font-medium text-gray-200'>
+            Just a moment... we're getting things ready for you.
+          </p>
         </div>
       </div>
     );

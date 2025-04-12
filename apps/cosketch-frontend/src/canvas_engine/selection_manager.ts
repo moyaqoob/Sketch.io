@@ -21,6 +21,7 @@ export class SelectionManager {
   private context: CanvasRenderingContext2D;
   private sendMessage: (message: CanvasMessage) => void;
   private roomId: string;
+  private dragDistance: number = 0;
 
   private selectedShape: Shape | null = null; // Currently selected shape
 
@@ -378,11 +379,6 @@ export class SelectionManager {
     const index = shapes.indexOf(selectedShape);
     shapes.splice(index, 1);
     shapes.push(selectedShape);
-    // this.sendMessage({
-    //   type: 'canvas:update',
-    //   room: this.roomId,
-    //   data: selectedShape,
-    // });
 
     return selectedShape;
   }
@@ -398,6 +394,12 @@ export class SelectionManager {
    * Sets the currently selected shape
    */
   public setSelectedShape(shape: Shape | null) {
+    if (
+      this.selectedShape === shape ||
+      (this.selectedShape && shape && this.selectedShape.id === shape.id)
+    ) {
+      return;
+    }
     this.selectedShape = shape;
   }
 
@@ -477,15 +479,6 @@ export class SelectionManager {
     // Select the best match (smallest shape in the marquee)
     this.selectedShape = shapesWithArea[0].shape;
 
-    // At the end of the method, add:
-    if (this.selectedShape) {
-      this.sendMessage({
-        type: 'canvas:update',
-        room: this.roomId,
-        data: this.selectedShape,
-      });
-    }
-
     this.isMarqueeSelecting = false;
   }
 
@@ -551,6 +544,9 @@ export class SelectionManager {
       this.selectedShape.y1 += deltaY;
       this.selectedShape.x2 += deltaX;
       this.selectedShape.y2 += deltaY;
+
+      // Track total distance moved
+      this.dragDistance += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     }
   }
 
@@ -560,14 +556,17 @@ export class SelectionManager {
   public endDrag() {
     this.isDragging = false;
 
-    // Send position updates for the moved shape
-    if (this.selectedShape) {
+    // Only send updates if the shape was actually moved
+    if (this.selectedShape && this.dragDistance > 0) {
       this.sendMessage({
         type: 'canvas:update',
         room: this.roomId,
         data: this.selectedShape,
       });
     }
+
+    // Reset drag distance
+    this.dragDistance = 0;
   }
 
   /**

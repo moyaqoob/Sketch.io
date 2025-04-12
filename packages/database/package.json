@@ -16,8 +16,10 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@prisma/client": "^6.6.0",
     "@repo/types": "*",
-    "@prisma/client": "^6.5.0",
-    "prisma": "^6.5.0"
+    "add": "^2.0.6",
+    "bun": "^1.2.9",
+    "prisma": "^6.6.0"
   }
 }

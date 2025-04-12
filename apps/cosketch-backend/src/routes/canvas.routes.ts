@@ -11,6 +11,6 @@ const router = express.Router();
 router.use(auth);
 
 // router.post("/clear-canvas", clearCanvas);
-router.get("/get-canvas-desgin/:roomId", getCanvasDesigns);
+router.get("/get-canvas-design/:roomId", getCanvasDesigns);
 
 export default router;

@@ -98,7 +98,7 @@ export const verifyUserInRoom = async (roomId: string) => {
       { roomId },
       { headers: getAuthHeaders() },
     );
-
+    await new Promise(resolve => setTimeout(resolve, 1000));
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

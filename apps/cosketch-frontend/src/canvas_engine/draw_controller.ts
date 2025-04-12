@@ -115,7 +115,6 @@ export class DrawController {
    */
   private async init() {
     const shapes: Shape[] = await getExistingShapes(this.roomId);
-    console.log(shapes);
     this.existingShapes = Array.isArray(shapes) ? shapes : [];
     this.clearCanvas();
   }
@@ -221,18 +220,20 @@ export class DrawController {
     }
 
     if (this.selectedTool === 'Selection') {
-      // Check if clicking on rotation handle
-      if (this.selectionManager.isNearRotationHandle(this.x1, this.y1)) {
+      // Check if clicking on rotation handle of the currently selected shape
+      if (
+        this.selectionManager.getSelectedShape() &&
+        this.selectionManager.isNearRotationHandle(this.x1, this.y1)
+      ) {
         this.action = 'rotating';
         this.selectionManager.beginRotation();
         return;
       }
 
-      // Check if clicking on resize handle
-      const handle = this.selectionManager.getResizeHandleAtPoint(
-        this.x1,
-        this.y1,
-      );
+      // Check if clicking on resize handle of the currently selected shape
+      const handle =
+        this.selectionManager.getSelectedShape() &&
+        this.selectionManager.getResizeHandleAtPoint(this.x1, this.y1);
 
       if (handle) {
         this.action = 'resizing';
@@ -245,17 +246,26 @@ export class DrawController {
           this.existingShapes,
         );
 
+        // Get currently selected shape
+        const currentlySelected = this.selectionManager.getSelectedShape();
+
         if (shape) {
-          // Set as selected shape
-          this.selectionManager.setSelectedShape(shape);
+          // Only set as selected if it's a different shape than currently selected
+          if (!currentlySelected || currentlySelected.id !== shape.id) {
+            this.selectionManager.setSelectedShape(shape);
+          }
+
           this.action = 'moving';
           this.selectionManager.beginDrag();
         } else {
-          // If not clicking on any shape, start marquee selection or clear selection
+          // If not clicking on any shape, start marquee selection and clear current selection
           this.action = 'marquee-selecting';
           this.selectionManager.beginMarqueeSelection(this.x1, this.y1);
-          // Or simply:
-          // this.selectionManager.setSelectedShape(null);
+
+          // Clear selection if clicking on empty space
+          if (currentlySelected) {
+            this.selectionManager.setSelectedShape(null);
+          }
         }
       }
     } else {
@@ -630,7 +640,19 @@ export class DrawController {
    */
   private updateSelectedShapeStyle() {
     const selectedShape = this.selectionManager.getSelectedShape();
-    if (selectedShape) {
+    if (!selectedShape) return;
+
+    // Check if any style property has actually changed
+    const hasStyleChanged =
+      selectedShape.options.roughness !== this.roughness ||
+      selectedShape.options.strokeStyle !== this.strokeStyle ||
+      selectedShape.options.strokeWidth !== this.strokeWidth ||
+      selectedShape.options.fillStyle !== this.fillStyle ||
+      selectedShape.options.fillColor !== this.fillColor ||
+      selectedShape.options.strokeColor !== this.strokeColor;
+
+    // Only update and send message if something changed
+    if (hasStyleChanged) {
       // Update the options object with current style settings
       selectedShape.options = {
         ...selectedShape.options,

@@ -119,7 +119,7 @@ export const useSocket = ({
       activeConnections++;
 
       socket.onopen = () => {
-        console.log('✅ WebSocket connected successfully');
+        console.log('WebSocket connected successfully');
         connectingRef.current = false;
         retryCount.current = 0;
         activeRoomId = roomId;
