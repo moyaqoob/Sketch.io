@@ -20,7 +20,7 @@ interface CanvasProps {
 
 const cursorStyles = {
   Eraser: '',
-  FreeDraw: 'crosshair',
+  Freehand: 'crosshair',
   Text: 'text',
   Selection: 'pointer',
   Rectangle: 'crosshair',

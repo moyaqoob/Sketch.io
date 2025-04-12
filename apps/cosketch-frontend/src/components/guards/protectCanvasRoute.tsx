@@ -46,7 +46,7 @@ const ProtectCanvasRoute = ({ children, roomId }: ProtectCanvasRouteProps) => {
         <div className='flex flex-col items-center space-y-4'>
           <Spinner />
           <p className='text-xl font-medium text-gray-200'>
-            Just a moment... we're getting things ready for you.
+            {`Just a moment... we're getting things ready for you.`}
           </p>
         </div>
       </div>

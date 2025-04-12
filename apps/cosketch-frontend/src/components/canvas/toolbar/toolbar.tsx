@@ -29,7 +29,7 @@ const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
   { icon: Circle, tool: 'Ellipse', id: 4, tooltip: 'Ellipse - 4' },
   { icon: MoveRight, tool: 'Arrow', id: 5, tooltip: 'Arrow - 5' },
   { icon: Minus, tool: 'Line', id: 6, tooltip: 'Line - 6' },
-  { icon: Pencil, tool: 'FreeDraw', id: 7, tooltip: 'Draw - 7' },
+  { icon: Pencil, tool: 'Freehand', id: 7, tooltip: 'Draw - 7' },
   { icon: Type, tool: 'Text', id: 8, tooltip: 'Text - 8' },
   { icon: Eraser, tool: 'Eraser', id: 9, tooltip: 'Eraser - 9' },
 ];
@@ -60,7 +60,7 @@ const Toolbar: React.FC = () => {
     const resetTool = () => {
       if (
         !isLocked &&
-        selectedTool !== 'FreeDraw' &&
+        selectedTool !== 'Freehand' &&
         selectedTool !== 'Eraser' &&
         selectedTool !== 'Selection'
       ) {

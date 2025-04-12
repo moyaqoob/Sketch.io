@@ -9,6 +9,7 @@ import { getExistingShapes } from '@/api/canvas';
 import { Eraser } from './eraser';
 import type { Shape, ShapeOptions } from '@repo/types';
 import { CanvasMessage } from '@/hooks/useSocket';
+import { getStroke } from 'perfect-freehand';
 
 /**
  * Main drawing engine that handles shape creation, manipulation, and rendering
@@ -32,6 +33,8 @@ export class DrawController {
 
   private selectedTool: Tool = 'Selection';
   private existingShapes: Shape[] = [];
+  private paths: [number, number][] = [];
+  private isDrawingFreehand: boolean = false;
 
   // Stroke style configurations
   private strokeStyles = {
@@ -219,6 +222,12 @@ export class DrawController {
       return;
     }
 
+    if (this.selectedTool === 'Freehand') {
+      this.isDrawingFreehand = true;
+      this.paths = [[this.x1, this.y1]];
+      return;
+    }
+
     if (this.selectedTool === 'Selection') {
       // Check if clicking on rotation handle of the currently selected shape
       if (
@@ -293,6 +302,13 @@ export class DrawController {
       return;
     }
 
+    if (this.selectedTool === 'Freehand' && this.isDrawingFreehand) {
+      this.paths.push([currentX, currentY]);
+      this.clearCanvas();
+      this.drawFreehandPath();
+      return;
+    }
+
     // Update cursor style based on what's under the cursor
     this.selectionManager.updateCursor(currentX, currentY);
 
@@ -334,16 +350,66 @@ export class DrawController {
       return;
     }
 
+    if (this.selectedTool === 'Freehand' && this.isDrawingFreehand) {
+      this.isDrawingFreehand = false;
+      if (this.paths.length > 1) {
+        const newShape: Shape = {
+          id: cuid(),
+          type: 'Freehand',
+          x1: this.paths[0][0],
+          y1: this.paths[0][1],
+          x2: this.paths[this.paths.length - 1][0],
+          y2: this.paths[this.paths.length - 1][1],
+          paths: this.paths,
+          options: this.getShapeOptions(),
+        };
+
+        this.existingShapes.push(newShape);
+        this.sendMessage({
+          type: 'canvas:draw',
+          room: this.roomId,
+          data: newShape,
+        });
+      }
+      this.paths = [];
+      this.clearCanvas();
+      return;
+    }
+
     if (this.action === 'drawing') {
       const rect = this.canvas.getBoundingClientRect();
       this.x2 = event.clientX - rect.left;
       this.y2 = event.clientY - rect.top;
       this.drawShape();
     } else if (this.action === 'moving') {
+      const selectedShape = this.selectionManager.getSelectedShape();
+      if (selectedShape) {
+        this.sendMessage({
+          type: 'canvas:update',
+          room: this.roomId,
+          data: selectedShape,
+        });
+      }
       this.selectionManager.endDrag();
     } else if (this.action === 'resizing') {
+      const selectedShape = this.selectionManager.getSelectedShape();
+      if (selectedShape) {
+        this.sendMessage({
+          type: 'canvas:update',
+          room: this.roomId,
+          data: selectedShape,
+        });
+      }
       this.selectionManager.endResize();
     } else if (this.action === 'rotating') {
+      const selectedShape = this.selectionManager.getSelectedShape();
+      if (selectedShape) {
+        this.sendMessage({
+          type: 'canvas:update',
+          room: this.roomId,
+          data: selectedShape,
+        });
+      }
       this.selectionManager.endRotation();
     } else if (this.action === 'marquee-selecting') {
       this.selectionManager.completeMarqueeSelection(this.existingShapes);
@@ -418,29 +484,58 @@ export class DrawController {
    */
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
-      // Generate drawable from shape data using the shape's own options
-      const roughOptions = this.convertToRoughOptions(shape.options);
-      const drawable = this.generateDrawableFromShapeData(shape, roughOptions);
-
-      // Apply rotation if needed
-      if (shape.rotation) {
+      if (shape.type === 'Freehand' && shape.paths) {
         this.context.save();
-        const centerX = (shape.x1 + shape.x2) / 2;
-        const centerY = (shape.y1 + shape.y2) / 2;
-        this.context.translate(centerX, centerY);
-        this.context.rotate((shape.rotation * Math.PI) / 180);
-        this.context.translate(-centerX, -centerY);
-      }
+        this.context.fillStyle = shape.options.strokeColor;
+        this.context.beginPath();
 
-      // Draw the shape
-      if (Array.isArray(drawable)) {
-        drawable.forEach(d => this.rc.draw(d));
-      } else if (drawable) {
-        this.rc.draw(drawable);
-      }
+        const stroke = getStroke(shape.paths, {
+          size: this.strokeWidths[shape.options.strokeWidth] * 2,
+          thinning: 0.5,
+          smoothing: 0.5,
+          streamline: 0.5,
+        });
 
-      if (shape.rotation) {
+        for (let i = 0; i < stroke.length; i++) {
+          const [x, y] = stroke[i];
+          if (i === 0) {
+            this.context.moveTo(x, y);
+          } else {
+            this.context.lineTo(x, y);
+          }
+        }
+
+        this.context.closePath();
+        this.context.fill();
         this.context.restore();
+      } else {
+        // Generate drawable from shape data using the shape's own options
+        const roughOptions = this.convertToRoughOptions(shape.options);
+        const drawable = this.generateDrawableFromShapeData(
+          shape,
+          roughOptions,
+        );
+
+        // Apply rotation if needed
+        if (shape.rotation) {
+          this.context.save();
+          const centerX = (shape.x1 + shape.x2) / 2;
+          const centerY = (shape.y1 + shape.y2) / 2;
+          this.context.translate(centerX, centerY);
+          this.context.rotate((shape.rotation * Math.PI) / 180);
+          this.context.translate(-centerX, -centerY);
+        }
+
+        // Draw the shape
+        if (Array.isArray(drawable)) {
+          drawable.forEach(d => this.rc.draw(d));
+        } else if (drawable) {
+          this.rc.draw(drawable);
+        }
+
+        if (shape.rotation) {
+          this.context.restore();
+        }
       }
     });
   }
@@ -701,8 +796,52 @@ export class DrawController {
     );
     this.eraser.setEraserSize(this.eraserSize);
 
-    // Perform erase operation
-    this.existingShapes = this.eraser.erase(x, y);
+    // Check each shape to see if it intersects with the eraser
+    const shapesToErase: Shape[] = [];
+    const remainingShapes: Shape[] = [];
+
+    this.existingShapes.forEach(shape => {
+      if (shape.type === 'Freehand' && shape.paths) {
+        // For freehand shapes, check if any point is within eraser radius
+        const isErased = shape.paths.some(point => {
+          const distance = Math.sqrt(
+            Math.pow(point[0] - x, 2) + Math.pow(point[1] - y, 2),
+          );
+          return distance <= this.eraserSize / 2;
+        });
+
+        if (isErased) {
+          shapesToErase.push(shape);
+        } else {
+          remainingShapes.push(shape);
+        }
+      } else {
+        // For other shapes, use the existing eraser logic
+        const currentEraser = this.eraser;
+        if (currentEraser) {
+          const erasedShapes = currentEraser.erase(x, y);
+          const isErased = !erasedShapes.some(erased => erased.id === shape.id);
+
+          if (isErased) {
+            shapesToErase.push(shape);
+          } else {
+            remainingShapes.push(shape);
+          }
+        }
+      }
+    });
+
+    // Send erase messages for each erased shape
+    shapesToErase.forEach(shape => {
+      this.sendMessage({
+        type: 'canvas:erase',
+        room: this.roomId,
+        shapeId: shape.id,
+      });
+    });
+
+    // Update existing shapes
+    this.existingShapes = remainingShapes;
 
     // Redraw canvas
     this.clearCanvas();
@@ -758,5 +897,33 @@ export class DrawController {
   public OnClearMessage() {
     this.existingShapes = [];
     this.clearCanvas();
+  }
+
+  private drawFreehandPath() {
+    if (this.paths.length < 2) return;
+
+    const stroke = getStroke(this.paths, {
+      size: this.strokeWidths[this.strokeWidth] * 2,
+      thinning: 0.5,
+      smoothing: 0.5,
+      streamline: 0.5,
+    });
+
+    this.context.save();
+    this.context.fillStyle = this.strokeColor;
+    this.context.beginPath();
+
+    for (let i = 0; i < stroke.length; i++) {
+      const [x, y] = stroke[i];
+      if (i === 0) {
+        this.context.moveTo(x, y);
+      } else {
+        this.context.lineTo(x, y);
+      }
+    }
+
+    this.context.closePath();
+    this.context.fill();
+    this.context.restore();
   }
 }

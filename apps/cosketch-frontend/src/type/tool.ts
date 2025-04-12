@@ -5,7 +5,7 @@ export type Tool =
   | 'Ellipse'
   | 'Arrow'
   | 'Line'
-  | 'FreeDraw'
+  | 'Freehand'
   | 'Text'
   | 'Eraser';
 

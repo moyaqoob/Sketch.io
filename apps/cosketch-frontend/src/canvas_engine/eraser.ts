@@ -123,6 +123,37 @@ export class Eraser {
       case 'Arrow':
         this.drawArrowPath(shape);
         break;
+      case 'Freehand':
+        if (shape.paths) {
+          // For freehand shapes, check if any point is within eraser radius
+          const isOnStroke = shape.paths.some(point => {
+            const distance = Math.sqrt(
+              Math.pow(point[0] - pointX, 2) + Math.pow(point[1] - pointY, 2),
+            );
+            return distance <= this.eraserSize / 2;
+          });
+
+          if (isOnStroke) {
+            // Find the closest point for distance calculation
+            const closestPoint = shape.paths.reduce(
+              (closest, point) => {
+                const distance = Math.sqrt(
+                  Math.pow(point[0] - pointX, 2) +
+                    Math.pow(point[1] - pointY, 2),
+                );
+                return distance < closest.distance
+                  ? { point, distance }
+                  : closest;
+              },
+              { point: shape.paths[0], distance: Infinity },
+            );
+
+            this.context.restore();
+            return { onStroke: true, distance: closestPoint.distance };
+          }
+        }
+        this.context.restore();
+        return { onStroke: false, distance: Infinity };
       default:
         this.context.restore();
         return { onStroke: false, distance: Infinity };

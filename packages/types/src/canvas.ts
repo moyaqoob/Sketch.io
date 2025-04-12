@@ -7,7 +7,7 @@ export const shapeTypes = [
   "Ellipse",
   "Arrow",
   "Line",
-  "FreeDraw",
+  "Freehand",
   "Text",
   "Selection",
   "Eraser",
