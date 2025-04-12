@@ -36,6 +36,7 @@ export const shapeSchema = z.object({
   y1: z.number(),
   x2: z.number(),
   y2: z.number(),
+  text: z.string().optional(),
   rotation: z.number().optional(),
   paths: z.array(z.tuple([z.number(), z.number()])).optional(),
   path: z.array(z.object({ x: z.number(), y: z.number() })).optional(),
