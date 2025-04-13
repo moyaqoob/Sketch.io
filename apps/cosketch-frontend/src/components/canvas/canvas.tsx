@@ -199,7 +199,7 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
 
   return (
     <>
-      <CanvasHeader roomId={roomId} />
+      <CanvasHeader roomId={roomId} sendMessage={sendMessage} />
       <Sidebar selectedTool={selectedTool} />
       <canvas ref={canvasRef} className='bg-black text-white' />
       <CanvasFooter />

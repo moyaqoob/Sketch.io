@@ -10,6 +10,7 @@ import { logger } from "../utils/logger";
 import { rooms, broadcastToRoom, isUserInRoom } from "../utils/roomManager";
 import { shapeSchema, type CanvasMessage } from "@repo/types";
 import { WebSocket } from "ws";
+import { clearRoomCanvas } from "@repo/database/src/services/canvasService";
 
 export const handleCanvasEvent = async (
   socket: WebSocket,
@@ -68,6 +69,7 @@ export const handleCanvasEvent = async (
 
       case "canvas:clear":
         logger.info(`User ${userId} cleared the canvas in room ${room}`);
+        clearRoomCanvas(room);
         broadcastToRoom(
           room,
           {

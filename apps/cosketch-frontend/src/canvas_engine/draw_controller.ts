@@ -895,6 +895,7 @@ export class DrawController {
   }
 
   public OnClearMessage() {
+    console.log('clearCanvas');
     this.existingShapes = [];
     this.clearCanvas();
   }
@@ -925,5 +926,10 @@ export class DrawController {
     this.context.closePath();
     this.context.fill();
     this.context.restore();
+  }
+
+  public cleanCanvas() {
+    this.existingShapes = [];
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 }

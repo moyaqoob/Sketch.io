@@ -21,6 +21,9 @@ import ToolbarButton from './toolbar-button';
 import Tooltip from './tooltip';
 import { Tool } from '@/type/tool';
 import { useToolStore } from '@/stores/tool.store';
+import ConfirmationDialog from '@/components/dialogbox/confirmation-dialog';
+import { CanvasMessage } from '@/hooks/useSocket';
+import { useCanvasEngineStore } from '@/stores/canvas.store';
 
 const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
   { icon: MousePointer, tool: 'Selection', id: 1, tooltip: 'Selection - 1' },
@@ -34,9 +37,30 @@ const tools: { icon: LucideIcon; tool: Tool; id: number; tooltip: string }[] = [
   { icon: Eraser, tool: 'Eraser', id: 9, tooltip: 'Eraser - 9' },
 ];
 
-const Toolbar: React.FC = () => {
+interface ToolbarProps {
+  roomId: string;
+  sendMessage: (message: CanvasMessage) => void;
+}
+
+const Toolbar: React.FC<ToolbarProps> = ({ sendMessage, roomId }) => {
   const [isLocked, setIsLocked] = useState(false);
   const { selectedTool, setSelectedTool } = useToolStore();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { canvasEngine } = useCanvasEngineStore();
+
+  const handleClick = () => {
+    setIsDialogOpen(true);
+  };
+
+  const confirmClear = () => {
+    sendMessage({ type: 'canvas:clear', room: roomId });
+    canvasEngine?.cleanCanvas();
+    setIsDialogOpen(false);
+  };
+
+  const cancelClear = () => {
+    setIsDialogOpen(false);
+  };
 
   const handleToolSelect = (tool: Tool) => {
     setSelectedTool(tool);
@@ -112,11 +136,22 @@ const Toolbar: React.FC = () => {
         <button
           className='hover:bg-light_background flex h-9 w-9 cursor-pointer items-center justify-center rounded p-2'
           aria-label='Clear canvas'
+          onClick={handleClick}
         >
           <Trash size={18} className='text-red-500' />
         </button>
         <Tooltip tooltip={'Clear Canvas'} />
       </div>
+
+      <ConfirmationDialog
+        isOpen={isDialogOpen}
+        title='Clear Canvas'
+        message='Are you sure you want to clear the canvas? This action cannot be undone.'
+        confirmText='Clear'
+        cancelText='Cancel'
+        onConfirm={confirmClear}
+        onCancel={cancelClear}
+      />
     </nav>
   );
 };
