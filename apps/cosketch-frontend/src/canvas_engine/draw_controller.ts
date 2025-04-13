@@ -36,6 +36,8 @@ export class DrawController {
   private paths: [number, number][] = [];
   private pressures: number[] = [];
   private isDrawingFreehand: boolean = false;
+  private textInput: HTMLInputElement | null = null;
+  private isTextInputActive: boolean = false;
 
   // Stroke style configurations
   private strokeStyles = {
@@ -141,6 +143,9 @@ export class DrawController {
    * Cleans up event listeners when the drawing engine is destroyed
    */
   destroy() {
+    if (this.textInput) {
+      this.textInput.remove();
+    }
     this.canvas.removeEventListener('pointerdown', this.pointerDownHandler);
     this.canvas.removeEventListener('pointermove', this.pointerMoveHandler);
     this.canvas.removeEventListener('pointerup', this.pointerUpHandler);
@@ -221,6 +226,11 @@ export class DrawController {
     this.x1 = event.clientX - rect.left;
     this.y1 = event.clientY - rect.top;
 
+    if (this.selectedTool === 'Text') {
+      this.startTextInput(event.clientX, event.clientY);
+      return;
+    }
+
     if (this.selectedTool === 'Eraser') {
       this.isErasing = true;
       this.eraseAtPoint(this.x1, this.y1);
@@ -235,6 +245,23 @@ export class DrawController {
     }
 
     if (this.selectedTool === 'Selection') {
+      // Check if clicking on text shape
+      const textShape = this.existingShapes.find(
+        shape =>
+          shape.type === 'Text' &&
+          this.x1 >= shape.x1 &&
+          this.x1 <= shape.x2 &&
+          this.y1 >= shape.y1 &&
+          this.y1 <= shape.y2,
+      );
+
+      if (textShape) {
+        this.selectionManager.setSelectedShape(textShape);
+        this.action = 'moving';
+        this.selectionManager.beginDrag();
+        return;
+      }
+
       // Check if clicking on rotation handle of the currently selected shape
       if (
         this.selectionManager.getSelectedShape() &&
@@ -335,7 +362,10 @@ export class DrawController {
       this.y2 = currentY;
       this.clearCanvas();
       this.previewShape();
-    } else if (this.action === 'moving') {
+    } else if (
+      this.action === 'moving' &&
+      this.selectionManager.getSelectedShape()
+    ) {
       const deltaX = currentX - this.x1;
       const deltaY = currentY - this.y1;
       this.selectionManager.updateDrag(deltaX, deltaY);
@@ -554,6 +584,21 @@ export class DrawController {
         this.context.closePath();
         this.context.fill();
         this.context.restore();
+      } else if (shape.type === 'Text' && shape.text) {
+        this.context.save();
+        this.context.font = '32px Caveat';
+        this.context.fillStyle = shape.options.strokeColor;
+        this.context.textBaseline = 'top';
+        this.context.textAlign = 'left';
+
+        // Add subtle shadow for better visibility
+        this.context.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        this.context.shadowBlur = 2;
+        this.context.shadowOffsetX = 1;
+        this.context.shadowOffsetY = 1;
+        this.context.fillText(shape.text, shape.x1, shape.y1);
+
+        this.context.restore();
       } else {
         // Generate drawable from shape data using the shape's own options
         const roughOptions = this.convertToRoughOptions(shape.options);
@@ -699,7 +744,7 @@ export class DrawController {
   /**
    * Sets the current drawing tool
    */
-  setSelectedTool(tool: Tool) {
+  public setSelectedTool(tool: Tool) {
     this.selectedTool = tool;
 
     // When switching to Selection tool, maintain current selection
@@ -710,14 +755,14 @@ export class DrawController {
     }
   }
 
-  getSelectedTool() {
+  public getSelectedTool() {
     return this.selectedTool;
   }
 
   /**
    * Sets the stroke style (solid, dashed, dotted)
    */
-  setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
+  public setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
     this.strokeStyle = style;
     this.updateSelectedShapeStyle();
   }
@@ -725,7 +770,7 @@ export class DrawController {
   /**
    * Sets the stroke width (thin, medium, thick)
    */
-  setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
+  public setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
     this.strokeWidth = width;
     this.updateSelectedShapeStyle();
   }
@@ -733,7 +778,7 @@ export class DrawController {
   /**
    * Sets the roughness level (none, normal, high)
    */
-  setRoughness(level: 'none' | 'normal' | 'high') {
+  public setRoughness(level: 'none' | 'normal' | 'high') {
     this.roughness = level;
     this.updateSelectedShapeStyle();
   }
@@ -741,7 +786,7 @@ export class DrawController {
   /**
    * Sets the fill style (hachure, solid, cross-hatch)
    */
-  setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
+  public setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
     this.fillStyle = style;
     this.updateSelectedShapeStyle();
   }
@@ -749,7 +794,7 @@ export class DrawController {
   /**
    * Sets the stroke color
    */
-  setStrokeColor(color: string) {
+  public setStrokeColor(color: string) {
     this.strokeColor = color;
     this.updateSelectedShapeStyle();
   }
@@ -757,7 +802,7 @@ export class DrawController {
   /**
    * Sets the fill color
    */
-  setFillColor(color: string) {
+  public setFillColor(color: string) {
     this.fillColor = color;
     this.updateSelectedShapeStyle();
   }
@@ -765,7 +810,7 @@ export class DrawController {
   /**
    * Gets all shapes on the canvas
    */
-  getAllShapes() {
+  public getAllShapes() {
     return this.existingShapes;
   }
 
@@ -818,7 +863,7 @@ export class DrawController {
   /**
    * Selects all shapes on the canvas (now just selects the top-most shape)
    */
-  selectAll() {
+  public selectAll() {
     if (this.existingShapes.length > 0) {
       // Just select the top-most shape (last in the array)
       const topShape = this.existingShapes[this.existingShapes.length - 1];
@@ -857,6 +902,16 @@ export class DrawController {
         });
 
         if (isErased) {
+          shapesToErase.push(shape);
+        } else {
+          remainingShapes.push(shape);
+        }
+      } else if (shape.type === 'Text') {
+        // Check if the eraser point is within the text bounds
+        const isWithinText =
+          x >= shape.x1 && x <= shape.x2 && y >= shape.y1 && y <= shape.y2;
+
+        if (isWithinText) {
           shapesToErase.push(shape);
         } else {
           remainingShapes.push(shape);
@@ -993,5 +1048,141 @@ export class DrawController {
   public cleanCanvas() {
     this.existingShapes = [];
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  private cleanupTextInput() {
+    if (!this.textInput) return;
+
+    // Store the reference to the text input
+    const textInput = this.textInput;
+
+    // Reset the state variables first
+    this.textInput = null;
+    this.isTextInputActive = false;
+
+    // Then try to remove the element if it still exists
+    try {
+      if (textInput.parentNode) {
+        textInput.remove();
+      }
+    } catch (error) {
+      console.warn('Error during text input cleanup:', error);
+    }
+  }
+
+  private startTextInput(x: number, y: number) {
+    // First, ensure any existing text input is properly cleaned up
+    this.cleanupTextInput();
+
+    // const rect =
+    this.canvas.getBoundingClientRect();
+    // const canvasX = x - rect.left;
+    // const canvasY = y - rect.top;
+
+    // Create new text input
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.style.position = 'absolute';
+    textInput.style.left = `${x}px`;
+    textInput.style.top = `${y}px`;
+    textInput.style.fontFamily = 'Shadows Into Light, cursive';
+    textInput.style.fontSize = '32px';
+    textInput.style.background = 'transparent';
+    textInput.style.border = 'none';
+    textInput.style.outline = 'none';
+    textInput.style.color = this.strokeColor;
+    textInput.style.padding = '4px 4px';
+    textInput.style.margin = '0';
+    textInput.style.width = 'auto';
+    textInput.style.minWidth = '100px';
+    textInput.style.zIndex = '1000';
+    textInput.style.cursor = 'text';
+    textInput.style.borderRadius = '4px';
+    textInput.style.transition = 'background-color 0.2s';
+    textInput.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+
+    // Add hover effect
+    textInput.addEventListener('mouseenter', () => {
+      textInput.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+    });
+    textInput.addEventListener('mouseleave', () => {
+      textInput.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+    });
+
+    // Add to canvas container first
+    const canvasContainer = this.canvas.parentElement;
+    if (!canvasContainer) return;
+
+    canvasContainer.appendChild(textInput);
+    this.textInput = textInput;
+    this.isTextInputActive = true;
+
+    // Add event listeners after the element is in the DOM
+    const handleBlur = () => {
+      if (textInput === this.textInput) {
+        this.finishTextInput(textInput);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (textInput === this.textInput) {
+          this.finishTextInput(textInput);
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        this.cleanupTextInput();
+        this.clearCanvas();
+      }
+    };
+
+    textInput.addEventListener('blur', handleBlur);
+    textInput.addEventListener('keydown', handleKeyDown);
+
+    // Focus after a small delay
+    setTimeout(() => {
+      if (textInput === this.textInput && textInput.parentNode) {
+        textInput.focus();
+      }
+    }, 0);
+  }
+
+  private finishTextInput(textInput: HTMLInputElement) {
+    // Only proceed if this is still the current text input
+    if (textInput !== this.textInput) return;
+
+    const text = textInput.value.trim();
+    if (text) {
+      const rect = textInput.getBoundingClientRect();
+      const canvasRect = this.canvas.getBoundingClientRect();
+
+      // Measure text width for more accurate sizing
+      this.context.save();
+      this.context.font = '32px Caveat';
+      const textWidth = this.context.measureText(text).width;
+      this.context.restore();
+
+      const newShape: Shape = {
+        id: cuid(),
+        type: 'Text',
+        x1: rect.left - canvasRect.left,
+        y1: rect.top - canvasRect.top,
+        x2: rect.left - canvasRect.left + textWidth,
+        y2: rect.bottom - canvasRect.top,
+        text: text,
+        options: this.getShapeOptions(),
+      };
+
+      this.existingShapes.push(newShape);
+      this.sendMessage({
+        type: 'canvas:draw',
+        room: this.roomId,
+        data: newShape,
+      });
+    }
+
+    this.cleanupTextInput();
+    this.clearCanvas();
   }
 }
