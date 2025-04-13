@@ -809,7 +809,7 @@ export class SelectionManager {
    * Shows resize cursors when over handles, move cursor when over shape
    */
   public updateCursor(x: number, y: number) {
-    if (!this.selectedShape) {
+    if (!this.selectedShape || this.selectedShape.type === 'Text') {
       this.canvas.style.cursor = 'default';
       return;
     }
