@@ -586,7 +586,7 @@ export class DrawController {
         this.context.restore();
       } else if (shape.type === 'Text' && shape.text) {
         this.context.save();
-        this.context.font = '32px Caveat';
+        this.context.font = '32px Comic Sans MS, cursive';
         this.context.fillStyle = shape.options.strokeColor;
         this.context.textBaseline = 'top';
         this.context.textAlign = 'left';
@@ -1085,7 +1085,7 @@ export class DrawController {
     textInput.style.position = 'absolute';
     textInput.style.left = `${x}px`;
     textInput.style.top = `${y}px`;
-    textInput.style.fontFamily = 'Shadows Into Light, cursive';
+    textInput.style.fontFamily = 'Comic Sans MS, cursive';
     textInput.style.fontSize = '32px';
     textInput.style.background = 'transparent';
     textInput.style.border = 'none';
@@ -1094,20 +1094,11 @@ export class DrawController {
     textInput.style.padding = '4px 4px';
     textInput.style.margin = '0';
     textInput.style.width = 'auto';
-    textInput.style.minWidth = '100px';
+    textInput.style.minWidth = '50px';
     textInput.style.zIndex = '1000';
     textInput.style.cursor = 'text';
     textInput.style.borderRadius = '4px';
     textInput.style.transition = 'background-color 0.2s';
-    textInput.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-
-    // Add hover effect
-    textInput.addEventListener('mouseenter', () => {
-      textInput.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-    });
-    textInput.addEventListener('mouseleave', () => {
-      textInput.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-    });
 
     // Add to canvas container first
     const canvasContainer = this.canvas.parentElement;
@@ -1159,7 +1150,7 @@ export class DrawController {
 
       // Measure text width for more accurate sizing
       this.context.save();
-      this.context.font = '32px Caveat';
+      this.context.font = '32px Comic Sans MS, cursive';
       const textWidth = this.context.measureText(text).width;
       this.context.restore();
 
