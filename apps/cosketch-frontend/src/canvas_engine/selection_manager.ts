@@ -81,31 +81,31 @@ export class SelectionManager {
    * Enhanced version of checking if a point is near a line segment
    * Uses improved distance calculation for better line selection experience
    */
-  private isPointNearLine(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    px: number,
-    py: number,
-  ): boolean {
-    const threshold = 8; // Increased threshold for easier selection
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const lengthSquared = dx * dx + dy * dy;
-    if (lengthSquared === 0) return false;
+  // private isPointNearLine(
+  //   x1: number,
+  //   y1: number,
+  //   x2: number,
+  //   y2: number,
+  //   px: number,
+  //   py: number,
+  // ): boolean {
+  //   const threshold = 8; // Increased threshold for easier selection
+  //   const dx = x2 - x1;
+  //   const dy = y2 - y1;
+  //   const lengthSquared = dx * dx + dy * dy;
+  //   if (lengthSquared === 0) return false;
 
-    // Calculate projection
-    const t = Math.max(
-      0,
-      Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lengthSquared),
-    );
-    const closestX = x1 + t * dx;
-    const closestY = y1 + t * dy;
-    const distance = Math.hypot(closestX - px, closestY - py);
+  //   // Calculate projection
+  //   const t = Math.max(
+  //     0,
+  //     Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lengthSquared),
+  //   );
+  //   const closestX = x1 + t * dx;
+  //   const closestY = y1 + t * dy;
+  //   const distance = Math.hypot(closestX - px, closestY - py);
 
-    return distance <= threshold;
-  }
+  //   return distance <= threshold;
+  // }
 
   /**
    * Returns the positions of all resize handles for a shape
@@ -235,7 +235,7 @@ export class SelectionManager {
    * Begin rotation of the selected shape
    */
   public beginRotation() {
-    if (!this.selectedShape) return;
+    if (!this.selectedShape || this.selectedShape.type === 'Text') return;
 
     this.isRotating = true;
     this.rotationCenter = {
@@ -533,6 +533,10 @@ export class SelectionManager {
    * Starts resizing a shape from a specific handle
    */
   public beginResize(handle: ResizeHandle) {
+    if (this.selectedShape && this.selectedShape.type === 'Text') {
+      // Don't allow resizing for Text shapes
+      return;
+    }
     this.isResizing = true;
     this.activeHandle = handle;
   }
@@ -659,6 +663,47 @@ export class SelectionManager {
         { x: maxX + padding, y: minY - padding }, // top-right
         { x: maxX + padding, y: maxY + padding }, // bottom-right
         { x: minX - padding, y: maxY + padding }, // bottom-left
+      ];
+
+      for (const pos of cornerHandles) {
+        this.context.beginPath();
+        this.context.rect(pos.x - 4, pos.y - 4, 8, 8);
+        this.context.fillStyle = '#625ee0';
+        this.context.fill();
+        this.context.strokeStyle = '#625ee0';
+        this.context.stroke();
+      }
+
+      this.context.restore();
+      return;
+    }
+
+    if (shape.type === 'Text') {
+      const { x1, y1, x2, y2 } = shape;
+      const padding = 8;
+
+      const width = x2 - x1;
+      const height = y2 - y1;
+
+      this.context.save();
+      this.context.strokeStyle = '#625ee0';
+      this.context.lineWidth = 1;
+      this.context.setLineDash([]);
+
+      // Draw bounding box with padding
+      this.context.strokeRect(
+        x1 - padding,
+        y1 - padding,
+        width + padding * 2,
+        height + padding * 2,
+      );
+
+      // Draw corner handles
+      const cornerHandles = [
+        { x: x1 - padding, y: y1 - padding }, // top-left
+        { x: x2 + padding, y: y1 - padding }, // top-right
+        { x: x2 + padding, y: y2 + padding }, // bottom-right
+        { x: x1 - padding, y: y2 + padding }, // bottom-left
       ];
 
       for (const pos of cornerHandles) {
