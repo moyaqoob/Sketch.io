@@ -34,6 +34,7 @@ export class DrawController {
   private selectedTool: Tool = 'Selection';
   private existingShapes: Shape[] = [];
   private paths: [number, number][] = [];
+  private pressures: number[] = [];
   private isDrawingFreehand: boolean = false;
 
   // Stroke style configurations
@@ -123,12 +124,14 @@ export class DrawController {
   }
 
   /**
-   * Sets up mouse and keyboard event handlers for drawing and selection
+   * Sets up pointer and keyboard event handlers for drawing and selection
    */
   private initHandlers() {
-    this.canvas.addEventListener('mousedown', this.mouseDownHandler);
-    this.canvas.addEventListener('mousemove', this.mouseMoveHandler);
-    this.canvas.addEventListener('mouseup', this.mouseUpHandler);
+    this.canvas.addEventListener('pointerdown', this.pointerDownHandler);
+    this.canvas.addEventListener('pointermove', this.pointerMoveHandler);
+    this.canvas.addEventListener('pointerup', this.pointerUpHandler);
+    this.canvas.addEventListener('pointercancel', this.pointerUpHandler);
+    this.canvas.addEventListener('pointerout', this.pointerUpHandler);
 
     // Add keyboard event listeners for modifier keys
     window.addEventListener('keydown', this.keyDownHandler);
@@ -138,9 +141,11 @@ export class DrawController {
    * Cleans up event listeners when the drawing engine is destroyed
    */
   destroy() {
-    this.canvas.removeEventListener('mousedown', this.mouseDownHandler);
-    this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
-    this.canvas.removeEventListener('mouseup', this.mouseUpHandler);
+    this.canvas.removeEventListener('pointerdown', this.pointerDownHandler);
+    this.canvas.removeEventListener('pointermove', this.pointerMoveHandler);
+    this.canvas.removeEventListener('pointerup', this.pointerUpHandler);
+    this.canvas.removeEventListener('pointercancel', this.pointerUpHandler);
+    this.canvas.removeEventListener('pointerout', this.pointerUpHandler);
 
     window.removeEventListener('keydown', this.keyDownHandler);
   }
@@ -209,9 +214,9 @@ export class DrawController {
   }
 
   /**
-   * Handles mouse down events for drawing and selection
+   * Handles pointer down events for drawing and selection
    */
-  private mouseDownHandler = (event: MouseEvent) => {
+  private pointerDownHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     this.x1 = event.clientX - rect.left;
     this.y1 = event.clientY - rect.top;
@@ -225,6 +230,7 @@ export class DrawController {
     if (this.selectedTool === 'Freehand') {
       this.isDrawingFreehand = true;
       this.paths = [[this.x1, this.y1]];
+      this.pressures = [event.pressure || 0.5];
       return;
     }
 
@@ -284,26 +290,38 @@ export class DrawController {
   };
 
   /**
-   * Handles mouse move events for drawing, moving, and resizing
+   * Handles pointer move events for drawing, moving, and resizing
    */
-  private mouseMoveHandler = (event: MouseEvent) => {
+  private pointerMoveHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     const currentX = event.clientX - rect.left;
     const currentY = event.clientY - rect.top;
 
-    if (this.selectedTool === 'Eraser' && this.isErasing) {
-      this.eraseAtPoint(currentX, currentY);
-      this.drawEraserCursor(currentX, currentY);
-      return;
-    } else if (this.selectedTool === 'Eraser') {
-      // Just show the cursor when hovering with eraser tool
-      this.clearCanvas();
-      this.drawEraserCursor(currentX, currentY);
+    // Only handle eraser if the pointer is actually over the canvas
+    if (this.selectedTool === 'Eraser') {
+      // Check if pointer is within canvas bounds
+      const isOverCanvas =
+        currentX >= 0 &&
+        currentX <= this.canvas.width &&
+        currentY >= 0 &&
+        currentY <= this.canvas.height;
+
+      if (isOverCanvas) {
+        if (this.isErasing) {
+          this.eraseAtPoint(currentX, currentY);
+        }
+        this.clearCanvas();
+        this.drawEraserCursor(currentX, currentY);
+      } else {
+        // If not over canvas, just clear any eraser cursor
+        this.clearCanvas();
+      }
       return;
     }
 
     if (this.selectedTool === 'Freehand' && this.isDrawingFreehand) {
       this.paths.push([currentX, currentY]);
+      this.pressures.push(event.pressure || 0.5);
       this.clearCanvas();
       this.drawFreehandPath();
       return;
@@ -342,11 +360,12 @@ export class DrawController {
   };
 
   /**
-   * Handles mouse up events to finalize drawing, moving, or resizing
+   * Handles pointer up events to finalize drawing, moving, or resizing
    */
-  private mouseUpHandler = (event: MouseEvent) => {
+  private pointerUpHandler = (event: PointerEvent) => {
     if (this.selectedTool === 'Eraser') {
       this.isErasing = false;
+      this.clearCanvas(); // Clear any remaining eraser cursor
       return;
     }
 
@@ -361,6 +380,7 @@ export class DrawController {
           x2: this.paths[this.paths.length - 1][0],
           y2: this.paths[this.paths.length - 1][1],
           paths: this.paths,
+          pressures: this.pressures,
           options: this.getShapeOptions(),
         };
 
@@ -372,6 +392,7 @@ export class DrawController {
         });
       }
       this.paths = [];
+      this.pressures = [];
       this.clearCanvas();
       return;
     }
@@ -490,10 +511,35 @@ export class DrawController {
         this.context.beginPath();
 
         const stroke = getStroke(shape.paths, {
-          size: this.strokeWidths[shape.options.strokeWidth] * 2,
-          thinning: 0.5,
+          size:
+            this.strokeWidths[shape.options.strokeWidth] *
+            3 *
+            (shape.pressures
+              ? 1 +
+                shape.pressures.reduce((a, b) => a + b, 0) /
+                  shape.pressures.length
+              : 1),
+          thinning:
+            0.5 +
+            (shape.pressures
+              ? (shape.pressures.reduce((a, b) => a + b, 0) /
+                  shape.pressures.length) *
+                0.5
+              : 0),
           smoothing: 0.5,
           streamline: 0.5,
+          simulatePressure: true,
+          easing: t => t,
+          start: {
+            taper: 0,
+            cap: true,
+            easing: t => t,
+          },
+          end: {
+            taper: 0,
+            cap: true,
+            easing: t => t,
+          },
         });
 
         for (let i = 0; i < stroke.length; i++) {
@@ -854,7 +900,7 @@ export class DrawController {
     this.context.save();
     this.context.strokeStyle = 'white';
     this.context.lineWidth = 1;
-    // this.context.setLineDash([3, 3]);
+    this.context.setLineDash([3, 3]); // Make the cursor more visible
     this.context.beginPath();
     this.context.arc(x, y, this.eraserSize / 2, 0, Math.PI * 2);
     this.context.stroke();
@@ -903,11 +949,27 @@ export class DrawController {
   private drawFreehandPath() {
     if (this.paths.length < 2) return;
 
+    // Calculate average pressure for the current stroke
+    const avgPressure =
+      this.pressures.reduce((a, b) => a + b, 0) / this.pressures.length;
+
     const stroke = getStroke(this.paths, {
-      size: this.strokeWidths[this.strokeWidth] * 2,
-      thinning: 0.5,
+      size: this.strokeWidths[this.strokeWidth] * 3 * (1 + avgPressure), // Reduced base size multiplier from 4 to 3
+      thinning: 0.5 + avgPressure * 0.5,
       smoothing: 0.5,
       streamline: 0.5,
+      simulatePressure: true,
+      easing: t => t,
+      start: {
+        taper: 0,
+        cap: true,
+        easing: t => t,
+      },
+      end: {
+        taper: 0,
+        cap: true,
+        easing: t => t,
+      },
     });
 
     this.context.save();
