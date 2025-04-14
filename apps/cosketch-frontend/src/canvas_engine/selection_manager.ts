@@ -57,109 +57,55 @@ export class SelectionManager {
    * Handles different shape types (Rectangle, Diamond, Ellipse, Line, Arrow)
    */
   private isPointInsideShape(shape: Shape, x: number, y: number): boolean {
-    // If shape is rotated, transform the point to un-rotated coordinates
-    let transformedX = x;
-    let transformedY = y;
-
-    if (shape.rotation) {
-      const centerX = (shape.x1 + shape.x2) / 2;
-      const centerY = (shape.y1 + shape.y2) / 2;
-
-      // Convert rotation from degrees to radians (in reverse direction)
-      const angleRad = -(shape.rotation * Math.PI) / 180;
-
-      // Translate point to origin (center of shape)
-      const translatedX = x - centerX;
-      const translatedY = y - centerY;
-
-      // Rotate point
-      transformedX =
-        centerX +
-        translatedX * Math.cos(angleRad) -
-        translatedY * Math.sin(angleRad);
-      transformedY =
-        centerY +
-        translatedX * Math.sin(angleRad) +
-        translatedY * Math.cos(angleRad);
+    if (shape.type === 'Freehand' && shape.paths) {
+      // For freehand shapes, check if any point is within a threshold
+      const threshold = 10; // Adjust this value to change selection sensitivity
+      return shape.paths.some(point => {
+        const distance = Math.sqrt(
+          Math.pow(point[0] - x, 2) + Math.pow(point[1] - y, 2),
+        );
+        return distance <= threshold;
+      });
     }
 
-    // Now use the transformed coordinates for hit detection
-    switch (shape.type) {
-      case 'Rectangle':
-        return (
-          transformedX >= Math.min(shape.x1, shape.x2) &&
-          transformedX <= Math.max(shape.x1, shape.x2) &&
-          transformedY >= Math.min(shape.y1, shape.y2) &&
-          transformedY <= Math.max(shape.y1, shape.y2)
-        );
-      case 'Diamond': {
-        const centerX = (shape.x1 + shape.x2) / 2;
-        const centerY = (shape.y1 + shape.y2) / 2;
-        const width = Math.abs(shape.x2 - shape.x1);
-        const height = Math.abs(shape.y2 - shape.y1);
+    // For other shapes, use the existing logic
+    const minX = Math.min(shape.x1, shape.x2);
+    const maxX = Math.max(shape.x1, shape.x2);
+    const minY = Math.min(shape.y1, shape.y2);
+    const maxY = Math.max(shape.y1, shape.y2);
 
-        // Diamond equation
-        return (
-          Math.abs(transformedX - centerX) / (width / 2) +
-            Math.abs(transformedY - centerY) / (height / 2) <=
-          1
-        );
-      }
-      case 'Ellipse': {
-        const cx = (shape.x1 + shape.x2) / 2;
-        const cy = (shape.y1 + shape.y2) / 2;
-        const rx = Math.abs(shape.x2 - shape.x1) / 2;
-        const ry = Math.abs(shape.y2 - shape.y1) / 2;
-        return (
-          (transformedX - cx) ** 2 / rx ** 2 +
-            (transformedY - cy) ** 2 / ry ** 2 <=
-          1
-        );
-      }
-      case 'Line':
-      case 'Arrow':
-        return this.isPointNearLine(
-          shape.x1,
-          shape.y1,
-          shape.x2,
-          shape.y2,
-          transformedX,
-          transformedY,
-        );
-      default:
-        return false;
-    }
+    return x >= minX && x <= maxX && y >= minY && y <= maxY;
   }
 
   /**
    * Enhanced version of checking if a point is near a line segment
    * Uses improved distance calculation for better line selection experience
    */
-  private isPointNearLine(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    px: number,
-    py: number,
-  ): boolean {
-    const threshold = 8; // Increased threshold for easier selection
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const lengthSquared = dx * dx + dy * dy;
-    if (lengthSquared === 0) return false;
+  // private isPointNearLine(
+  //   x1: number,
+  //   y1: number,
+  //   x2: number,
+  //   y2: number,
+  //   px: number,
+  //   py: number,
+  // ): boolean {
+  //   const threshold = 8; // Increased threshold for easier selection
+  //   const dx = x2 - x1;
+  //   const dy = y2 - y1;
+  //   const lengthSquared = dx * dx + dy * dy;
+  //   if (lengthSquared === 0) return false;
 
-    // Calculate projection
-    const t = Math.max(
-      0,
-      Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lengthSquared),
-    );
-    const closestX = x1 + t * dx;
-    const closestY = y1 + t * dy;
-    const distance = Math.hypot(closestX - px, closestY - py);
+  //   // Calculate projection
+  //   const t = Math.max(
+  //     0,
+  //     Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lengthSquared),
+  //   );
+  //   const closestX = x1 + t * dx;
+  //   const closestY = y1 + t * dy;
+  //   const distance = Math.hypot(closestX - px, closestY - py);
 
-    return distance <= threshold;
-  }
+  //   return distance <= threshold;
+  // }
 
   /**
    * Returns the positions of all resize handles for a shape
@@ -289,7 +235,7 @@ export class SelectionManager {
    * Begin rotation of the selected shape
    */
   public beginRotation() {
-    if (!this.selectedShape) return;
+    if (!this.selectedShape || this.selectedShape.type === 'Text') return;
 
     this.isRotating = true;
     this.rotationCenter = {
@@ -539,11 +485,25 @@ export class SelectionManager {
    */
   public updateDrag(deltaX: number, deltaY: number) {
     if (this.selectedShape && this.isDragging) {
-      // Move the selected shape
-      this.selectedShape.x1 += deltaX;
-      this.selectedShape.y1 += deltaY;
-      this.selectedShape.x2 += deltaX;
-      this.selectedShape.y2 += deltaY;
+      if (this.selectedShape.type === 'Freehand' && this.selectedShape.paths) {
+        // For freehand shapes, update all points in the path
+        this.selectedShape.paths = this.selectedShape.paths.map(point => [
+          point[0] + deltaX,
+          point[1] + deltaY,
+        ]);
+
+        // Update the shape's bounding box coordinates
+        this.selectedShape.x1 += deltaX;
+        this.selectedShape.y1 += deltaY;
+        this.selectedShape.x2 += deltaX;
+        this.selectedShape.y2 += deltaY;
+      } else {
+        // For other shapes, use the existing logic
+        this.selectedShape.x1 += deltaX;
+        this.selectedShape.y1 += deltaY;
+        this.selectedShape.x2 += deltaX;
+        this.selectedShape.y2 += deltaY;
+      }
 
       // Track total distance moved
       this.dragDistance += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -573,6 +533,10 @@ export class SelectionManager {
    * Starts resizing a shape from a specific handle
    */
   public beginResize(handle: ResizeHandle) {
+    if (this.selectedShape && this.selectedShape.type === 'Text') {
+      // Don't allow resizing for Text shapes
+      return;
+    }
     this.isResizing = true;
     this.activeHandle = handle;
   }
@@ -672,6 +636,90 @@ export class SelectionManager {
    * Enhanced version of drawing selection outline
    */
   public drawSelectionOutline(shape: Shape) {
+    if (shape.type === 'Freehand' && shape.paths) {
+      // For freehand shapes, draw a bounding box around the path
+      const minX = Math.min(...shape.paths.map(p => p[0]));
+      const maxX = Math.max(...shape.paths.map(p => p[0]));
+      const minY = Math.min(...shape.paths.map(p => p[1]));
+      const maxY = Math.max(...shape.paths.map(p => p[1]));
+
+      this.context.save();
+      this.context.strokeStyle = '#625ee0';
+      this.context.lineWidth = 1;
+      this.context.setLineDash([]);
+
+      // Draw selection rectangle with padding
+      const padding = 8;
+      this.context.strokeRect(
+        minX - padding,
+        minY - padding,
+        maxX - minX + padding * 2,
+        maxY - minY + padding * 2,
+      );
+
+      // Draw corner handles
+      const cornerHandles = [
+        { x: minX - padding, y: minY - padding }, // top-left
+        { x: maxX + padding, y: minY - padding }, // top-right
+        { x: maxX + padding, y: maxY + padding }, // bottom-right
+        { x: minX - padding, y: maxY + padding }, // bottom-left
+      ];
+
+      for (const pos of cornerHandles) {
+        this.context.beginPath();
+        this.context.rect(pos.x - 4, pos.y - 4, 8, 8);
+        this.context.fillStyle = '#625ee0';
+        this.context.fill();
+        this.context.strokeStyle = '#625ee0';
+        this.context.stroke();
+      }
+
+      this.context.restore();
+      return;
+    }
+
+    if (shape.type === 'Text') {
+      const { x1, y1, x2, y2 } = shape;
+      const padding = 8;
+
+      const width = x2 - x1;
+      const height = y2 - y1;
+
+      this.context.save();
+      this.context.strokeStyle = '#625ee0';
+      this.context.lineWidth = 1;
+      this.context.setLineDash([]);
+
+      // Draw bounding box with padding
+      this.context.strokeRect(
+        x1 - padding,
+        y1 - padding,
+        width + padding * 2,
+        height + padding * 2,
+      );
+
+      // Draw corner handles
+      const cornerHandles = [
+        { x: x1 - padding, y: y1 - padding }, // top-left
+        { x: x2 + padding, y: y1 - padding }, // top-right
+        { x: x2 + padding, y: y2 + padding }, // bottom-right
+        { x: x1 - padding, y: y2 + padding }, // bottom-left
+      ];
+
+      for (const pos of cornerHandles) {
+        this.context.beginPath();
+        this.context.rect(pos.x - 4, pos.y - 4, 8, 8);
+        this.context.fillStyle = '#625ee0';
+        this.context.fill();
+        this.context.strokeStyle = '#625ee0';
+        this.context.stroke();
+      }
+
+      this.context.restore();
+      return;
+    }
+
+    // Existing code for other shapes
     const { x1, y1, x2, y2 } = shape;
     const minX = Math.min(x1, x2);
     const minY = Math.min(y1, y2);
@@ -761,7 +809,7 @@ export class SelectionManager {
    * Shows resize cursors when over handles, move cursor when over shape
    */
   public updateCursor(x: number, y: number) {
-    if (!this.selectedShape) {
+    if (!this.selectedShape || this.selectedShape.type === 'Text') {
       this.canvas.style.cursor = 'default';
       return;
     }

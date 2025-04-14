@@ -1,7 +1,11 @@
 import { WebSocketServer } from "ws";
 import { authenticateWebSocket } from "../services/auth";
 import { getToken } from "../services/getToken";
-import { handleRoomEvent, removeUserFromRoom } from "./roomHandler";
+import {
+  handleRoomEvent,
+  removeUserFromRoom,
+  handleUserDisconnect,
+} from "./roomHandler";
 import { handleCanvasEvent } from "./canvasHandler";
 import { logger } from "../utils/logger";
 import { PORT } from "../config";
@@ -28,6 +32,7 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
     const userId = userAuthenticated.id;
     logger.info(`User ${userId} connected`);
 
+    // Handle incoming messages
     socket.on("message", (data) => {
       try {
         const message = JSON.parse(data.toString());
@@ -53,15 +58,10 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
       }
     });
 
+    // Handle disconnection
     socket.on("close", () => {
       logger.info(`User ${userId} disconnected`);
-
-      for (const room in rooms) {
-        if (isUserInRoom(socket, room)) {
-          removeUserFromRoom(socket, room, userId, false);
-          logger.info(`User ${userId} removed from room ${room}`);
-        }
-      }
+      handleUserDisconnect(socket, userId); // uses userId to fully clean up rooms
     });
   });
 

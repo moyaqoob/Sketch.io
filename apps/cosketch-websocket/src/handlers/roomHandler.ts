@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { logger } from "../utils/logger";
-import { deleteUserCanvasInRoom, getRoomIfExists } from "@repo/database";
+import { deleteUserCanvasInRoom } from "@repo/database";
 import {
   addUserToRoom,
   isUserInRoom,
@@ -18,11 +18,6 @@ export const handleRoomEvent = async (
 
   switch (type) {
     case "room:join":
-      // const existingRoom = await getRoomIfExists(room);
-      // if (!existingRoom) {
-      //   logger.warn(`Room ${room} does not exist in the database.`);
-      //   return;
-      // }
       if (!isUserInRoom(socket, room)) {
         addUserToRoom(socket, room);
         logger.info(`User ${userId} joined room ${room}`);
@@ -38,27 +33,29 @@ export const handleRoomEvent = async (
       break;
 
     case "room:leave":
-      removeUserFromRoom(socket, room, userId, true);
+      if (rooms[room] && isUserInRoom(socket, room)) {
+        await removeUserFromRoom(socket, room, userId, false);
+      }
       break;
   }
 };
 
-// Option 1: Handle Normal Disconnect (Keep Canvas)
+// Handle Disconnect (Keep Canvas)
 export const handleUserDisconnect = (socket: WebSocket, userId: string) => {
   for (const room in rooms) {
-    if (isUserInRoom(socket, room)) {
+    if (rooms[room] && isUserInRoom(socket, room)) {
       removeUserFromRoom(socket, room, userId, false);
     }
   }
 };
 
-// Option 2: Full Leave (Remove User + Canvas)
+// Full Leave (Remove User + Canvas)
 export const handleUserLeaveCompletely = async (
   socket: WebSocket,
   userId: string
 ) => {
   for (const room in rooms) {
-    if (isUserInRoom(socket, room)) {
+    if (rooms[room] && isUserInRoom(socket, room)) {
       await removeUserFromRoom(socket, room, userId, true);
     }
   }
@@ -71,36 +68,48 @@ export const removeUserFromRoom = async (
   userId: string,
   removeCanvas: boolean
 ) => {
-  if (!rooms[room]) {
-    logger.warn(`User ${userId} tried to leave non-existent room: ${room}`);
-    socket.send(
-      JSON.stringify({ type: "error", message: "Room does not exist." })
+  if (!rooms[room] || !isUserInRoom(socket, room)) {
+    logger.warn(
+      `User ${userId} tried to leave room ${room}, but either room does not exist or user not in room.`
     );
     return;
   }
 
-  removeUser(socket, room);
-  logger.info(`User ${userId} left room ${room}`);
+  try {
+    removeUser(socket, room);
+    console.log(rooms[room]?.size);
 
-  if (removeCanvas) {
-    try {
-      const response = await deleteUserCanvasInRoom(room, userId);
-      if (response) {
-        logger.info(`User ${userId}'s canvas removed from room ${room}`);
-      } else {
-        logger.warn(`No canvas found for user ${userId} in room ${room}`);
+    const roomSize = rooms[room]?.size || 0;
+    logger.info(
+      `User ${userId} left room ${room}. Remaining users: ${roomSize}`
+    );
+
+    if (removeCanvas) {
+      try {
+        const response = await deleteUserCanvasInRoom(room, userId);
+        if (response) {
+          logger.info(`User ${userId}'s canvas removed from room ${room}`);
+        } else {
+          logger.warn(`No canvas found for user ${userId} in room ${room}`);
+        }
+      } catch (error) {
+        logger.error(`Failed to remove canvas for user ${userId}:`, error);
       }
-    } catch (error) {
-      logger.error(`Failed to remove canvas for user ${userId}:`, error);
+    }
+  } catch (err) {
+    logger.error(`Error while removing user ${userId} from room ${room}:`, err);
+  } finally {
+    if (rooms[room]) {
+      cleanupRoom(room, socket);
     }
   }
-
-  cleanupRoom(room, socket);
 };
 
 // Remove Room if Empty
 const cleanupRoom = (room: string, socket: WebSocket) => {
-  if (rooms[room] && rooms[room].size === 0) {
+  const userCount = rooms[room]?.size || 0;
+
+  if (userCount === 0) {
     delete rooms[room];
     logger.info(`Room ${room} deleted (no users left).`);
   } else {

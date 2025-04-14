@@ -9,6 +9,7 @@ import { getExistingShapes } from '@/api/canvas';
 import { Eraser } from './eraser';
 import type { Shape, ShapeOptions } from '@repo/types';
 import { CanvasMessage } from '@/hooks/useSocket';
+import { getStroke } from 'perfect-freehand';
 
 /**
  * Main drawing engine that handles shape creation, manipulation, and rendering
@@ -32,6 +33,11 @@ export class DrawController {
 
   private selectedTool: Tool = 'Selection';
   private existingShapes: Shape[] = [];
+  private paths: [number, number][] = [];
+  private pressures: number[] = [];
+  private isDrawingFreehand: boolean = false;
+  private textInput: HTMLInputElement | null = null;
+  private isTextInputActive: boolean = false;
 
   // Stroke style configurations
   private strokeStyles = {
@@ -120,12 +126,14 @@ export class DrawController {
   }
 
   /**
-   * Sets up mouse and keyboard event handlers for drawing and selection
+   * Sets up pointer and keyboard event handlers for drawing and selection
    */
   private initHandlers() {
-    this.canvas.addEventListener('mousedown', this.mouseDownHandler);
-    this.canvas.addEventListener('mousemove', this.mouseMoveHandler);
-    this.canvas.addEventListener('mouseup', this.mouseUpHandler);
+    this.canvas.addEventListener('pointerdown', this.pointerDownHandler);
+    this.canvas.addEventListener('pointermove', this.pointerMoveHandler);
+    this.canvas.addEventListener('pointerup', this.pointerUpHandler);
+    this.canvas.addEventListener('pointercancel', this.pointerUpHandler);
+    this.canvas.addEventListener('pointerout', this.pointerUpHandler);
 
     // Add keyboard event listeners for modifier keys
     window.addEventListener('keydown', this.keyDownHandler);
@@ -135,9 +143,14 @@ export class DrawController {
    * Cleans up event listeners when the drawing engine is destroyed
    */
   destroy() {
-    this.canvas.removeEventListener('mousedown', this.mouseDownHandler);
-    this.canvas.removeEventListener('mousemove', this.mouseMoveHandler);
-    this.canvas.removeEventListener('mouseup', this.mouseUpHandler);
+    if (this.textInput) {
+      this.textInput.remove();
+    }
+    this.canvas.removeEventListener('pointerdown', this.pointerDownHandler);
+    this.canvas.removeEventListener('pointermove', this.pointerMoveHandler);
+    this.canvas.removeEventListener('pointerup', this.pointerUpHandler);
+    this.canvas.removeEventListener('pointercancel', this.pointerUpHandler);
+    this.canvas.removeEventListener('pointerout', this.pointerUpHandler);
 
     window.removeEventListener('keydown', this.keyDownHandler);
   }
@@ -206,12 +219,17 @@ export class DrawController {
   }
 
   /**
-   * Handles mouse down events for drawing and selection
+   * Handles pointer down events for drawing and selection
    */
-  private mouseDownHandler = (event: MouseEvent) => {
+  private pointerDownHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     this.x1 = event.clientX - rect.left;
     this.y1 = event.clientY - rect.top;
+
+    if (this.selectedTool === 'Text') {
+      this.startTextInput(event.clientX, event.clientY);
+      return;
+    }
 
     if (this.selectedTool === 'Eraser') {
       this.isErasing = true;
@@ -219,7 +237,31 @@ export class DrawController {
       return;
     }
 
+    if (this.selectedTool === 'Freehand') {
+      this.isDrawingFreehand = true;
+      this.paths = [[this.x1, this.y1]];
+      this.pressures = [event.pressure || 0.5];
+      return;
+    }
+
     if (this.selectedTool === 'Selection') {
+      // Check if clicking on text shape
+      const textShape = this.existingShapes.find(
+        shape =>
+          shape.type === 'Text' &&
+          this.x1 >= shape.x1 &&
+          this.x1 <= shape.x2 &&
+          this.y1 >= shape.y1 &&
+          this.y1 <= shape.y2,
+      );
+
+      if (textShape) {
+        this.selectionManager.setSelectedShape(textShape);
+        this.action = 'moving';
+        this.selectionManager.beginDrag();
+        return;
+      }
+
       // Check if clicking on rotation handle of the currently selected shape
       if (
         this.selectionManager.getSelectedShape() &&
@@ -275,21 +317,40 @@ export class DrawController {
   };
 
   /**
-   * Handles mouse move events for drawing, moving, and resizing
+   * Handles pointer move events for drawing, moving, and resizing
    */
-  private mouseMoveHandler = (event: MouseEvent) => {
+  private pointerMoveHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     const currentX = event.clientX - rect.left;
     const currentY = event.clientY - rect.top;
 
-    if (this.selectedTool === 'Eraser' && this.isErasing) {
-      this.eraseAtPoint(currentX, currentY);
-      this.drawEraserCursor(currentX, currentY);
+    // Only handle eraser if the pointer is actually over the canvas
+    if (this.selectedTool === 'Eraser') {
+      // Check if pointer is within canvas bounds
+      const isOverCanvas =
+        currentX >= 0 &&
+        currentX <= this.canvas.width &&
+        currentY >= 0 &&
+        currentY <= this.canvas.height;
+
+      if (isOverCanvas) {
+        if (this.isErasing) {
+          this.eraseAtPoint(currentX, currentY);
+        }
+        this.clearCanvas();
+        this.drawEraserCursor(currentX, currentY);
+      } else {
+        // If not over canvas, just clear any eraser cursor
+        this.clearCanvas();
+      }
       return;
-    } else if (this.selectedTool === 'Eraser') {
-      // Just show the cursor when hovering with eraser tool
+    }
+
+    if (this.selectedTool === 'Freehand' && this.isDrawingFreehand) {
+      this.paths.push([currentX, currentY]);
+      this.pressures.push(event.pressure || 0.5);
       this.clearCanvas();
-      this.drawEraserCursor(currentX, currentY);
+      this.drawFreehandPath();
       return;
     }
 
@@ -301,7 +362,10 @@ export class DrawController {
       this.y2 = currentY;
       this.clearCanvas();
       this.previewShape();
-    } else if (this.action === 'moving') {
+    } else if (
+      this.action === 'moving' &&
+      this.selectionManager.getSelectedShape()
+    ) {
       const deltaX = currentX - this.x1;
       const deltaY = currentY - this.y1;
       this.selectionManager.updateDrag(deltaX, deltaY);
@@ -326,11 +390,40 @@ export class DrawController {
   };
 
   /**
-   * Handles mouse up events to finalize drawing, moving, or resizing
+   * Handles pointer up events to finalize drawing, moving, or resizing
    */
-  private mouseUpHandler = (event: MouseEvent) => {
+  private pointerUpHandler = (event: PointerEvent) => {
     if (this.selectedTool === 'Eraser') {
       this.isErasing = false;
+      this.clearCanvas(); // Clear any remaining eraser cursor
+      return;
+    }
+
+    if (this.selectedTool === 'Freehand' && this.isDrawingFreehand) {
+      this.isDrawingFreehand = false;
+      if (this.paths.length > 1) {
+        const newShape: Shape = {
+          id: cuid(),
+          type: 'Freehand',
+          x1: this.paths[0][0],
+          y1: this.paths[0][1],
+          x2: this.paths[this.paths.length - 1][0],
+          y2: this.paths[this.paths.length - 1][1],
+          paths: this.paths,
+          pressures: this.pressures,
+          options: this.getShapeOptions(),
+        };
+
+        this.existingShapes.push(newShape);
+        this.sendMessage({
+          type: 'canvas:draw',
+          room: this.roomId,
+          data: newShape,
+        });
+      }
+      this.paths = [];
+      this.pressures = [];
+      this.clearCanvas();
       return;
     }
 
@@ -340,10 +433,34 @@ export class DrawController {
       this.y2 = event.clientY - rect.top;
       this.drawShape();
     } else if (this.action === 'moving') {
+      const selectedShape = this.selectionManager.getSelectedShape();
+      if (selectedShape) {
+        this.sendMessage({
+          type: 'canvas:update',
+          room: this.roomId,
+          data: selectedShape,
+        });
+      }
       this.selectionManager.endDrag();
     } else if (this.action === 'resizing') {
+      const selectedShape = this.selectionManager.getSelectedShape();
+      if (selectedShape) {
+        this.sendMessage({
+          type: 'canvas:update',
+          room: this.roomId,
+          data: selectedShape,
+        });
+      }
       this.selectionManager.endResize();
     } else if (this.action === 'rotating') {
+      const selectedShape = this.selectionManager.getSelectedShape();
+      if (selectedShape) {
+        this.sendMessage({
+          type: 'canvas:update',
+          room: this.roomId,
+          data: selectedShape,
+        });
+      }
       this.selectionManager.endRotation();
     } else if (this.action === 'marquee-selecting') {
       this.selectionManager.completeMarqueeSelection(this.existingShapes);
@@ -418,29 +535,98 @@ export class DrawController {
    */
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
-      // Generate drawable from shape data using the shape's own options
-      const roughOptions = this.convertToRoughOptions(shape.options);
-      const drawable = this.generateDrawableFromShapeData(shape, roughOptions);
-
-      // Apply rotation if needed
-      if (shape.rotation) {
+      if (shape.type === 'Freehand' && shape.paths) {
         this.context.save();
-        const centerX = (shape.x1 + shape.x2) / 2;
-        const centerY = (shape.y1 + shape.y2) / 2;
-        this.context.translate(centerX, centerY);
-        this.context.rotate((shape.rotation * Math.PI) / 180);
-        this.context.translate(-centerX, -centerY);
-      }
+        this.context.fillStyle = shape.options.strokeColor;
+        this.context.beginPath();
 
-      // Draw the shape
-      if (Array.isArray(drawable)) {
-        drawable.forEach(d => this.rc.draw(d));
-      } else if (drawable) {
-        this.rc.draw(drawable);
-      }
+        const stroke = getStroke(shape.paths, {
+          size:
+            this.strokeWidths[shape.options.strokeWidth] *
+            3 *
+            (shape.pressures
+              ? 1 +
+                shape.pressures.reduce((a, b) => a + b, 0) /
+                  shape.pressures.length
+              : 1),
+          thinning:
+            0.5 +
+            (shape.pressures
+              ? (shape.pressures.reduce((a, b) => a + b, 0) /
+                  shape.pressures.length) *
+                0.5
+              : 0),
+          smoothing: 0.5,
+          streamline: 0.5,
+          simulatePressure: true,
+          easing: t => t,
+          start: {
+            taper: 0,
+            cap: true,
+            easing: t => t,
+          },
+          end: {
+            taper: 0,
+            cap: true,
+            easing: t => t,
+          },
+        });
 
-      if (shape.rotation) {
+        for (let i = 0; i < stroke.length; i++) {
+          const [x, y] = stroke[i];
+          if (i === 0) {
+            this.context.moveTo(x, y);
+          } else {
+            this.context.lineTo(x, y);
+          }
+        }
+
+        this.context.closePath();
+        this.context.fill();
         this.context.restore();
+      } else if (shape.type === 'Text' && shape.text) {
+        this.context.save();
+        this.context.font = '32px Comic Sans MS, cursive';
+        this.context.fillStyle = shape.options.strokeColor;
+        this.context.textBaseline = 'top';
+        this.context.textAlign = 'left';
+
+        // Add subtle shadow for better visibility
+        this.context.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        this.context.shadowBlur = 2;
+        this.context.shadowOffsetX = 1;
+        this.context.shadowOffsetY = 1;
+        this.context.fillText(shape.text, shape.x1, shape.y1);
+
+        this.context.restore();
+      } else {
+        // Generate drawable from shape data using the shape's own options
+        const roughOptions = this.convertToRoughOptions(shape.options);
+        const drawable = this.generateDrawableFromShapeData(
+          shape,
+          roughOptions,
+        );
+
+        // Apply rotation if needed
+        if (shape.rotation) {
+          this.context.save();
+          const centerX = (shape.x1 + shape.x2) / 2;
+          const centerY = (shape.y1 + shape.y2) / 2;
+          this.context.translate(centerX, centerY);
+          this.context.rotate((shape.rotation * Math.PI) / 180);
+          this.context.translate(-centerX, -centerY);
+        }
+
+        // Draw the shape
+        if (Array.isArray(drawable)) {
+          drawable.forEach(d => this.rc.draw(d));
+        } else if (drawable) {
+          this.rc.draw(drawable);
+        }
+
+        if (shape.rotation) {
+          this.context.restore();
+        }
       }
     });
   }
@@ -558,7 +744,7 @@ export class DrawController {
   /**
    * Sets the current drawing tool
    */
-  setSelectedTool(tool: Tool) {
+  public setSelectedTool(tool: Tool) {
     this.selectedTool = tool;
 
     // When switching to Selection tool, maintain current selection
@@ -569,14 +755,14 @@ export class DrawController {
     }
   }
 
-  getSelectedTool() {
+  public getSelectedTool() {
     return this.selectedTool;
   }
 
   /**
    * Sets the stroke style (solid, dashed, dotted)
    */
-  setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
+  public setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
     this.strokeStyle = style;
     this.updateSelectedShapeStyle();
   }
@@ -584,7 +770,7 @@ export class DrawController {
   /**
    * Sets the stroke width (thin, medium, thick)
    */
-  setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
+  public setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
     this.strokeWidth = width;
     this.updateSelectedShapeStyle();
   }
@@ -592,7 +778,7 @@ export class DrawController {
   /**
    * Sets the roughness level (none, normal, high)
    */
-  setRoughness(level: 'none' | 'normal' | 'high') {
+  public setRoughness(level: 'none' | 'normal' | 'high') {
     this.roughness = level;
     this.updateSelectedShapeStyle();
   }
@@ -600,7 +786,7 @@ export class DrawController {
   /**
    * Sets the fill style (hachure, solid, cross-hatch)
    */
-  setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
+  public setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
     this.fillStyle = style;
     this.updateSelectedShapeStyle();
   }
@@ -608,7 +794,7 @@ export class DrawController {
   /**
    * Sets the stroke color
    */
-  setStrokeColor(color: string) {
+  public setStrokeColor(color: string) {
     this.strokeColor = color;
     this.updateSelectedShapeStyle();
   }
@@ -616,7 +802,7 @@ export class DrawController {
   /**
    * Sets the fill color
    */
-  setFillColor(color: string) {
+  public setFillColor(color: string) {
     this.fillColor = color;
     this.updateSelectedShapeStyle();
   }
@@ -624,7 +810,7 @@ export class DrawController {
   /**
    * Gets all shapes on the canvas
    */
-  getAllShapes() {
+  public getAllShapes() {
     return this.existingShapes;
   }
 
@@ -677,7 +863,7 @@ export class DrawController {
   /**
    * Selects all shapes on the canvas (now just selects the top-most shape)
    */
-  selectAll() {
+  public selectAll() {
     if (this.existingShapes.length > 0) {
       // Just select the top-most shape (last in the array)
       const topShape = this.existingShapes[this.existingShapes.length - 1];
@@ -701,8 +887,62 @@ export class DrawController {
     );
     this.eraser.setEraserSize(this.eraserSize);
 
-    // Perform erase operation
-    this.existingShapes = this.eraser.erase(x, y);
+    // Check each shape to see if it intersects with the eraser
+    const shapesToErase: Shape[] = [];
+    const remainingShapes: Shape[] = [];
+
+    this.existingShapes.forEach(shape => {
+      if (shape.type === 'Freehand' && shape.paths) {
+        // For freehand shapes, check if any point is within eraser radius
+        const isErased = shape.paths.some(point => {
+          const distance = Math.sqrt(
+            Math.pow(point[0] - x, 2) + Math.pow(point[1] - y, 2),
+          );
+          return distance <= this.eraserSize / 2;
+        });
+
+        if (isErased) {
+          shapesToErase.push(shape);
+        } else {
+          remainingShapes.push(shape);
+        }
+      } else if (shape.type === 'Text') {
+        // Check if the eraser point is within the text bounds
+        const isWithinText =
+          x >= shape.x1 && x <= shape.x2 && y >= shape.y1 && y <= shape.y2;
+
+        if (isWithinText) {
+          shapesToErase.push(shape);
+        } else {
+          remainingShapes.push(shape);
+        }
+      } else {
+        // For other shapes, use the existing eraser logic
+        const currentEraser = this.eraser;
+        if (currentEraser) {
+          const erasedShapes = currentEraser.erase(x, y);
+          const isErased = !erasedShapes.some(erased => erased.id === shape.id);
+
+          if (isErased) {
+            shapesToErase.push(shape);
+          } else {
+            remainingShapes.push(shape);
+          }
+        }
+      }
+    });
+
+    // Send erase messages for each erased shape
+    shapesToErase.forEach(shape => {
+      this.sendMessage({
+        type: 'canvas:erase',
+        room: this.roomId,
+        shapeId: shape.id,
+      });
+    });
+
+    // Update existing shapes
+    this.existingShapes = remainingShapes;
 
     // Redraw canvas
     this.clearCanvas();
@@ -715,7 +955,7 @@ export class DrawController {
     this.context.save();
     this.context.strokeStyle = 'white';
     this.context.lineWidth = 1;
-    // this.context.setLineDash([3, 3]);
+    this.context.setLineDash([3, 3]); // Make the cursor more visible
     this.context.beginPath();
     this.context.arc(x, y, this.eraserSize / 2, 0, Math.PI * 2);
     this.context.stroke();
@@ -756,7 +996,184 @@ export class DrawController {
   }
 
   public OnClearMessage() {
+    console.log('clearCanvas');
     this.existingShapes = [];
+    this.clearCanvas();
+  }
+
+  private drawFreehandPath() {
+    if (this.paths.length < 2) return;
+
+    // Calculate average pressure for the current stroke
+    const avgPressure =
+      this.pressures.reduce((a, b) => a + b, 0) / this.pressures.length;
+
+    const stroke = getStroke(this.paths, {
+      size: this.strokeWidths[this.strokeWidth] * 3 * (1 + avgPressure), // Reduced base size multiplier from 4 to 3
+      thinning: 0.5 + avgPressure * 0.5,
+      smoothing: 0.5,
+      streamline: 0.5,
+      simulatePressure: true,
+      easing: t => t,
+      start: {
+        taper: 0,
+        cap: true,
+        easing: t => t,
+      },
+      end: {
+        taper: 0,
+        cap: true,
+        easing: t => t,
+      },
+    });
+
+    this.context.save();
+    this.context.fillStyle = this.strokeColor;
+    this.context.beginPath();
+
+    for (let i = 0; i < stroke.length; i++) {
+      const [x, y] = stroke[i];
+      if (i === 0) {
+        this.context.moveTo(x, y);
+      } else {
+        this.context.lineTo(x, y);
+      }
+    }
+
+    this.context.closePath();
+    this.context.fill();
+    this.context.restore();
+  }
+
+  public cleanCanvas() {
+    this.existingShapes = [];
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  private cleanupTextInput() {
+    if (!this.textInput) return;
+
+    // Store the reference to the text input
+    const textInput = this.textInput;
+
+    // Reset the state variables first
+    this.textInput = null;
+    this.isTextInputActive = false;
+
+    // Then try to remove the element if it still exists
+    try {
+      if (textInput.parentNode) {
+        textInput.remove();
+      }
+    } catch (error) {
+      console.warn('Error during text input cleanup:', error);
+    }
+  }
+
+  private startTextInput(x: number, y: number) {
+    // First, ensure any existing text input is properly cleaned up
+    this.cleanupTextInput();
+
+    // const rect =
+    this.canvas.getBoundingClientRect();
+    // const canvasX = x - rect.left;
+    // const canvasY = y - rect.top;
+
+    // Create new text input
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.style.position = 'absolute';
+    textInput.style.left = `${x}px`;
+    textInput.style.top = `${y}px`;
+    textInput.style.fontFamily = 'Comic Sans MS, cursive';
+    textInput.style.fontSize = '32px';
+    textInput.style.background = 'transparent';
+    textInput.style.border = 'none';
+    textInput.style.outline = 'none';
+    textInput.style.color = this.strokeColor;
+    textInput.style.padding = '4px 4px';
+    textInput.style.margin = '0';
+    textInput.style.width = 'auto';
+    textInput.style.minWidth = '50px';
+    textInput.style.zIndex = '1000';
+    textInput.style.cursor = 'text';
+    textInput.style.borderRadius = '4px';
+    textInput.style.transition = 'background-color 0.2s';
+
+    // Add to canvas container first
+    const canvasContainer = this.canvas.parentElement;
+    if (!canvasContainer) return;
+
+    canvasContainer.appendChild(textInput);
+    this.textInput = textInput;
+    this.isTextInputActive = true;
+
+    // Add event listeners after the element is in the DOM
+    const handleBlur = () => {
+      if (textInput === this.textInput) {
+        this.finishTextInput(textInput);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (textInput === this.textInput) {
+          this.finishTextInput(textInput);
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        this.cleanupTextInput();
+        this.clearCanvas();
+      }
+    };
+
+    textInput.addEventListener('blur', handleBlur);
+    textInput.addEventListener('keydown', handleKeyDown);
+
+    // Focus after a small delay
+    setTimeout(() => {
+      if (textInput === this.textInput && textInput.parentNode) {
+        textInput.focus();
+      }
+    }, 0);
+  }
+
+  private finishTextInput(textInput: HTMLInputElement) {
+    // Only proceed if this is still the current text input
+    if (textInput !== this.textInput) return;
+
+    const text = textInput.value.trim();
+    if (text) {
+      const rect = textInput.getBoundingClientRect();
+      const canvasRect = this.canvas.getBoundingClientRect();
+
+      // Measure text width for more accurate sizing
+      this.context.save();
+      this.context.font = '32px Comic Sans MS, cursive';
+      const textWidth = this.context.measureText(text).width;
+      this.context.restore();
+
+      const newShape: Shape = {
+        id: cuid(),
+        type: 'Text',
+        x1: rect.left - canvasRect.left,
+        y1: rect.top - canvasRect.top,
+        x2: rect.left - canvasRect.left + textWidth,
+        y2: rect.bottom - canvasRect.top,
+        text: text,
+        options: this.getShapeOptions(),
+      };
+
+      this.existingShapes.push(newShape);
+      this.sendMessage({
+        type: 'canvas:draw',
+        room: this.roomId,
+        data: newShape,
+      });
+    }
+
+    this.cleanupTextInput();
     this.clearCanvas();
   }
 }
