@@ -77,7 +77,6 @@ export const removeUserFromRoom = async (
 
   try {
     removeUser(socket, room);
-    console.log(rooms[room]?.size);
 
     const roomSize = rooms[room]?.size || 0;
     logger.info(

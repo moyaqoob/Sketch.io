@@ -54,7 +54,9 @@ const VideoSection = () => {
             loop
             playsInline
             onCanPlay={() => {
+              videoRef.current;
               if (videoRef.current?.paused) {
+                videoRef.current.playbackRate = 2;
                 requestAnimationFrame(() => {
                   videoRef.current
                     ?.play()
@@ -63,7 +65,7 @@ const VideoSection = () => {
               }
             }}
           >
-            <source src='/final.mp4' type='video/mp4' />
+            <source src='/COSKETCH.mp4' type='video/mp4' />
             Your browser does not support the video tag.
           </video>
         </div>
