@@ -4,7 +4,20 @@
 
 CoSketch is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
 
----
+<!-- ## 🎬 CoSketch Demo -->
+
+<video width="100%" controls style="border-radius: 6px;">
+  <source src="https://github.com/NarsiBhati-Dev/CoSketch/blob/master/apps/cosketch-frontend/public/COSKETCH.mp4?raw=true" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+## Code of Conduct
+
+Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) to help keep **CoSketch** a welcoming and inclusive space for everyone
+
+## License
+
+This project is licensed under the [CoSketch Custom License](./LICENSE.md).
 
 ## 🏗 Project Structure
 
@@ -41,55 +54,96 @@ CoSketch offers a rich set of features for real-time collaborative sketching:
   - Arrow
   - Line
 
+- ✏️ **Freehand Drawing**
+
+  - Draw freehand lines with customizable brush sizes and colors.
+
+- 📝 **Text Support**
+
+  - Add text labels to your canvas with customizable colors.
+
 - ✏️ **Interactive Editing**
 
-  - Select, drag, and resize shapes with ease
-  - Modify shape styles including color, stroke width, and fill
+  - Select, drag, and resize shapes with ease.
+  - Modify shape styles including color, stroke width, and fill.
 
 - 🗑️ **Shape Management**
 
-  - Delete individual shapes
-  - Clear entire canvas in one click
+  - Delete individual shapes.
+  - Clear the entire canvas with one click.
 
 - 🔄 **Real-Time Synchronization**
 
-  - Update and broadcast shape state across all users using **WebSockets**
+  - Update and broadcast shape and drawing state across all users using **WebSockets**.
 
 - 🌐 **Multi-User Collaboration**
 
-  - Seamless live editing experience for multiple participants
+  - Seamless live editing experience for multiple participants.
 
 - ☁️ **Persistent Storage**
 
-  - Store and retrieve all shapes from a **PostgreSQL** database via **Prisma ORM**
+  - Store and retrieve all shapes and drawings from a **PostgreSQL** database via **Prisma ORM**.
 
 - ⚙️ **Modular Architecture**
-  - Built with a scalable monorepo structure using **Turborepo** and **Bun**
-  - Decoupled apps for frontend, backend, and WebSocket server
+
+  - Built with a scalable monorepo structure using **Turborepo** and **Bun**.
+  - Decoupled apps for frontend, backend, and WebSocket server.
 
 ---
 
 ## 🚀 Getting Started
 
+Follow these steps to get **CoSketch** up and running locally:
+
 ### 1️⃣ Install Dependencies
 
-Ensure **Bun** is installed on your system:
+Make sure you have **Bun** installed globally, then install all packages:
 
 ```sh
 bun install
 ```
 
-### 2️⃣ Start the Development Environment
+### 2️⃣ Start the PostgreSQL Database
 
-Use Turborepo to start all apps simultaneously:
+Ensure Docker is installed and running, then start the database:
+
+```sh
+bun run db:up
+```
+
+This uses the docker-compose.yml file to spin up a PostgreSQL container.
+
+### 3️⃣ Generate Prisma Client
+
+```sh
+bun run generate
+```
+
+This command generates the Prisma client across all apps using the shared database package.
+
+### 4️⃣ Configure Environment Variables
+
+Copy the example environment files and rename them to .env in each app:
+
+```sh
+cp apps/cosketch-backend/.env.example apps/cosketch-backend/.env
+cp apps/cosketch-frontend/.env.example apps/cosketch-frontend/.env
+cp apps/cosketch-websocket/.env.example apps/cosketch-websocket/.env
+```
+
+Fill in the required values like DATABASE_URL, NEXT_PUBLIC_WS_URL, etc.
+
+### 5️⃣ Run the App (Monorepo Style)
+
+To start all apps together using Turborepo:
 
 ```sh
 bun run dev
 ```
 
-### 3️⃣ Run Individual Apps
+### 🔧 Or Start Individual Apps
 
-You can start specific apps independently:
+You can run apps individually if needed:
 
 ```sh
 # Start frontend (Next.js)

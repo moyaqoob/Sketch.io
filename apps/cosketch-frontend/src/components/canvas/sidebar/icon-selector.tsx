@@ -25,7 +25,7 @@ const IconSelector = <T extends string>({
         <button
           key={key}
           className={clsx(
-            'flex h-10 w-10 cursor-pointer items-center justify-center rounded transition-colors',
+            'flex h-8 w-8 cursor-pointer items-center justify-center rounded transition-colors',
             selectedIcon === key
               ? 'bg-tool_select'
               : 'bg-gray-900 hover:bg-gray-800',

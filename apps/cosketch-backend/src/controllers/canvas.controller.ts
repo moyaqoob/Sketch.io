@@ -4,25 +4,6 @@ import type { AuthRequest } from "../utils/request-type";
 import { getRoomCanvas } from "@repo/database";
 import { shapeSchema, type Shape } from "@repo/types";
 
-// //  Clear the canvas by deleting all designs for a specific room
-// export const clearCanvas = async (req: AuthRequest, res: Response) => {
-//   const userId = req.auth?.id;
-//   if (!userId) {
-//     res
-//       .status(HttpStatus.UNAUTHORIZED)
-//       .json({ success: false, error: "Unauthorized" });
-//     return;
-//   }
-
-//   const { roomId } = req.params;
-//   if (!roomId) {
-//     res
-//       .status(HttpStatus.BAD_REQUEST)
-//       .json({ success: false, message: "Room ID required" });
-//     return;
-//   }
-// };
-
 //  Fetch all designs for a specific room
 export const getCanvasDesigns = async (req: AuthRequest, res: Response) => {
   const userId = req.auth?.id;

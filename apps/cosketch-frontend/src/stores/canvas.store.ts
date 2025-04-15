@@ -1,12 +1,12 @@
-import { DrawController } from '@/canvas_engine/draw_controller';
+import { CanvasEngine } from '@/canvas_engine/CanvasEngine';
 import { create } from 'zustand';
 
 interface CanvasEngineState {
-  canvasEngine: DrawController | null;
-  setCanvasEngine: (engine: DrawController) => void;
+  canvasEngine: CanvasEngine | null;
+  setCanvasEngine: (engine: CanvasEngine) => void;
 }
 
 export const useCanvasEngineStore = create<CanvasEngineState>(set => ({
   canvasEngine: null,
-  setCanvasEngine: (engine: DrawController) => set({ canvasEngine: engine }),
+  setCanvasEngine: (engine: CanvasEngine) => set({ canvasEngine: engine }),
 }));

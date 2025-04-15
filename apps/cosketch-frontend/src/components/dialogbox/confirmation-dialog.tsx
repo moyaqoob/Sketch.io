@@ -27,15 +27,15 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       onClick={onCancel}
     >
       <div
-        className='w-[90%] max-w-md rounded-xl bg-white p-6 shadow-lg'
+        className='bg-background w-[90%] max-w-md rounded-xl p-6 shadow-lg'
         onClick={e => e.stopPropagation()}
       >
-        <h2 className='mb-2 text-xl font-semibold text-gray-800'>{title}</h2>
-        <p className='mb-10 text-base text-gray-600'>{message}</p>
+        <h2 className='mb-2 text-xl font-semibold text-white'>{title}</h2>
+        <p className='mb-10 text-base text-gray-300'>{message}</p>
 
         <div className='flex justify-end gap-2'>
           <button
-            className='cursor-pointer rounded-md border px-4 py-2 font-bold text-gray-600 hover:bg-gray-100'
+            className='cursor-pointer rounded-md border px-4 py-2 font-bold text-gray-200 hover:bg-gray-700'
             onClick={onCancel}
           >
             {cancelText}

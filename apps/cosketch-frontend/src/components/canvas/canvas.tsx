@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import CanvasFooter from './footer/canvas-footer';
 import CanvasHeader from './header/canvas-header';
-import { DrawController } from '@/canvas_engine/draw_controller';
+import { CanvasEngine } from '@/canvas_engine/CanvasEngine';
 import Sidebar from './sidebar/sidebar';
 import { useCanvasEngineStore } from '@/stores/canvas.store';
 import { useIsShapeSelectedStore } from '@/stores/shape_selected.store';
@@ -117,7 +117,7 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const draw = new DrawController(canvas, roomId, sendMessage);
+    const draw = new CanvasEngine(canvas, roomId, sendMessage);
     setCanvasEngine(draw);
 
     // Mouse event handlers with optimized state updates
@@ -201,7 +201,7 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
     <>
       <CanvasHeader roomId={roomId} sendMessage={sendMessage} />
       <Sidebar selectedTool={selectedTool} />
-      <canvas ref={canvasRef} className='bg-black text-white' />
+      <canvas ref={canvasRef} className='bg-[#1c1a1a] text-white' />
       <CanvasFooter />
     </>
   );

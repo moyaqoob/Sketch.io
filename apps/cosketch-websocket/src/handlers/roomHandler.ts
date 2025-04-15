@@ -34,7 +34,8 @@ export const handleRoomEvent = async (
 
     case "room:leave":
       if (rooms[room] && isUserInRoom(socket, room)) {
-        await removeUserFromRoom(socket, room, userId, false);
+        // Set this to true if you want to remove the user's canvas design when they leave, otherwise set to false.
+        await removeUserFromRoom(socket, room, userId, true);
       }
       break;
   }

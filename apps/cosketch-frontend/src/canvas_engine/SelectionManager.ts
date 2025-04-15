@@ -12,10 +12,9 @@ type ResizeHandle =
   | 'bottom-left'
   | 'left';
 
-/**
- * Manages shape selection, movement, and resizing on the canvas
- * Single selection only - no multi-selection functionality
- */
+// Manages shape selection, movement, and resizing on the canvas
+// Single selection only - no multi-selection functionality
+
 export class SelectionManager {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
@@ -52,10 +51,9 @@ export class SelectionManager {
     this.roomId = roomId;
   }
 
-  /**
-   * Checks if a point (x,y) is inside a given shape
-   * Handles different shape types (Rectangle, Diamond, Ellipse, Line, Arrow)
-   */
+  // Checks if a point (x,y) is inside a given shape
+  //  Handles different shape types (Rectangle, Diamond, Ellipse, Line, Arrow)
+
   private isPointInsideShape(shape: Shape, x: number, y: number): boolean {
     if (shape.type === 'Freehand' && shape.paths) {
       // For freehand shapes, check if any point is within a threshold
@@ -77,40 +75,9 @@ export class SelectionManager {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
   }
 
-  /**
-   * Enhanced version of checking if a point is near a line segment
-   * Uses improved distance calculation for better line selection experience
-   */
-  // private isPointNearLine(
-  //   x1: number,
-  //   y1: number,
-  //   x2: number,
-  //   y2: number,
-  //   px: number,
-  //   py: number,
-  // ): boolean {
-  //   const threshold = 8; // Increased threshold for easier selection
-  //   const dx = x2 - x1;
-  //   const dy = y2 - y1;
-  //   const lengthSquared = dx * dx + dy * dy;
-  //   if (lengthSquared === 0) return false;
+  // Returns the positions of all resize handles for a shape
+  // Includes corner and edge handles
 
-  //   // Calculate projection
-  //   const t = Math.max(
-  //     0,
-  //     Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lengthSquared),
-  //   );
-  //   const closestX = x1 + t * dx;
-  //   const closestY = y1 + t * dy;
-  //   const distance = Math.hypot(closestX - px, closestY - py);
-
-  //   return distance <= threshold;
-  // }
-
-  /**
-   * Returns the positions of all resize handles for a shape
-   * Includes corner and edge handles
-   */
   private getResizeHandles(
     shape: Shape,
   ): Record<ResizeHandle, { x: number; y: number }> {
@@ -130,9 +97,8 @@ export class SelectionManager {
     };
   }
 
-  /**
-   * Finds which resize handle (if any) is at the given point, accounting for rotation
-   */
+  // Finds which resize handle (if any) is at the given point, accounting for rotation
+
   public getResizeHandleAtPoint(x: number, y: number): ResizeHandle | null {
     if (!this.selectedShape) return null;
 
@@ -179,9 +145,8 @@ export class SelectionManager {
     return null;
   }
 
-  /**
-   * Gets the rotation handle position for a shape
-   */
+  // Gets the rotation handle position for a shape
+
   private getRotationHandle(shape: Shape): { x: number; y: number } {
     const centerX = (shape.x1 + shape.x2) / 2;
     // const centerY = (shape.y1 + shape.y2) / 2;
@@ -194,9 +159,8 @@ export class SelectionManager {
     };
   }
 
-  /**
-   * Checks if a point is near the rotation handle, accounting for shape rotation
-   */
+  // Checks if a point is near the rotation handle, accounting for shape rotation
+
   public isNearRotationHandle(x: number, y: number): boolean {
     if (!this.selectedShape) return false;
 
@@ -231,9 +195,8 @@ export class SelectionManager {
     return Math.hypot(x - handle.x, y - handle.y) <= 8;
   }
 
-  /**
-   * Begin rotation of the selected shape
-   */
+  // Begin rotation of the selected shape
+
   public beginRotation() {
     if (!this.selectedShape || this.selectedShape.type === 'Text') return;
 
@@ -244,9 +207,8 @@ export class SelectionManager {
     };
   }
 
-  /**
-   * Update rotation based on mouse movement
-   */
+  // Update rotation based on mouse movement
+
   public updateRotation(x: number, y: number) {
     if (!this.isRotating || !this.selectedShape) return;
 
@@ -264,9 +226,8 @@ export class SelectionManager {
     this.selectedShape.rotation = degrees;
   }
 
-  /**
-   * End rotation operation
-   */
+  // End rotation operation
+
   public endRotation() {
     this.isRotating = false;
 
@@ -280,11 +241,10 @@ export class SelectionManager {
     }
   }
 
-  /**
-   * Finds which shape (if any) is at the given point
-   * Returns the most appropriate shape at that position, prioritizing smaller shapes
-   * to handle nested shapes correctly
-   */
+  // Finds which shape (if any) is at the given point
+  // Returns the most appropriate shape at that position, prioritizing smaller shapes
+  // to handle nested shapes correctly
+
   public getShapeAtPoint(x: number, y: number, shapes: Shape[]): Shape | null {
     // Find all shapes containing the point
     const containingShapes = shapes.filter(shape =>
@@ -329,16 +289,14 @@ export class SelectionManager {
     return selectedShape;
   }
 
-  /**
-   * Gets the currently selected shape
-   */
+  // Gets the currently selected shape
+
   public getSelectedShape(): Shape | null {
     return this.selectedShape;
   }
 
-  /**
-   * Sets the currently selected shape
-   */
+  // Sets the currently selected shape
+
   public setSelectedShape(shape: Shape | null) {
     if (
       this.selectedShape === shape ||
@@ -349,16 +307,14 @@ export class SelectionManager {
     this.selectedShape = shape;
   }
 
-  /**
-   * Gets all currently selected shapes (in single-selection mode, returns array with 0 or 1 item)
-   */
+  // Gets all currently selected shapes (in single-selection mode, returns array with 0 or 1 item)
+
   public getSelectedShapes(): Shape[] {
     return this.selectedShape ? [this.selectedShape] : [];
   }
 
-  /**
-   * Starts marquee selection from a point
-   */
+  // Starts marquee selection from a point
+
   public beginMarqueeSelection(x: number, y: number) {
     this.isMarqueeSelecting = true;
     this.marqueeStartX = x;
@@ -367,19 +323,17 @@ export class SelectionManager {
     this.marqueeEndY = y;
   }
 
-  /**
-   * Updates marquee selection
-   */
+  // Updates marquee selection
+
   public updateMarqueeSelection(x: number, y: number) {
     if (!this.isMarqueeSelecting) return;
     this.marqueeEndX = x;
     this.marqueeEndY = y;
   }
 
-  /**
-   * Completes marquee selection and selects all shapes inside the marquee
-   * Modified to prioritize smaller shapes for better nested shape handling
-   */
+  // Completes marquee selection and selects all shapes inside the marquee
+  // Modified to prioritize smaller shapes for better nested shape handling
+
   public completeMarqueeSelection(shapes: Shape[]) {
     if (!this.isMarqueeSelecting) return;
 
@@ -428,9 +382,8 @@ export class SelectionManager {
     this.isMarqueeSelecting = false;
   }
 
-  /**
-   * Draws the marquee selection rectangle
-   */
+  // Draws the marquee selection rectangle
+
   public drawMarqueeSelection() {
     if (!this.isMarqueeSelecting) return;
 
@@ -448,9 +401,8 @@ export class SelectionManager {
     this.context.restore();
   }
 
-  /**
-   * Checks if a shape intersects with a rectangle
-   */
+  // Checks if a shape intersects with a rectangle
+
   private doesShapeIntersectRect(
     shape: Shape,
     minX: number,
@@ -473,16 +425,14 @@ export class SelectionManager {
     );
   }
 
-  /**
-   * Starts dragging a shape
-   */
+  // Starts dragging a shape
+
   public beginDrag() {
     this.isDragging = true;
   }
 
-  /**
-   * Updates shape position during dragging
-   */
+  // Updates shape position during dragging
+
   public updateDrag(deltaX: number, deltaY: number) {
     if (this.selectedShape && this.isDragging) {
       if (this.selectedShape.type === 'Freehand' && this.selectedShape.paths) {
@@ -510,9 +460,8 @@ export class SelectionManager {
     }
   }
 
-  /**
-   * Ends dragging operation
-   */
+  // Ends dragging operation
+
   public endDrag() {
     this.isDragging = false;
 
@@ -529,9 +478,8 @@ export class SelectionManager {
     this.dragDistance = 0;
   }
 
-  /**
-   * Starts resizing a shape from a specific handle
-   */
+  // Starts resizing a shape from a specific handle
+
   public beginResize(handle: ResizeHandle) {
     if (this.selectedShape && this.selectedShape.type === 'Text') {
       // Don't allow resizing for Text shapes
@@ -541,10 +489,9 @@ export class SelectionManager {
     this.activeHandle = handle;
   }
 
-  /**
-   * Updates shape size during resizing
-   * Handles different resize handles (corners and edges)
-   */
+  // Updates shape size during resizing
+  // Handles different resize handles (corners and edges)
+
   public updateResize(deltaX: number, deltaY: number) {
     if (!this.selectedShape || !this.isResizing || !this.activeHandle) return;
 
@@ -583,9 +530,8 @@ export class SelectionManager {
     this.ensureMinimumSize(shape);
   }
 
-  /**
-   * Ends resizing operation
-   */
+  // Ends resizing operation
+
   public endResize() {
     this.isResizing = false;
     this.activeHandle = null;
@@ -600,9 +546,8 @@ export class SelectionManager {
     }
   }
 
-  /**
-   * Draw the rotation handle for the selected shape
-   */
+  // Draw the rotation handle for the selected shape
+
   public drawRotationHandle(shape: Shape) {
     const handle = this.getRotationHandle(shape);
 
@@ -632,9 +577,8 @@ export class SelectionManager {
     this.context.restore();
   }
 
-  /**
-   * Enhanced version of drawing selection outline
-   */
+  // Enhanced version of drawing selection outline
+
   public drawSelectionOutline(shape: Shape) {
     if (shape.type === 'Freehand' && shape.paths) {
       // For freehand shapes, draw a bounding box around the path
@@ -804,10 +748,9 @@ export class SelectionManager {
     this.context.restore();
   }
 
-  /**
-   * Updates cursor style based on current interaction
-   * Shows resize cursors when over handles, move cursor when over shape
-   */
+  // Updates cursor style based on current interaction
+  // Shows resize cursors when over handles, move cursor when over shape
+
   public updateCursor(x: number, y: number) {
     if (!this.selectedShape || this.selectedShape.type === 'Text') {
       this.canvas.style.cursor = 'default';
@@ -847,10 +790,9 @@ export class SelectionManager {
     }
   }
 
-  /**
-   * Ensures a shape doesn't get too small during resizing
-   * Maintains minimum dimensions for better usability
-   */
+  // Ensures a shape doesn't get too small during resizing
+  // Maintains minimum dimensions for better usability
+
   private ensureMinimumSize(shape: Shape, minSize: number = 10): void {
     if (Math.abs(shape.x2 - shape.x1) < minSize) {
       if (shape.x2 > shape.x1) {

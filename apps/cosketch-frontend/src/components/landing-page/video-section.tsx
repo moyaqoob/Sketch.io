@@ -54,7 +54,6 @@ const VideoSection = () => {
             loop
             playsInline
             onCanPlay={() => {
-              videoRef.current;
               if (videoRef.current?.paused) {
                 videoRef.current.playbackRate = 2;
                 requestAnimationFrame(() => {

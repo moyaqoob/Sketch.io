@@ -4,18 +4,17 @@ import rough from 'roughjs';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import { Drawable } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
-import { SelectionManager } from './selection_manager';
+import { SelectionManager } from './SelectionManager';
 import { getExistingShapes } from '@/api/canvas';
 import { Eraser } from './eraser';
 import type { Shape, ShapeOptions } from '@repo/types';
 import { CanvasMessage } from '@/hooks/useSocket';
 import { getStroke } from 'perfect-freehand';
 
-/**
- * Main drawing engine that handles shape creation, manipulation, and rendering
- * Uses rough.js for hand-drawn style rendering
- */
-export class DrawController {
+// Main drawing engine that handles shape creation, manipulation, and rendering
+// Uses rough.js for hand-drawn style rendering
+
+export class CanvasEngine {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private rc: RoughCanvas;
@@ -84,9 +83,8 @@ export class DrawController {
   private isErasing: boolean = false;
   private eraserSize: number = 20;
 
-  /**
-   * Initializes the drawing engine with canvas and room context
-   */
+  // Initializes the drawing engine with canvas and room context
+
   constructor(
     canvas: HTMLCanvasElement,
     roomId: string,
@@ -125,9 +123,8 @@ export class DrawController {
     this.clearCanvas();
   }
 
-  /**
-   * Sets up pointer and keyboard event handlers for drawing and selection
-   */
+  // Sets up pointer and keyboard event handlers for drawing and selection
+
   private initHandlers() {
     this.canvas.addEventListener('pointerdown', this.pointerDownHandler);
     this.canvas.addEventListener('pointermove', this.pointerMoveHandler);
@@ -139,9 +136,8 @@ export class DrawController {
     window.addEventListener('keydown', this.keyDownHandler);
   }
 
-  /**
-   * Cleans up event listeners when the drawing engine is destroyed
-   */
+  // Cleans up event listeners when the drawing engine is destroyed
+
   destroy() {
     if (this.textInput) {
       this.textInput.remove();
@@ -155,9 +151,8 @@ export class DrawController {
     window.removeEventListener('keydown', this.keyDownHandler);
   }
 
-  /**
-   * Handles key down events for modifier keys
-   */
+  // Handles key down events for modifier keys
+
   private keyDownHandler = (event: KeyboardEvent) => {
     // Delete key for deleting selected shape
     if (event.key === 'Delete' || event.key === 'Backspace') {
@@ -165,9 +160,8 @@ export class DrawController {
     }
   };
 
-  /**
-   * Deletes selected shapes
-   */
+  // Deletes selected shapes
+
   private deleteSelectedShape() {
     const selectedShape = this.selectionManager.getSelectedShape();
     if (selectedShape) {
@@ -188,9 +182,8 @@ export class DrawController {
     }
   }
 
-  /**
-   * Creates a new ShapeOptions object for new shapes
-   */
+  // Creates a new ShapeOptions object for new shapes
+
   private getShapeOptions(): ShapeOptions {
     return {
       roughness: this.roughness,
@@ -203,9 +196,8 @@ export class DrawController {
     };
   }
 
-  /**
-   * Converts ShapeOptions to RoughJS format
-   */
+  // Converts ShapeOptions to RoughJS format
+
   private convertToRoughOptions(options: ShapeOptions) {
     return {
       roughness: this.roughnessLevels[options.roughness],
@@ -218,9 +210,8 @@ export class DrawController {
     };
   }
 
-  /**
-   * Handles pointer down events for drawing and selection
-   */
+  // Handles pointer down events for drawing and selection
+
   private pointerDownHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     this.x1 = event.clientX - rect.left;
@@ -316,9 +307,8 @@ export class DrawController {
     }
   };
 
-  /**
-   * Handles pointer move events for drawing, moving, and resizing
-   */
+  // Handles pointer move events for drawing, moving, and resizing
+
   private pointerMoveHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     const currentX = event.clientX - rect.left;
@@ -389,9 +379,8 @@ export class DrawController {
     }
   };
 
-  /**
-   * Handles pointer up events to finalize drawing, moving, or resizing
-   */
+  // Handles pointer up events to finalize drawing, moving, or resizing
+
   private pointerUpHandler = (event: PointerEvent) => {
     if (this.selectedTool === 'Eraser') {
       this.isErasing = false;
@@ -433,34 +422,10 @@ export class DrawController {
       this.y2 = event.clientY - rect.top;
       this.drawShape();
     } else if (this.action === 'moving') {
-      const selectedShape = this.selectionManager.getSelectedShape();
-      if (selectedShape) {
-        this.sendMessage({
-          type: 'canvas:update',
-          room: this.roomId,
-          data: selectedShape,
-        });
-      }
       this.selectionManager.endDrag();
     } else if (this.action === 'resizing') {
-      const selectedShape = this.selectionManager.getSelectedShape();
-      if (selectedShape) {
-        this.sendMessage({
-          type: 'canvas:update',
-          room: this.roomId,
-          data: selectedShape,
-        });
-      }
       this.selectionManager.endResize();
     } else if (this.action === 'rotating') {
-      const selectedShape = this.selectionManager.getSelectedShape();
-      if (selectedShape) {
-        this.sendMessage({
-          type: 'canvas:update',
-          room: this.roomId,
-          data: selectedShape,
-        });
-      }
       this.selectionManager.endRotation();
     } else if (this.action === 'marquee-selecting') {
       this.selectionManager.completeMarqueeSelection(this.existingShapes);
@@ -470,9 +435,8 @@ export class DrawController {
     this.clearCanvas();
   };
 
-  /**
-   * Shows a preview of the shape while drawing
-   */
+  // Shows a preview of the shape while drawing
+
   private previewShape() {
     const shapeOptions = this.getShapeOptions();
     const roughOptions = this.convertToRoughOptions(shapeOptions);
@@ -496,9 +460,8 @@ export class DrawController {
     }
   }
 
-  /**
-   * Creates and adds a new shape to the canvas
-   */
+  // Creates and adds a new shape to the canvas
+
   private drawShape() {
     if (
       ['Rectangle', 'Diamond', 'Ellipse', 'Arrow', 'Line'].includes(
@@ -530,9 +493,8 @@ export class DrawController {
     }
   }
 
-  /**
-   * Redraws all shapes on the canvas
-   */
+  // Redraws all shapes on the canvas
+
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
       if (shape.type === 'Freehand' && shape.paths) {
@@ -631,9 +593,8 @@ export class DrawController {
     });
   }
 
-  /**
-   * Generates a drawable from shape data
-   */
+  // Generates a drawable from shape data
+
   private generateDrawableFromShapeData(
     shape: Shape,
     options: {
@@ -720,9 +681,8 @@ export class DrawController {
     }
   }
 
-  /**
-   * Clears the canvas and redraws all shapes and selection outlines
-   */
+  // Clears the canvas and redraws all shapes and selection outlines
+
   public clearCanvas() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.save();
@@ -741,9 +701,8 @@ export class DrawController {
     this.context.restore();
   }
 
-  /**
-   * Sets the current drawing tool
-   */
+  // Sets the current drawing tool
+
   public setSelectedTool(tool: Tool) {
     this.selectedTool = tool;
 
@@ -759,71 +718,62 @@ export class DrawController {
     return this.selectedTool;
   }
 
-  /**
-   * Sets the stroke style (solid, dashed, dotted)
-   */
+  // Sets the stroke style (solid, dashed, dotted)
+
   public setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
     this.strokeStyle = style;
     this.updateSelectedShapeStyle();
   }
 
-  /**
-   * Sets the stroke width (thin, medium, thick)
-   */
+  // Sets the stroke width (thin, medium, thick)
+
   public setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
     this.strokeWidth = width;
     this.updateSelectedShapeStyle();
   }
 
-  /**
-   * Sets the roughness level (none, normal, high)
-   */
+  // Sets the roughness level (none, normal, high)
+
   public setRoughness(level: 'none' | 'normal' | 'high') {
     this.roughness = level;
     this.updateSelectedShapeStyle();
   }
 
-  /**
-   * Sets the fill style (hachure, solid, cross-hatch)
-   */
+  // Sets the fill style (hachure, solid, cross-hatch)
+
   public setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
     this.fillStyle = style;
     this.updateSelectedShapeStyle();
   }
 
-  /**
-   * Sets the stroke color
-   */
+  // Sets the stroke color
+
   public setStrokeColor(color: string) {
     this.strokeColor = color;
     this.updateSelectedShapeStyle();
   }
 
-  /**
-   * Sets the fill color
-   */
+  // Sets the fill color
+
   public setFillColor(color: string) {
     this.fillColor = color;
     this.updateSelectedShapeStyle();
   }
 
-  /**
-   * Gets all shapes on the canvas
-   */
+  // Gets all shapes on the canvas
+
   public getAllShapes() {
     return this.existingShapes;
   }
 
-  /**
-   * Gets the currently selected shape
-   */
+  // Gets the currently selected shape
+
   public getSelectedShape(): Shape | null {
     return this.selectionManager.getSelectedShape();
   }
 
-  /**
-   * Updates the style of the currently selected shape
-   */
+  // Updates the style of the currently selected shape
+
   private updateSelectedShapeStyle() {
     const selectedShape = this.selectionManager.getSelectedShape();
     if (!selectedShape) return;
@@ -860,9 +810,7 @@ export class DrawController {
     }
   }
 
-  /**
-   * Selects all shapes on the canvas (now just selects the top-most shape)
-   */
+  // Selects all shapes on the canvas
   public selectAll() {
     if (this.existingShapes.length > 0) {
       // Just select the top-most shape (last in the array)
@@ -872,9 +820,8 @@ export class DrawController {
     }
   }
 
-  /**
-   * Erases shapes at the specified point
-   */
+  // Erases shapes at the specified point
+
   private eraseAtPoint(x: number, y: number): void {
     if (!this.eraser) return;
 
@@ -948,9 +895,8 @@ export class DrawController {
     this.clearCanvas();
   }
 
-  /**
-   * Draws the eraser cursor
-   */
+  // Draws the eraser cursor
+
   private drawEraserCursor(x: number, y: number): void {
     this.context.save();
     this.context.strokeStyle = 'white';
@@ -962,9 +908,8 @@ export class DrawController {
     this.context.restore();
   }
 
-  /**
-   * Sets the eraser size
-   */
+  // Sets the eraser size
+
   public setEraserSize(size: number): void {
     this.eraserSize = size;
     if (this.eraser) {
