@@ -4,12 +4,9 @@
 
 CoSketch is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
 
-<!-- ## 🎬 CoSketch Demo -->
+## 🎬 CoSketch Demo
 
-<video width="100%" controls style="border-radius: 6px;">
-  <source src="https://github.com/NarsiBhati-Dev/CoSketch/blob/master/apps/cosketch-frontend/public/COSKETCH.mp4?raw=true" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[![Watch the CoSketch Demo](https://img.youtube.com/vi/m_uOsRsr8bw/maxresdefault.jpg)](https://www.youtube.com/watch?v=m_uOsRsr8bw)
 
 ## Code of Conduct
 
@@ -95,7 +92,7 @@ CoSketch offers a rich set of features for real-time collaborative sketching:
 
 Follow these steps to get **CoSketch** up and running locally:
 
-### 1️⃣ Install Dependencies
+### Install Dependencies
 
 Make sure you have **Bun** installed globally, then install all packages:
 
@@ -103,7 +100,15 @@ Make sure you have **Bun** installed globally, then install all packages:
 bun install
 ```
 
-### 2️⃣ Start the PostgreSQL Database
+### Configure Environment Variables
+
+```sh
+Copy the example environment files and rename them to .env in each app:
+```
+
+Fill in the required values like DATABASE_URL, NEXT_PUBLIC_WS_URL, etc.
+
+### Start the PostgreSQL Database
 
 Ensure Docker is installed and running, then start the database:
 
@@ -113,7 +118,7 @@ bun run db:up
 
 This uses the docker-compose.yml file to spin up a PostgreSQL container.
 
-### 3️⃣ Generate Prisma Client
+### Generate Prisma Client
 
 ```sh
 bun run generate
@@ -121,19 +126,7 @@ bun run generate
 
 This command generates the Prisma client across all apps using the shared database package.
 
-### 4️⃣ Configure Environment Variables
-
-Copy the example environment files and rename them to .env in each app:
-
-```sh
-cp apps/cosketch-backend/.env.example apps/cosketch-backend/.env
-cp apps/cosketch-frontend/.env.example apps/cosketch-frontend/.env
-cp apps/cosketch-websocket/.env.example apps/cosketch-websocket/.env
-```
-
-Fill in the required values like DATABASE_URL, NEXT_PUBLIC_WS_URL, etc.
-
-### 5️⃣ Run the App (Monorepo Style)
+### Run the App (Monorepo Style)
 
 To start all apps together using Turborepo:
 
