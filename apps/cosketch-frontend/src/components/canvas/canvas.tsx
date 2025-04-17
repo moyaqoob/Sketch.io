@@ -19,7 +19,7 @@ interface CanvasProps {
 }
 
 const cursorStyles = {
-  Eraser: '',
+  Eraser: 'none',
   Freehand: 'crosshair',
   Text: 'text',
   Selection: 'pointer',
