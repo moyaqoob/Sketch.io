@@ -32,12 +32,12 @@
     "start:backend": {
       "dependsOn": ["^db:deploy"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "env": ["DATABASE_URL"]
+      "env": ["JWT_SECRET", "DATABASE_URL", "JWT_EXPIRES_IN", "FRONTEND_URL"]
     },
     "start:websocket": {
       "dependsOn": ["^db:deploy"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "env": ["DATABASE_URL"]
+      "env": ["JWT_SECRET", "DATABASE_URL"]
     },
 
     "generate": {
