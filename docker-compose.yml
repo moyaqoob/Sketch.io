@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: docker/backend.prod.Dockerfile
+      args:
+        DATABASE_URL: postgresql://narsi:secretpassword@database:5432/cosketch
     ports:
       - "9000:9000"
     depends_on:
@@ -44,6 +46,8 @@ services:
     build:
       context: .
       dockerfile: docker/websocket.prod.Dockerfile
+      args:
+        DATABASE_URL: postgresql://narsi:secretpassword@database:5432/cosketch
     ports:
       - "8000:8000"
     depends_on:

@@ -158,6 +158,8 @@ const Canvas: React.FC<CanvasProps> = ({ roomId }) => {
     const handleResize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      if (!canvasEngine) return;
+      canvasEngine.clearCanvas();
     };
 
     handleResize();

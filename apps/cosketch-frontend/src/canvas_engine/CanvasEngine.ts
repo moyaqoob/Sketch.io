@@ -11,9 +11,10 @@ import type { Shape, ShapeOptions } from '@repo/types';
 import { CanvasMessage } from '@/hooks/useSocket';
 import { getStroke } from 'perfect-freehand';
 
-// Main drawing engine that handles shape creation, manipulation, and rendering
-// Uses rough.js for hand-drawn style rendering
-
+/**
+ * Main drawing engine that handles shape creation, manipulation, and rendering
+ * Uses rough.js for hand-drawn style rendering
+ */
 export class CanvasEngine {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
@@ -83,8 +84,9 @@ export class CanvasEngine {
   private isErasing: boolean = false;
   private eraserSize: number = 20;
 
-  // Initializes the drawing engine with canvas and room context
-
+  /**
+   * Initializes the drawing engine with canvas and room context
+   */
   constructor(
     canvas: HTMLCanvasElement,
     roomId: string,
@@ -104,12 +106,7 @@ export class CanvasEngine {
       roomId,
     );
 
-    this.eraser = new Eraser(
-      this.context,
-      this.existingShapes,
-      this.roomId,
-      sendMessage,
-    );
+    this.eraser = new Eraser(this.context, this.existingShapes);
 
     this.init().then(() => this.initHandlers());
   }
@@ -123,8 +120,9 @@ export class CanvasEngine {
     this.clearCanvas();
   }
 
-  // Sets up pointer and keyboard event handlers for drawing and selection
-
+  /**
+   * Sets up pointer and keyboard event handlers for drawing and selection
+   */
   private initHandlers() {
     this.canvas.addEventListener('pointerdown', this.pointerDownHandler);
     this.canvas.addEventListener('pointermove', this.pointerMoveHandler);
@@ -136,8 +134,9 @@ export class CanvasEngine {
     window.addEventListener('keydown', this.keyDownHandler);
   }
 
-  // Cleans up event listeners when the drawing engine is destroyed
-
+  /**
+   * Cleans up event listeners when the drawing engine is destroyed
+   */
   destroy() {
     if (this.textInput) {
       this.textInput.remove();
@@ -151,8 +150,9 @@ export class CanvasEngine {
     window.removeEventListener('keydown', this.keyDownHandler);
   }
 
-  // Handles key down events for modifier keys
-
+  /**
+   * Handles key down events for modifier keys
+   */
   private keyDownHandler = (event: KeyboardEvent) => {
     // Delete key for deleting selected shape
     if (event.key === 'Delete' || event.key === 'Backspace') {
@@ -160,8 +160,9 @@ export class CanvasEngine {
     }
   };
 
-  // Deletes selected shapes
-
+  /**
+   * Deletes selected shapes
+   */
   private deleteSelectedShape() {
     const selectedShape = this.selectionManager.getSelectedShape();
     if (selectedShape) {
@@ -182,8 +183,9 @@ export class CanvasEngine {
     }
   }
 
-  // Creates a new ShapeOptions object for new shapes
-
+  /**
+   * Creates a new ShapeOptions object for new shapes
+   */
   private getShapeOptions(): ShapeOptions {
     return {
       roughness: this.roughness,
@@ -196,8 +198,9 @@ export class CanvasEngine {
     };
   }
 
-  // Converts ShapeOptions to RoughJS format
-
+  /**
+   * Converts ShapeOptions to RoughJS format
+   */
   private convertToRoughOptions(options: ShapeOptions) {
     return {
       roughness: this.roughnessLevels[options.roughness],
@@ -210,8 +213,9 @@ export class CanvasEngine {
     };
   }
 
-  // Handles pointer down events for drawing and selection
-
+  /**
+   * Handles pointer down events for drawing and selection
+   */
   private pointerDownHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     this.x1 = event.clientX - rect.left;
@@ -307,8 +311,9 @@ export class CanvasEngine {
     }
   };
 
-  // Handles pointer move events for drawing, moving, and resizing
-
+  /**
+   * Handles pointer move events for drawing, moving, and resizing
+   */
   private pointerMoveHandler = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
     const currentX = event.clientX - rect.left;
@@ -379,8 +384,9 @@ export class CanvasEngine {
     }
   };
 
-  // Handles pointer up events to finalize drawing, moving, or resizing
-
+  /**
+   * Handles pointer up events to finalize drawing, moving, or resizing
+   */
   private pointerUpHandler = (event: PointerEvent) => {
     if (this.selectedTool === 'Eraser') {
       this.isErasing = false;
@@ -422,10 +428,13 @@ export class CanvasEngine {
       this.y2 = event.clientY - rect.top;
       this.drawShape();
     } else if (this.action === 'moving') {
+      this.selectionManager.getSelectedShape();
       this.selectionManager.endDrag();
     } else if (this.action === 'resizing') {
+      this.selectionManager.getSelectedShape();
       this.selectionManager.endResize();
     } else if (this.action === 'rotating') {
+      this.selectionManager.getSelectedShape();
       this.selectionManager.endRotation();
     } else if (this.action === 'marquee-selecting') {
       this.selectionManager.completeMarqueeSelection(this.existingShapes);
@@ -435,8 +444,9 @@ export class CanvasEngine {
     this.clearCanvas();
   };
 
-  // Shows a preview of the shape while drawing
-
+  /**
+   * Shows a preview of the shape while drawing
+   */
   private previewShape() {
     const shapeOptions = this.getShapeOptions();
     const roughOptions = this.convertToRoughOptions(shapeOptions);
@@ -460,8 +470,9 @@ export class CanvasEngine {
     }
   }
 
-  // Creates and adds a new shape to the canvas
-
+  /**
+   * Creates and adds a new shape to the canvas
+   */
   private drawShape() {
     if (
       ['Rectangle', 'Diamond', 'Ellipse', 'Arrow', 'Line'].includes(
@@ -493,8 +504,9 @@ export class CanvasEngine {
     }
   }
 
-  // Redraws all shapes on the canvas
-
+  /**
+   * Redraws all shapes on the canvas
+   */
   private drawAllShapes() {
     this.existingShapes.forEach(shape => {
       if (shape.type === 'Freehand' && shape.paths) {
@@ -505,7 +517,7 @@ export class CanvasEngine {
         const stroke = getStroke(shape.paths, {
           size:
             this.strokeWidths[shape.options.strokeWidth] *
-            2.4 *
+            3 *
             (shape.pressures
               ? 1 +
                 shape.pressures.reduce((a, b) => a + b, 0) /
@@ -593,8 +605,9 @@ export class CanvasEngine {
     });
   }
 
-  // Generates a drawable from shape data
-
+  /**
+   * Generates a drawable from shape data
+   */
   private generateDrawableFromShapeData(
     shape: Shape,
     options: {
@@ -681,8 +694,9 @@ export class CanvasEngine {
     }
   }
 
-  // Clears the canvas and redraws all shapes and selection outlines
-
+  /**
+   * Clears the canvas and redraws all shapes and selection outlines
+   */
   public clearCanvas() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.save();
@@ -701,8 +715,9 @@ export class CanvasEngine {
     this.context.restore();
   }
 
-  // Sets the current drawing tool
-
+  /**
+   * Sets the current drawing tool
+   */
   public setSelectedTool(tool: Tool) {
     this.selectedTool = tool;
 
@@ -718,62 +733,71 @@ export class CanvasEngine {
     return this.selectedTool;
   }
 
-  // Sets the stroke style (solid, dashed, dotted)
-
+  /**
+   * Sets the stroke style (solid, dashed, dotted)
+   */
   public setStrokeStyle(style: 'solid' | 'dashed' | 'dotted') {
     this.strokeStyle = style;
     this.updateSelectedShapeStyle();
   }
 
-  // Sets the stroke width (thin, medium, thick)
-
+  /**
+   * Sets the stroke width (thin, medium, thick)
+   */
   public setStrokeWidth(width: 'thin' | 'medium' | 'thick') {
     this.strokeWidth = width;
     this.updateSelectedShapeStyle();
   }
 
-  // Sets the roughness level (none, normal, high)
-
+  /**
+   * Sets the roughness level (none, normal, high)
+   */
   public setRoughness(level: 'none' | 'normal' | 'high') {
     this.roughness = level;
     this.updateSelectedShapeStyle();
   }
 
-  // Sets the fill style (hachure, solid, cross-hatch)
-
+  /**
+   * Sets the fill style (hachure, solid, cross-hatch)
+   */
   public setFillStyle(style: 'hachure' | 'solid' | 'cross-hatch') {
     this.fillStyle = style;
     this.updateSelectedShapeStyle();
   }
 
-  // Sets the stroke color
-
+  /**
+   * Sets the stroke color
+   */
   public setStrokeColor(color: string) {
     this.strokeColor = color;
     this.updateSelectedShapeStyle();
   }
 
-  // Sets the fill color
-
+  /**
+   * Sets the fill color
+   */
   public setFillColor(color: string) {
     this.fillColor = color;
     this.updateSelectedShapeStyle();
   }
 
-  // Gets all shapes on the canvas
-
+  /**
+   * Gets all shapes on the canvas
+   */
   public getAllShapes() {
     return this.existingShapes;
   }
 
-  // Gets the currently selected shape
-
+  /**
+   * Gets the currently selected shape
+   */
   public getSelectedShape(): Shape | null {
     return this.selectionManager.getSelectedShape();
   }
 
-  // Updates the style of the currently selected shape
-
+  /**
+   * Updates the style of the currently selected shape
+   */
   private updateSelectedShapeStyle() {
     const selectedShape = this.selectionManager.getSelectedShape();
     if (!selectedShape) return;
@@ -810,7 +834,9 @@ export class CanvasEngine {
     }
   }
 
-  // Selects all shapes on the canvas
+  /**
+   * Selects all shapes on the canvas
+   */
   public selectAll() {
     if (this.existingShapes.length > 0) {
       // Just select the top-most shape (last in the array)
@@ -820,18 +846,14 @@ export class CanvasEngine {
     }
   }
 
-  // Erases shapes at the specified point
-
+  /**
+   * Erases shapes at the specified point
+   */
   private eraseAtPoint(x: number, y: number): void {
     if (!this.eraser) return;
 
     // Make sure eraser has the latest shapes
-    this.eraser = new Eraser(
-      this.context,
-      this.existingShapes,
-      this.roomId,
-      this.sendMessage,
-    );
+    this.eraser = new Eraser(this.context, this.existingShapes);
     this.eraser.setEraserSize(this.eraserSize);
 
     // Check each shape to see if it intersects with the eraser
@@ -895,8 +917,9 @@ export class CanvasEngine {
     this.clearCanvas();
   }
 
-  // Draws the eraser cursor
-
+  /**
+   * Draws the eraser cursor
+   */
   private drawEraserCursor(x: number, y: number): void {
     this.context.save();
     this.context.strokeStyle = 'white';
@@ -908,8 +931,9 @@ export class CanvasEngine {
     this.context.restore();
   }
 
-  // Sets the eraser size
-
+  /**
+   * Sets the eraser size
+   */
   public setEraserSize(size: number): void {
     this.eraserSize = size;
     if (this.eraser) {
@@ -954,7 +978,7 @@ export class CanvasEngine {
       this.pressures.reduce((a, b) => a + b, 0) / this.pressures.length;
 
     const stroke = getStroke(this.paths, {
-      size: this.strokeWidths[this.strokeWidth] * 2.4 * (1 + avgPressure),
+      size: this.strokeWidths[this.strokeWidth] * 3 * (1 + avgPressure), // Reduced base size multiplier from 4 to 3
       thinning: 0.5 + avgPressure * 0.5,
       smoothing: 0.5,
       streamline: 0.5,

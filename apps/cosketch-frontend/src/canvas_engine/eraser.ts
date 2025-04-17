@@ -1,23 +1,13 @@
-import { CanvasMessage } from '@/hooks/useSocket';
 import { Shape } from '@repo/types';
 
 export class Eraser {
   private context: CanvasRenderingContext2D;
   private shapes: Shape[];
   private eraserSize: number = 20;
-  private roomId: string;
-  private sendMessage: (message: CanvasMessage) => void;
 
-  constructor(
-    context: CanvasRenderingContext2D,
-    shapes: Shape[],
-    roomId: string,
-    sendMessage: (message: CanvasMessage) => void,
-  ) {
+  constructor(context: CanvasRenderingContext2D, shapes: Shape[]) {
     this.context = context;
     this.shapes = shapes;
-    this.roomId = roomId;
-    this.sendMessage = sendMessage;
   }
 
   /**
@@ -58,13 +48,6 @@ export class Eraser {
     const remainingShapes = this.shapes.filter(
       shape => shape.id !== closestShape.id,
     );
-
-    // socket
-    this.sendMessage({
-      type: 'canvas:erase',
-      shapeId: closestShape.id,
-      room: this.roomId,
-    });
 
     return remainingShapes;
   }
