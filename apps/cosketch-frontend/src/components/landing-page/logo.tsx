@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import siteMetadata from '@/data/siteMetadata';
+import siteMetadata from '@/lib/siteMetadata';
 import { knewave } from '@/data/fonts';
 import Link from 'next/link';
 

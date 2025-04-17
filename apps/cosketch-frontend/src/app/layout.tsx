@@ -4,7 +4,7 @@ import '@/styles/globals.css';
 import { space_grotesk } from '@/data/fonts';
 import ReactQueryProvider from '@/lib/react-query';
 import { Toaster } from 'react-hot-toast';
-import siteMetadata from '@/data/siteMetadata';
+import siteMetadata from '@/lib/siteMetadata';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),

@@ -505,7 +505,7 @@ export class CanvasEngine {
         const stroke = getStroke(shape.paths, {
           size:
             this.strokeWidths[shape.options.strokeWidth] *
-            3 *
+            2.4 *
             (shape.pressures
               ? 1 +
                 shape.pressures.reduce((a, b) => a + b, 0) /
@@ -954,7 +954,7 @@ export class CanvasEngine {
       this.pressures.reduce((a, b) => a + b, 0) / this.pressures.length;
 
     const stroke = getStroke(this.paths, {
-      size: this.strokeWidths[this.strokeWidth] * 3 * (1 + avgPressure), // Reduced base size multiplier from 4 to 3
+      size: this.strokeWidths[this.strokeWidth] * 2.4 * (1 + avgPressure),
       thinning: 0.5 + avgPressure * 0.5,
       smoothing: 0.5,
       streamline: 0.5,

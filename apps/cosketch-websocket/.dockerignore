@@ -1,0 +1,43 @@
+# Don't copy environment variables
+.env
+.env.local
+.env.*.local
+.example.env
+
+# Ignore node_modules (reinstalled during build)
+node_modules
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# OS/System junk
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker itself
+Dockerfile
+.dockerignore
+
+# Testing & coverage
+coverage
+*.test.ts
+*.test.js
+jest.config.js
+
+# Optional: ignore build output if re-building inside container
+.next
+out
+dist
+
+# Optional: ignore IDE/editor configs
+.vscode
+.idea
+.turbo
+*.swp

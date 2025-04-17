@@ -1,5 +1,5 @@
 export const NavLink = [
-  { title: 'Features', href: '#features' },
   { title: 'Demo Video', href: '#demo' },
+  { title: 'Features', href: '#features' },
   // { title: 'Try Canvas', href: '/dashboard' },
 ];

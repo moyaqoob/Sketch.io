@@ -7,21 +7,46 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
+
     "lint": {
       "dependsOn": ["^lint"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+
     "dev": {
       "cache": false,
       "persistent": true
     },
+
     "start": {
+      "dependsOn": ["start:frontend", "start:backend", "start:websocket"],
+      "cache": false
+    },
+    "start:frontend": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
-    "generate": { "cache": false, "persistent": true }
+    "start:backend": {
+      "dependsOn": ["^db:deploy"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["DATABASE_URL"]
+    },
+    "start:websocket": {
+      "dependsOn": ["^db:deploy"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["DATABASE_URL"]
+    },
+
+    "generate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:deploy": {
+      "cache": false,
+      "env": ["DATABASE_URL"]
+    }
   }
 }

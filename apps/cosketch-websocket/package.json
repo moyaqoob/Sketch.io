@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run src/server.ts",
-    "start": "bun run src/server.ts"
+    "start:websocket": "bun run src/server.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

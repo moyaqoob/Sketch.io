@@ -1,6 +1,6 @@
 'use client';
 
-import siteMetadata from '@/data/siteMetadata';
+import siteMetadata from '@/lib/siteMetadata';
 import { X } from 'lucide-react';
 import React, { useState } from 'react';
 import { Input, InputPassword } from '@/components/forms/input';

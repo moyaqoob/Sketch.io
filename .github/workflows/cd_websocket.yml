@@ -1,0 +1,58 @@
+# name: CoSketch websocket
+
+# on: 
+#   push: 
+#     branches: [ master ]
+#     paths: 
+#       - 'apps/cosketch-websocket/**'
+#       - 'packages/**'
+#       - '.github/workflows/cd_websocket.yml'
+
+# jobs: 
+#   build: 
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout the code websocket
+#         uses: actions/checkout@v3
+
+#       - name: Docker Login
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+#       - name: Build and push
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: .
+#           file: ./docker/websocket.prod.Dockerfile
+#           push: true
+#           tags: |
+#             narsibhati6545/cosketch-websocket:${{ github.sha }} 
+#             narsibhati6545/cosketch-websocket:latest
+
+#       - name: Deploy to VM
+#         uses: appleboy/ssh-action@v1.2.0
+#         with:
+#           host: "${{secrets.HOST_IP}}"
+#           username: "ubuntu"
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           port: 22
+#           script: |
+#             sudo docker pull narsibhati6545/cosketch-websocket:latest
+
+#             if sudo docker ps -a --format '{{.Names}}' | grep -q "^cosketch-websocket$"; then
+#               sudo docker stop cosketch-websocket
+#               sudo docker rm cosketch-websocket
+#             fi
+
+#             sudo docker run -d \
+#               --name cosketch-websocket \
+#               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+#               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \      
+#               -p 8000:8000 \
+#               --restart always \
+#               narsibhati6545/cosketch-websocket:latest
+
+#             sudo docker image prune -f
+#             echo "CoSketch WebSocket deployed successfully!"

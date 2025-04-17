@@ -11,7 +11,7 @@ import {
 import clsx from 'clsx';
 import { NavLink } from '@/data/navLink';
 import Logo from './logo';
-import siteMetadata from '@/data/siteMetadata';
+import siteMetadata from '@/lib/siteMetadata';
 import Link from 'next/link';
 
 const MobileNav = () => {

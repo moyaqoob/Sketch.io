@@ -4,9 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate": "bun prisma generate",
+    "generate": "bunx prisma generate",
     "reset": "bun prisma migrate reset",
     "migrate": "bun prisma migrate dev",
+    "db:deploy": "bun prisma migrate deploy && bun run generate",
     "studio": "bunx prisma studio"
   },
   "devDependencies": {

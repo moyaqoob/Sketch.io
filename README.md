@@ -29,8 +29,16 @@ cosketch/
 ├── packages/ # Shared code across apps
 │   ├── database/        # Prisma & PostgreSQL setup
 │   ├── types/           # Shared TypeScript types
-│   ├── ui/              # Shared UI components (e.g., buttons, modals)
 │   ├── backend-common/  # Common utilities for backend services
+├── docker/              # Docker configuration
+│   ├── backend.prod.Dockerfile    # Production Dockerfile for backend
+│   ├── frontend.prod.Dockerfile   # Production Dockerfile for frontend
+│   ├── websocket.prod.Dockerfile  # Production Dockerfile for WebSocket
+│   ├── docker-compose.yml         # Docker Compose configuration
+├── .github/workflows/    # GitHub Actions CI/CD pipelines
+│   ├── cd_backend.yml    # CI/CD pipeline for backend
+│   ├── cd_frontend.yml   # CI/CD pipeline for frontend
+│   ├── cd_websocket.yml  # CI/CD pipeline for WebSocket
 ├── turbo.json           # Turborepo config file
 ├── package.json         # Root package.json for Bun & Turborepo setup
 └── README.md            # Project documentation
@@ -92,6 +100,12 @@ CoSketch offers a rich set of features for real-time collaborative sketching:
 
 Follow these steps to get **CoSketch** up and running locally:
 
+### Prerequisites
+
+- **Bun** (v1.2.5 or later)
+- **Node.js** (v18 or later)
+- **Docker** and **Docker Compose** (for PostgreSQL and infrastructure)
+
 ### Install Dependencies
 
 Make sure you have **Bun** installed globally, then install all packages:
@@ -102,51 +116,95 @@ bun install
 
 ### Configure Environment Variables
 
-```sh
-Copy the example environment files and rename them to .env in each app:
-```
+Create environment files for each app:
 
-Fill in the required values like DATABASE_URL, NEXT_PUBLIC_WS_URL, etc.
+1. Copy the example environment files
+2. Rename them to `.env` in each app directory
+3. Fill in the required values like `DATABASE_URL`, `NEXT_PUBLIC_WS_URL`, etc.
 
-### Start the PostgreSQL Database
+### Database Setup
 
-Ensure Docker is installed and running, then start the database:
+Start the PostgreSQL database using Docker:
 
 ```sh
 bun run db:up
 ```
 
-This uses the docker-compose.yml file to spin up a PostgreSQL container.
+This command uses the docker-compose.yml file located in the docker directory to spin up a PostgreSQL container.
 
 ### Generate Prisma Client
+
+Generate the Prisma client across all apps:
 
 ```sh
 bun run generate
 ```
 
-This command generates the Prisma client across all apps using the shared database package.
+### Deploy Database Migrations
 
-### Run the App (Monorepo Style)
+Apply all migrations to your database:
 
-To start all apps together using Turborepo:
+```sh
+bun run db:deploy
+```
+
+### Run the Application
+
+#### Development Mode
+
+Start all apps in development mode:
 
 ```sh
 bun run dev
 ```
 
-### 🔧 Or Start Individual Apps
+This uses Turborepo to run all services concurrently.
 
-You can run apps individually if needed:
+#### Production Mode
+
+To build and start all services:
 
 ```sh
-# Start frontend (Next.js)
-bun run dev --filter=cosketch-frontend
+bun run build
+bun run start
+```
 
-# Start backend (Express API)
-bun run dev --filter=cosketch-backend
+Or use the convenient combined command:
 
-# Start WebSocket server
-bun run dev --filter=cosketch-websocket
+```sh
+bun run server:start
+```
+
+This deploys database migrations and starts all services.
+
+### Start Individual Apps
+
+You can also start specific apps individually:
+
+```sh
+# Start frontend only
+bun run start:frontend
+
+# Start backend API only
+bun run start:backend
+
+# Start WebSocket server only
+bun run start:websocket
+```
+
+### Infrastructure Management
+
+The project includes Docker Compose configurations for running the entire stack:
+
+```sh
+# Build all Docker containers
+bun run infra:build
+
+# Start all infrastructure containers
+bun run infra:up
+
+# Stop all infrastructure containers
+bun run infra:down
 ```
 
 ---
@@ -162,6 +220,7 @@ bun run dev --filter=cosketch-websocket
 - **Prisma** → ORM for database management
 - **Docker** → Containerized database for development
 - **Sharp** → Image processing
+- **GitHub Actions** → CI/CD pipelines
 
 ---
 
@@ -182,7 +241,7 @@ bun db:down
 ### Run Database Migrations
 
 ```sh
-bun prisma migrate deploy
+bun run db:deploy
 ```
 
 ### Connect to PostgreSQL via CLI
@@ -195,22 +254,67 @@ docker exec -it <postgres_container_name> psql -U <your_db_user> -d <your_databa
 
 ---
 
-## 📜 Available Scripts (Root `package.json`)
+## 🚢 Deployment
+
+The project includes production Docker configurations and GitHub Actions workflows for continuous deployment:
+
+### Docker Production Setup
+
+The `/docker` directory contains production Dockerfiles for each service:
+
+- `backend.prod.Dockerfile` - Production container for the backend API
+- `frontend.prod.Dockerfile` - Production container for the Next.js frontend
+- `websocket.prod.Dockerfile` - Production container for the WebSocket server
+
+### CI/CD Pipelines
+
+GitHub Actions workflows in the `.github/workflows` directory automate the deployment process:
+
+- `cd_backend.yml` - Deploys the backend service
+- `cd_frontend.yml` - Deploys the frontend application
+- `cd_websocket.yml` - Deploys the WebSocket server
+
+---
+
+## 📜 Available Scripts
 
 ```json
 {
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev",
+    "build": "turbo run build",
     "start": "turbo run start",
+    "start:frontend": "turbo run start:frontend --filter=cosketch-frontend",
+    "start:backend": "turbo run start:backend --filter=cosketch-backend",
+    "start:websocket": "turbo run start:websocket --filter=cosketch-websocket",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "db:up": "docker-compose -f docker/docker-compose.yml up -d",
     "db:down": "docker-compose -f docker/docker-compose.yml down",
+    "infra:build": "docker-compose -f docker-compose.yml build",
+    "infra:up": "docker-compose -f docker-compose.yml up -d",
+    "infra:down": "docker-compose -f docker-compose.yml down",
+    "db:deploy": "turbo run db:deploy",
+    "server:start": "bun run db:deploy && bun run start",
     "generate": "turbo run generate"
   }
 }
+```
+
+---
+
+## Development Tools
+
+```sh
+# Run linting across all packages
+bun run lint
+
+# Format code with Prettier
+bun run format
+
+# Type checking
+bun run check-types
 ```
 
 ---

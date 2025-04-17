@@ -1,5 +1,5 @@
 import React from 'react';
-import siteMetadata from '@/data/siteMetadata';
+import siteMetadata from '@/lib/siteMetadata';
 import CardSocial from './card-social';
 import Logo from './logo';
 import Animation from '@/components/animation';

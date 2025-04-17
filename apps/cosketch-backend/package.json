@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run src/server.ts",
-    "start": "bun run src/server.ts"
+    "start:backend": "bun run src/server.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
