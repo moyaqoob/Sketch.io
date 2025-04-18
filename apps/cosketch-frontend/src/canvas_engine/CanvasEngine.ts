@@ -49,16 +49,15 @@ export class CanvasEngine {
   // Roughness levels for hand-drawn style
   private roughnessLevels = {
     none: 0,
-    low: 0.5,
     normal: 1,
-    high: 3,
+    high: 2,
   };
 
   // Stroke width options
   private strokeWidths = {
-    thin: 2,
-    medium: 3,
-    thick: 5,
+    thin: 1,
+    medium: 2,
+    thick: 4,
   };
 
   // Current drawing style settings
@@ -663,7 +662,7 @@ export class CanvasEngine {
         );
       case 'Arrow': {
         const angle = Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1);
-        const arrowSize = 10;
+        const arrowSize = 16;
         const arrowLeftX = shape.x2 - arrowSize * Math.cos(angle - Math.PI / 6);
         const arrowLeftY = shape.y2 - arrowSize * Math.sin(angle - Math.PI / 6);
         const arrowRightX =
