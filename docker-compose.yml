@@ -1,3 +1,4 @@
+# Docker Compose configuration for CoSketch (Frontend, Backend, WebSocket, PostgreSQL)
 services:
   frontend:
     build:

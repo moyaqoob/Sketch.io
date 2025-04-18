@@ -82,7 +82,7 @@ export class CanvasEngine {
 
   private eraser: Eraser | null = null;
   private isErasing: boolean = false;
-  private eraserSize: number = 20;
+  private eraserSize: number = 10;
 
   /**
    * Initializes the drawing engine with canvas and room context
@@ -924,7 +924,7 @@ export class CanvasEngine {
     this.context.save();
     this.context.strokeStyle = 'white';
     this.context.lineWidth = 1;
-    this.context.setLineDash([3, 3]); // Make the cursor more visible
+    // this.context.setLineDash([3, 3]); // Make the cursor more visible
     this.context.beginPath();
     this.context.arc(x, y, this.eraserSize / 2, 0, Math.PI * 2);
     this.context.stroke();

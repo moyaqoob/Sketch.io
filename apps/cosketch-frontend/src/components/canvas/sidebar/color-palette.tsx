@@ -147,7 +147,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
               <button
                 key={hex}
                 className={clsx(
-                  'flex h-8 w-8 cursor-pointer items-center justify-center rounded border-1 transition-all',
+                  'flex h-8 w-8 cursor-pointer items-center justify-center rounded border-2 transition-all',
                   selectedColor === hex ? 'border-blue-500' : 'border-gray-700',
                 )}
                 style={{
