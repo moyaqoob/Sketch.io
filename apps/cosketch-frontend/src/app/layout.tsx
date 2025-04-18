@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
     default: 'COSKETCH',
-    template: `%s | COSKETCH`,
+    template: `%s | ${siteMetadata.title}`,
   },
 
   description: siteMetadata.description,
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     description: siteMetadata.description,
     url: siteMetadata.siteUrl,
     siteName: siteMetadata.title,
-    images: [siteMetadata.socialBannerFour],
+    images: [siteMetadata.socialBanner],
     locale: 'en_US',
     type: 'website',
   },
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     title: siteMetadata.title,
     card: 'summary_large_image',
-    images: [siteMetadata.socialBannerFour],
+    images: [siteMetadata.socialBanner],
   },
 };
 

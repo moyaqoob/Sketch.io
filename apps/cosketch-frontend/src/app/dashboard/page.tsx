@@ -4,7 +4,10 @@ import ProtectRoute from '@/components/guards/protectRoute';
 import React from 'react';
 import getPageMetadata from '@/lib/getPageMetadata';
 
-export const metadata = getPageMetadata({ title: 'Dashboard' });
+export const metadata = getPageMetadata({
+  title: 'Dashboard',
+  path: 'dashboard',
+});
 
 const DashboardPage = () => {
   return (

@@ -9,7 +9,7 @@ if (!envSiteUrl) {
 const SITE_URL = envSiteUrl.replace(/\/$/, '');
 
 const siteMetadata = {
-  title: 'CoSketch',
+  title: 'COSKETCH',
   description:
     'A real-time collaborative sketching tool for teams to brainstorm, draw, and create together.',
 
@@ -24,10 +24,7 @@ const siteMetadata = {
   language: 'en-US',
   locale: 'en-US',
 
-  socialBannerOne: `${SITE_URL}/images/social-banner-1.jpeg`,
-  socialBannerTwo: `${SITE_URL}/images/social-banner-2.jpeg`,
-  socialBannerThree: `${SITE_URL}/images/social-banner-3.jpeg`,
-  socialBannerFour: `${SITE_URL}/images/social-banner-4.jpeg`,
+  socialBanner: `${SITE_URL}/images/social-banner.webp`,
 
   // social links
   github: 'https://github.com/NarsiBhati-Dev/CoSketch.git',
