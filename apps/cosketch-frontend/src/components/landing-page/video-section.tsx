@@ -8,7 +8,6 @@ const VideoSection = () => {
   const handleVideoObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const entry = entries[0];
-
       if (videoRef.current) {
         if (entry.isIntersecting) {
           if (videoRef.current.paused) {
@@ -34,7 +33,7 @@ const VideoSection = () => {
     if (!videoRef.current) return;
 
     const observer = new IntersectionObserver(handleVideoObserver, {
-      threshold: 0.5, // Ensures 50% of video is in view before playing
+      threshold: 0.5,
     });
 
     observer.observe(videoRef.current);
@@ -45,7 +44,6 @@ const VideoSection = () => {
   return (
     <section id='demo' className='mx-4 my-10 scroll-mt-20 rounded-xl shadow-lg'>
       <div className='container mx-auto max-w-5xl'>
-        {/* Video Container */}
         <div className='relative overflow-hidden rounded-xl'>
           <video
             ref={videoRef}
@@ -53,6 +51,8 @@ const VideoSection = () => {
             muted
             loop
             playsInline
+            preload='auto'
+            poster='/video-poster.webp'
             onCanPlay={() => {
               if (videoRef.current?.paused) {
                 videoRef.current.playbackRate = 2;
