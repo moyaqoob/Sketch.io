@@ -1,39 +1,39 @@
-# name: CoSketch frontend
+name: CoSketch frontend
 
-# on: 
-#   push: 
-#     branches: [ production ]
-#     paths: 
-#       - 'apps/cosketch-frontend/**'
-#       - 'packages/**'
-#       - '.github/workflows/cd_frontend.yml'
+on: 
+  push: 
+    branches: [ master ]
+    paths: 
+      - 'apps/cosketch-frontend/**'
+      - 'packages/**'
+      - '.github/workflows/cd_frontend.yml'
 
-# jobs: 
-#   build: 
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout the code frontend
-#         uses: actions/checkout@v3
+jobs: 
+  build: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code frontend
+        uses: actions/checkout@v3
 
-#       - name: Docker Login
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{ secrets.DOCKERHUB_USERNAME }}
-#           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#       - name: Build and push
-#         uses: docker/build-push-action@v5
-#         with:
-#           context: .
-#           file: ./docker/frontend.prod.Dockerfile
-#           push: true
-#           build-args: |
-#             NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}
-#             NEXT_PUBLIC_HTTP_URL=${{ secrets.NEXT_PUBLIC_HTTP_URL }}
-#             NEXT_PUBLIC_WS_URL=${{ secrets.NEXT_PUBLIC_WS_URL }}
-#           tags: |
-#             narsibhati6545/cosketch-frontend:${{ github.sha }} 
-#             narsibhati6545/cosketch-frontend:latest
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/frontend.prod.Dockerfile
+          push: true
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_HTTP_URL=${{ secrets.NEXT_PUBLIC_HTTP_URL }}
+            NEXT_PUBLIC_WS_URL=${{ secrets.NEXT_PUBLIC_WS_URL }}
+          tags: |
+            narsibhati6545/cosketch-frontend:${{ github.sha }} 
+            narsibhati6545/cosketch-frontend:latest
 
 #       - name: Deploy to VM
 #         uses: appleboy/ssh-action@v1.2.0
