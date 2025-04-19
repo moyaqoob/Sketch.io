@@ -1,6 +1,6 @@
 # CoSketch
 
-![CoSketch banner](https://github.com/NarsiBhati-Dev/CoSketch/blob/master/apps/cosketch-frontend/public/images/social-banner-4.jpeg?raw=true)
+![CoSketch banner](https://github.com/NarsiBhati-Dev/CoSketch/blob/master/apps/cosketch-frontend/public/images/social-banner.webp?raw=true)
 
 CoSketch is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
 
