@@ -8,7 +8,7 @@ This README describes how to set up NGINX as a reverse proxy for the CoSketch pr
 
 | Subdomain             | Port | Service     | Description                          |
 | --------------------- | ---- | ----------- | ------------------------------------ |
-| `cosketch.xyz`        | 3000 | Frontend    | Main frontend (optional, disabled)   |
+| `cosketch.xyz`        | 3000 | Frontend    | Main frontend                        |
 | `server.cosketch.xyz` | 9000 | Backend API | Handles REST API requests            |
 | `socket.cosketch.xyz` | 8000 | WebSocket   | Handles real-time socket connections |
 
@@ -117,6 +117,40 @@ http {
     }
 }
 ```
+
+Here’s the complete and correct Step 3: Restart the NGINX server section for your README:
+
+⸻
+
+### Step 3: Restart the NGINX Server
+
+#### Test NGINX config for syntax errors
+
+```bash
+sudo nginx -t
+```
+
+#### Reload NGINX without downtime
+
+```bash
+sudo systemctl reload nginx
+```
+
+If NGINX is not running yet, use:
+
+```bash
+sudo systemctl start nginx
+```
+
+Or if you made major changes and want to fully restart:
+
+```bash
+sudo systemctl restart nginx
+```
+
+⸻
+
+Let me know if you want to add a systemd status check or auto-restart config too.
 
 ⸻
 

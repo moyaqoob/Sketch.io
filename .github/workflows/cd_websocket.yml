@@ -2,7 +2,7 @@ name: CoSketch websocket
 
 on: 
   push: 
-    branches: [ master ]
+    branches: [ production ]
     paths: 
       - 'apps/cosketch-websocket/**'
       - 'packages/**'
@@ -31,29 +31,29 @@ jobs:
             narsibhati6545/cosketch-websocket:${{ github.sha }} 
             narsibhati6545/cosketch-websocket:latest
 
-      # - name: Deploy to VM
-      #   uses: appleboy/ssh-action@v1.2.0
-      #   with:
-      #     host: "${{secrets.HOST_IP}}"
-      #     username: "ubuntu"
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     port: 22
-      #     script: |
-      #       sudo docker pull narsibhati6545/cosketch-websocket:latest
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: "${{secrets.HOST_IP}}"
+          username: "ubuntu"
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            sudo docker pull narsibhati6545/cosketch-websocket:latest
 
-      #       if sudo docker ps -a --format '{{.Names}}' | grep -q "^cosketch-websocket$"; then
-      #         sudo docker stop cosketch-websocket
-      #         sudo docker rm cosketch-websocket
-      #       fi
+            if sudo docker ps -a --format '{{.Names}}' | grep -q "^cosketch-websocket$"; then
+              sudo docker stop cosketch-websocket
+              sudo docker rm cosketch-websocket
+            fi
 
-      #       sudo docker run -d \
-      #         --name cosketch-websocket \
-      #         -e NODE_ENV=production \
-      #         -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-      #         -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \      
-      #         -p 8000:8000 \
-      #         --restart always \
-      #         narsibhati6545/cosketch-websocket:latest
+            sudo docker run -d \
+              --name cosketch-websocket \
+              -e NODE_ENV=production \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \      
+              -p 8000:8000 \
+              --restart always \
+              narsibhati6545/cosketch-websocket:latest
 
-      #       echo "CoSketch WebSocket deployed successfully!"
-      #       sudo docker image prune -f --filter "until=24h"
+            echo "CoSketch WebSocket deployed successfully!"
+            sudo docker image prune -f --filter "until=24h"
