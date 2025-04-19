@@ -20,7 +20,7 @@ COPY ../apps/cosketch-websocket ./apps/cosketch-websocket
 RUN bun install
 
 # Expose backend port
-EXPOSE 9000
+EXPOSE 8000
 
 # Run the server with database deployment
 CMD ["bun", "run", "start:websocket"]

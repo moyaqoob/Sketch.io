@@ -2,7 +2,7 @@
 
 # on: 
 #   push: 
-#     branches: [ master ]
+#     branches: [ production ]
 #     paths: 
 #       - 'apps/cosketch-frontend/**'
 #       - 'packages/**'
@@ -56,5 +56,5 @@
 #               --restart always \
 #               narsibhati6545/cosketch-frontend:latest
 
-#             sudo docker image prune -f
 #             echo "CoSketch frontend deployed successfully!"
+#             sudo docker image prune -f --filter "until=24h"
