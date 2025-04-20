@@ -9,7 +9,7 @@ import siteMetadata from '@/lib/siteMetadata';
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
-    default: 'COSKETCH',
+    default: 'CoSketch | Sketch Together, Think Better',
     template: `%s | ${siteMetadata.title}`,
   },
 

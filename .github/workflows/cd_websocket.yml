@@ -50,7 +50,7 @@ jobs:
               --name cosketch-websocket \
               -e NODE_ENV=production \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \      
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -p 8000:8000 \
               --restart always \
               narsibhati6545/cosketch-websocket:latest
