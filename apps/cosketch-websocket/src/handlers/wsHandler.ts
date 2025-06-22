@@ -3,13 +3,13 @@ import { authenticateWebSocket } from "../services/auth";
 import { getToken } from "../services/getToken";
 import {
   handleRoomEvent,
-  removeUserFromRoom,
+  // removeUserFromRoom,
   handleUserDisconnect,
 } from "./roomHandler";
 import { handleCanvasEvent } from "./canvasHandler";
 import { logger } from "../utils/logger";
 import { PORT } from "../config";
-import { rooms, isUserInRoom } from "../utils/roomManager";
+// import { rooms, isUserInRoom } from "../utils/roomManager";
 
 export const setupWebSocketServer = (wss: WebSocketServer) => {
   wss.on("connection", (socket, request) => {

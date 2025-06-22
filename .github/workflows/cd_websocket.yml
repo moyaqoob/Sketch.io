@@ -2,7 +2,7 @@ name: CoSketch websocket
 
 on: 
   push: 
-    branches: [ production ]
+    branches: [ master ]
     paths: 
       - 'apps/cosketch-websocket/**'
       - 'packages/**'

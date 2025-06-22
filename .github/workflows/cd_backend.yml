@@ -2,7 +2,7 @@ name: CoSketch backend
 
 on: 
   push: 
-    branches: [ production ]
+    branches: [ master ]
     paths: 
       - 'apps/cosketch-backend/**'
       - 'packages/**'
