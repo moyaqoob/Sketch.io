@@ -38,7 +38,7 @@ const ProtectCanvasRoute = ({ children, roomId }: ProtectCanvasRouteProps) => {
     }
 
     return () => setIsLoading(false);
-  }, []);
+  }, [roomId,router,verifyUserInRoomMutation]);
 
   if (isLoading || verifyUserInRoomMutation.isPending) {
     return (

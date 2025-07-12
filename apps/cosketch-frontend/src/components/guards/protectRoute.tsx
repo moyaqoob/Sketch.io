@@ -37,7 +37,7 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
     }
 
     return () => setIsLoading(false);
-  }, []);
+  }, [authorizeMutation,router]);
 
   if (isLoading || authorizeMutation.isPending) {
     return (

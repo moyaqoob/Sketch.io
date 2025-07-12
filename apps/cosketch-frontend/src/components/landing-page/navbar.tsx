@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink } from '@/data/navLink';
 import MobileNav from './mobile-nav';
-import siteMetadata from '@/lib/siteMetadata';
 import Link from 'next/link';
 
 const Navbar = () => {

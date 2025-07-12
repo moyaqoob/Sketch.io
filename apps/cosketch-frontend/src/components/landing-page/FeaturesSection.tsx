@@ -1,4 +1,4 @@
-import { Cloud, Pencil, Share2, Stars, Users, Zap } from 'lucide-react';
+import { Cloud, Share2, Stars, Zap } from 'lucide-react';
 import { ReactElement } from 'react';
 import Animation from '@/components/animation';
 
