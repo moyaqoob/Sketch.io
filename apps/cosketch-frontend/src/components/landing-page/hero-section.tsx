@@ -5,11 +5,11 @@ import Animation from '@/components/animation';
 
 const HeroSection = () => {
   return (
-    <section className='bg-background_yellow mt-18 flex w-screen flex-col items-center justify-center py-24 text-center md:mb-10 md:py-56'>
+    <section className='bg-background_blue mt-18 flex w-screen flex-col items-center justify-center py-24 text-center md:mb-10 md:py-56'>
       {/* Headline */}
       <h1 className='flex flex-col items-center justify-between gap-4 text-center text-5xl font-semibold tracking-wide md:gap-2 md:text-6xl lg:flex-row xl:text-7xl'>
         <span>Online </span>
-        <span className={`${knewave.className} font-light`}>
+        <span className={` font-light leading-0`}>
           <Animation>Whiteboard</Animation>
         </span>
         <span>Made Simple </span>
@@ -27,7 +27,7 @@ const HeroSection = () => {
           href='/dashboard'
           className='hover:bg-primary bg-primary-darker rounded-lg px-6 py-4 text-center font-bold tracking-wider text-white transition md:text-lg'
         >
-          🎨 Start Drawing Now
+          🎨 Start Drawing
         </a>
       </div>
     </section>

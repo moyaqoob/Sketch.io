@@ -9,30 +9,29 @@ if (!envSiteUrl) {
 const SITE_URL = envSiteUrl.replace(/\/$/, '');
 
 const siteMetadata = {
-  title: 'COSKETCH',
+  title: 'Sketch.io',
   description:
     'A real-time collaborative sketching tool for teams to brainstorm, draw, and create together.',
 
-  header: 'COSKETCH',
+  header: 'Sketch.io',
 
   slogan: `Sketch Together, Think Better`,
 
-  developer: 'Narsi Bhati',
+  developer: 'Mohd Yaqoob',
 
   siteUrl: SITE_URL,
 
   language: 'en-US',
   locale: 'en-US',
 
-  socialBanner: `${SITE_URL}/images/social-banner.webp`,
+  socialBanner: `${SITE_URL}/images/social-banner.png`,
 
   // social links
-  github: 'https://github.com/NarsiBhati-Dev/CoSketch.git',
-  linkedIn: 'https://www.linkedin.com/in/narsi-bhati-b43459224/',
-  twitter: 'https://x.com/NarsiBhati31',
+  linkedIn: 'https://www.linkedin.com/in/moyaqoob/',
+  twitter: 'https://x.com/aliyaqoob_',
 
   // contacts
-  email: 'narsibhati2000@gmail.com',
+  email: 'moyaqoob28@gmail.com',
 };
 
 export default siteMetadata;

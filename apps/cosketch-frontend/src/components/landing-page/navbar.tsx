@@ -20,13 +20,7 @@ const Navbar = () => {
         ))}
 
         <li>
-          <a
-            href={siteMetadata.github}
-            target='_blank'
-            className='hover:text-primary-chubb text-base transition'
-          >
-            Github
-          </a>
+         
         </li>
 
         <li>

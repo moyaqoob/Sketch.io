@@ -13,7 +13,7 @@ const Logo = () => {
     >
       <Image
         src={'/images/logo.png'}
-        alt={'CoSketch logo'}
+        alt={'Sketch.io logo'}
         width={40}
         height={40}
         priority
@@ -21,7 +21,7 @@ const Logo = () => {
       />
 
       <h1
-        className={`${knewave.className} text-secondary text-2xl font-extrabold md:text-3xl`}
+        className={`${knewave.className} text-primary text-2xl font-extrabold md:text-3xl`}
       >
         {siteMetadata.header}
       </h1>

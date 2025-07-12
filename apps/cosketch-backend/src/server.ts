@@ -12,7 +12,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://www.cosketch.xyz", FRONTEND_URL],
+    origin: ["http://localhost:3000", FRONTEND_URL],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -25,7 +25,7 @@ app.use(express.json());
 app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
-    message: "Welcome to COSKETCH!",
+    message: "Welcome to Sketch.io!",
   });
 });
 

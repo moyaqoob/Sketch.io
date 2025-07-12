@@ -1,6 +1,6 @@
-# 🏷️ CoSketch Types
+# 🏷️ Sketch.io Types
 
-This package contains TypeScript type definitions shared across the CoSketch project.
+This package contains TypeScript type definitions shared across the Sketch.io project.
 
 ## 📦 Installation
 
@@ -21,7 +21,7 @@ bun run
 ## 📂 Project Structure
 
 ```bash
-CoSketch/types
+Sketch.io/types
 │── src/            # Shared type definitions
 │── index.ts        # Entry point for exports
 │── package.json    # Package configuration

@@ -11,13 +11,6 @@ const featureItems = [
     icon: <Share2 className='h-10 w-10 text-blue-600' />,
   },
   {
-    id: 2,
-    title: 'Team Workspaces',
-    description:
-      'Create and manage multiple workspaces for different teams and projects.',
-    icon: <Users className='h-10 w-10 text-green-600' />,
-  },
-  {
     id: 3,
     title: 'Cloud Storage',
     description:
@@ -38,13 +31,7 @@ const featureItems = [
       'Optimized performance for smooth drawing and collaboration experience.',
     icon: <Zap className='h-10 w-10 text-red-600' />,
   },
-  {
-    id: 6,
-    title: 'Custom Styles',
-    description:
-      'Personalize your drawings with custom colors, fonts, and styles.',
-    icon: <Pencil className='h-10 w-10 text-indigo-600' />,
-  },
+
 ];
 
 export function Features() {
@@ -59,7 +46,7 @@ export function Features() {
             Robust Features
           </Animation>
         </h2>
-        <div className='grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3'>
+        <div className='grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4'>
           {featureItems.map(item => (
             <Card
               key={item.id}

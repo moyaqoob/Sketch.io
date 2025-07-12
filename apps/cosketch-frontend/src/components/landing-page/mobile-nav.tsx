@@ -90,16 +90,6 @@ const MobileNav = () => {
               </li>
             ))}
 
-            <li className='mt-6'>
-              <a
-                href={siteMetadata.github}
-                target='_blank'
-                onClick={() => setIsOpen(false)}
-                className='hover:text-primary text-2xl transition'
-              >
-                Github
-              </a>
-            </li>
 
             <li className='mt-8'>
               <Link

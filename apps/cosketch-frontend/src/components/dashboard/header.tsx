@@ -11,7 +11,7 @@ const DashboardHeader = () => {
         <div className='ml-1 flex items-center justify-center gap-3'>
           <Image
             src={'/images/logo.png'}
-            alt={'CoSketch logo'}
+            alt={'Sketch.io logo'}
             width={40}
             height={40}
             priority

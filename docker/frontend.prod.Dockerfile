@@ -21,7 +21,7 @@ COPY ../package.json ./package.json
 COPY ../bun.lock ./bun.lock
 COPY ../turbo.json ./turbo.json
 COPY ../packages ./packages
-COPY ../apps/cosketch-frontend ./apps/cosketch-frontend
+COPY ../apps/Sketch.io-frontend ./apps/Sketch.io-frontend
 
 # Install dependencies
 RUN bun install

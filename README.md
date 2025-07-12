@@ -1,31 +1,31 @@
-# CoSketch
+# Sketch.io
 
-![CoSketch banner](https://github.com/NarsiBhati-Dev/CoSketch/blob/master/apps/cosketch-frontend/public/images/social-banner.webp?raw=true)
+![Sketch.io banner](https://github.com/yaqoobBhati-Dev/Sketch.io/blob/master/apps/Sketch.io-frontend/public/images/social-banner.webp?raw=true)
 
-CoSketch is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
+Sketch.io is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
 
-## 🎬 CoSketch Demo
+## 🎬 Sketch.io Demo
 
-[![Watch the CoSketch Demo](https://img.youtube.com/vi/m_uOsRsr8bw/maxresdefault.jpg)](https://www.youtube.com/watch?v=m_uOsRsr8bw)
+[![Watch the Sketch.io Demo](https://img.youtube.com/vi/m_uOsRsr8bw/maxresdefault.jpg)](https://www.youtube.com/watch?v=m_uOsRsr8bw)
 
 ## Code of Conduct
 
-Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) to help keep **CoSketch** a welcoming and inclusive space for everyone
+Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) to help keep **Sketch.io** a welcoming and inclusive space for everyone
 
 ## License
 
-This project is licensed under the [CoSketch Custom License](./LICENSE.md).
+This project is licensed under the [Sketch.io Custom License](./LICENSE.md).
 
 ## 🏗 Project Structure
 
 This monorepo is managed using **Turborepo** and is structured as follows:
 
 ```sh
-cosketch/
+Sketch.io/
 ├── apps/ # Contains independent applications
-│   ├── cosketch-frontend/        # Next.js app for the UI
-│   ├── cosketch-backend/         # Express backend for API handling
-│   ├── cosketch-websocket/       # WebSocket server for real-time collaboration
+│   ├── Sketch.io-frontend/        # Next.js app for the UI
+│   ├── Sketch.io-backend/         # Express backend for API handling
+│   ├── Sketch.io-websocket/       # WebSocket server for real-time collaboration
 ├── packages/ # Shared code across apps
 │   ├── database/        # Prisma & PostgreSQL setup
 │   ├── types/           # Shared TypeScript types
@@ -48,7 +48,7 @@ cosketch/
 
 ## 🧩 Features
 
-CoSketch offers a rich set of features for real-time collaborative sketching:
+Sketch.io offers a rich set of features for real-time collaborative sketching:
 
 - 🎨 **Shape Drawing**  
   Supports essential diagramming shapes:
@@ -98,7 +98,7 @@ CoSketch offers a rich set of features for real-time collaborative sketching:
 
 ## 🚀 Getting Started
 
-Follow these steps to get **CoSketch** up and running locally:
+Follow these steps to get **Sketch.io** up and running locally:
 
 ### Prerequisites
 
@@ -284,9 +284,9 @@ GitHub Actions workflows in the `.github/workflows` directory automate the deplo
     "dev": "turbo run dev",
     "build": "turbo run build",
     "start": "turbo run start",
-    "start:frontend": "turbo run start:frontend --filter=cosketch-frontend",
-    "start:backend": "turbo run start:backend --filter=cosketch-backend",
-    "start:websocket": "turbo run start:websocket --filter=cosketch-websocket",
+    "start:frontend": "turbo run start:frontend --filter=Sketch.io-frontend",
+    "start:backend": "turbo run start:backend --filter=Sketch.io-backend",
+    "start:websocket": "turbo run start:websocket --filter=Sketch.io-websocket",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",

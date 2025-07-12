@@ -14,7 +14,7 @@ COPY ../package.json ./package.json
 COPY ../bun.lock ./bun.lock
 COPY ../turbo.json ./turbo.json
 COPY ../packages ./packages
-COPY ../apps/cosketch-backend ./apps/cosketch-backend
+COPY ../apps/Sketch.io-backend ./apps/Sketch.io-backend
 
 # Install deps
 RUN bun install

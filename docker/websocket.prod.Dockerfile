@@ -14,7 +14,7 @@ COPY ../package.json ./package.json
 COPY ../bun.lock ./bun.lock
 COPY ../turbo.json ./turbo.json
 COPY ../packages ./packages
-COPY ../apps/cosketch-websocket ./apps/cosketch-websocket
+COPY ../apps/Sketch.io-websocket ./apps/Sketch.io-websocket
 
 # Install deps
 RUN bun install

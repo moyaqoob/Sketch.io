@@ -1,6 +1,6 @@
-# 🖥️ CoSketch - NGINX Reverse Proxy + SSL Setup
+# 🖥️ Sketch.io - NGINX Reverse Proxy + SSL Setup
 
-This README describes how to set up NGINX as a reverse proxy for the CoSketch project, including WebSocket support and HTTPS via Let's Encrypt (Certbot).
+This README describes how to set up NGINX as a reverse proxy for the Sketch.io project, including WebSocket support and HTTPS via Let's Encrypt (Certbot).
 
 ---
 
@@ -8,9 +8,9 @@ This README describes how to set up NGINX as a reverse proxy for the CoSketch pr
 
 | Subdomain             | Port | Service     | Description                          |
 | --------------------- | ---- | ----------- | ------------------------------------ |
-| `cosketch.xyz`        | 3000 | Frontend    | Main frontend                        |
-| `server.cosketch.xyz` | 9000 | Backend API | Handles REST API requests            |
-| `socket.cosketch.xyz` | 8000 | WebSocket   | Handles real-time socket connections |
+| `Sketch.io.xyz`        | 3000 | Frontend    | Main frontend                        |
+| `server.Sketch.io.xyz` | 9000 | Backend API | Handles REST API requests            |
+| `socket.Sketch.io.xyz` | 8000 | WebSocket   | Handles real-time socket connections |
 
 ---
 
@@ -46,7 +46,7 @@ http {
     # -------------------------------
     server {
         listen 80;
-        server_name socket.cosketch.xyz;
+        server_name socket.Sketch.io.xyz;
 
         access_log off; # Disable access logs
         error_log /var/log/nginx/ws.error.log warn; # Log only warnings and errors
@@ -72,7 +72,7 @@ http {
     # -------------------------------
     server {
         listen 80;
-        server_name server.cosketch.xyz;
+        server_name server.Sketch.io.xyz;
 
         access_log off;
         error_log /var/log/nginx/backend.error.log warn;
@@ -93,7 +93,7 @@ http {
     # -------------------------------
     server {
         listen 80;
-        server_name cosketch.xyz www.cosketch.xyz;
+        server_name Sketch.io.xyz www.Sketch.io.xyz;
 
         access_log off;
         error_log /var/log/nginx/frontend.error.log warn;
@@ -166,13 +166,13 @@ sudo apt install certbot python3-certbot-nginx
 Step 2: Generate SSL Certificates
 
 ```bash
-sudo certbot --nginx -d server.cosketch.xyz -d socket.cosketch.xyz
+sudo certbot --nginx -d server.Sketch.io.xyz -d socket.Sketch.io.xyz
 ```
 
 If you later add the frontend:
 
 ```bash
-sudo certbot --nginx -d cosketch.xyz -d www.cosketch.xyz
+sudo certbot --nginx -d Sketch.io.xyz -d www.Sketch.io.xyz
 ```
 
 Step 3: Test Auto-Renewal
@@ -188,7 +188,7 @@ WebSocket over HTTPS (WSS)
 Use the wss:// protocol on the frontend:
 
 ```ts
-const socket = new WebSocket("wss://socket.cosketch.xyz");
+const socket = new WebSocket("wss://socket.Sketch.io.xyz");
 ```
 
 ⸻

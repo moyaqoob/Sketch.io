@@ -16,7 +16,7 @@ const Actions = () => {
       <ActionCard
         title='Create New Room'
         description='Start a new collaborative drawing session'
-        icon={<Plus className='h-8 w-8 text-red-500' />}
+        icon={<Plus className='h-8 w-8 text-black' />}
         onClick={() => setCreateRoom(true)}
       />
 
@@ -24,7 +24,7 @@ const Actions = () => {
       <ActionCard
         title='Join Existing Room'
         description='Enter a room code to collaborate'
-        icon={<Users className='h-8 w-8 text-green-600' />}
+        icon={<Users className='h-8 w-8 text-black' />}
         onClick={() => setJoinRoom(true)}
       />
 

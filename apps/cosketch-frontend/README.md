@@ -1,6 +1,6 @@
-# CoSketch Frontend
+# Sketch.io Frontend
 
-CoSketch Frontend is a **real-time collaborative drawing application** built with **Next.js 15**, **React 19**, and **Bun** as the package manager. It is part of the **CoSketch monorepo** managed using **Turborepo**.
+Sketch.io Frontend is a **real-time collaborative drawing application** built with **Next.js 15**, **React 19**, and **Bun** as the package manager. It is part of the **Sketch.io monorepo** managed using **Turborepo**.
 
 ## 🚀 Features
 
@@ -13,7 +13,7 @@ CoSketch Frontend is a **real-time collaborative drawing application** built wit
 ## 🏗 Folder Structure
 
 ```sh
-cosketch-frontend/
+Sketch.io-frontend/
 ├── public/ # Static assets
 │   ├── favicons/ # Favicon images
 │   ├── images/ # Logos and banners
@@ -83,6 +83,6 @@ bun run start
 
 ## 📸 UI Preview
 
-![CoSketch UI](public/images/social-banner-4.jpeg)
+![Sketch.io UI](public/images/social-banner-4.jpeg)
 
 🚀 **"Sketch Together, Think Better."**

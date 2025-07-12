@@ -3,26 +3,26 @@
 @theme {
   /* Custom Colors */
 
-  --color-primary: #6965db;
-  --color-primary-chubb: #625ee0;
-  --color-primary-darker: #5b57d1;
-  --color-primary-darkest: #4a47b1;
-  --color-primary-light: #e2e1fc;
+  --color-primary:        #1a1a1a;  /* Dark gray, readable but deep */
+--color-primary-chubb:  #141414;  /* Slightly darker */
+--color-primary-darker: #0d0d0d;  /* Near-black */
+--color-primary-darkest:#000000;  /* Pure black */
+--color-primary-light:  #2a2a2a;  /* Lightest shade (still dark UI friendly) */
 
-  --color-secondary: #223082;
 
-  /* --color-background: #1f1f1f; */
-  --color-background: #232329;
-  --color-light_background: #2a2a2a;
-  --color-lighter_background: #191919;
+  --color-secondary: #1e3a8a;            /* deep blue (matching tone) */
 
-  --color-tool_select: #47456d;
+  --color-background: #232329;           /* unchanged */
+  --color-light_background: #2a2a2a;     /* unchanged */
+  --color-lighter_background: #191919;   /* unchanged */
+
+  --color-tool_select: #3a4a6d;          /* blue-gray (was purple-ish) */
 
   /* Custom BG Colors */
 
-  --color-background_yellow: #fffceb;
-  --color-background_green: #d1fae5;
-  --color-background_blue: #f0f9ff;
+  --color-background_yellow: #fefcbf;    /* lighter soft yellow */
+  --color-background_green: #dcfce7;     /* lighter green tone */
+  --color-background_blue: #e0f2fe;      /* softer sky blue */
 }
 
 html {

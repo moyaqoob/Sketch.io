@@ -12,18 +12,8 @@ export const passwordSchema = z
   .string()
   .trim()
   .nonempty({ message: "Password is required" })
-  .min(8, { message: "Password must be at least 8 characters long" })
-  .max(64, { message: "Password cannot exceed 64 characters" })
-  .regex(/[A-Z]/, {
-    message: "Password must include at least one uppercase letter",
-  })
-  .regex(/[a-z]/, {
-    message: "Password must include at least one lowercase letter",
-  })
-  .regex(/\d/, { message: "Password must include at least one number" })
-  .regex(/[^A-Za-z0-9]/, {
-    message: "Password must include at least one special character",
-  });
+  .min(6, { message: "Password must be at least 6 characters long" });
+
 
 // Name Schema
 export const nameSchema = z
@@ -32,6 +22,7 @@ export const nameSchema = z
   .nonempty({ message: "Name is required" })
   .min(2, { message: "Name must be at least 2 characters long" })
   .max(50, { message: "Name cannot exceed 50 characters" });
+
 
 // Create User Schema (Signup)
 export const CreateUserSchema = z.object({

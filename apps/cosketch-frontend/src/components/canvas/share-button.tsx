@@ -22,8 +22,8 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
     }
   }, []);
 
-  const shareMessage = `🎨 JOIN MY COSKETCH ROOM! ✨
-🚀 Let's collaborate in real-time on CoSketch and bring ideas to life!
+  const shareMessage = `🎨 JOIN MY Sketch.io ROOM! ✨
+🚀 Let's collaborate in real-time on Sketch.io and bring ideas to life!
 
 🔹 ROOM ID: ${roomId}
 🔹 JOIN FROM DASHBOARD: ${dashboardUrl}
@@ -51,7 +51,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ roomId }) => {
     setIsProcessing(true);
     try {
       await navigator.share({
-        title: 'Join My CoSketch Room!',
+        title: 'Join My Sketch.io Room!',
         text: shareMessage,
         url: dashboardUrl,
       });

@@ -18,8 +18,8 @@ interface AnimationProps {
 }
 
 const Animation = ({
-  type = 'highlight',
-  color = '#A7EFC2',
+  type = "underline",
+  color = '		#00F0FF',
   children,
 }: AnimationProps) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -52,8 +52,8 @@ const Animation = ({
         type={type}
         show={isVisible}
         color={color}
-        strokeWidth={2}
-        animationDuration={800}
+        strokeWidth={1}
+        animationDuration={1000}
         brackets={['left', 'right']}
       >
         {children}

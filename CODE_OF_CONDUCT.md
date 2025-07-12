@@ -1,10 +1,10 @@
 # Code of Conduct
 
-We are committed to providing a welcoming and inclusive community for all users and contributors of **CoSketch**. By participating in this project, you agree to abide by the following guidelines and help maintain a positive, respectful environment for everyone.
+We are committed to providing a welcoming and inclusive community for all users and contributors of **Sketch.io**. By participating in this project, you agree to abide by the following guidelines and help maintain a positive, respectful environment for everyone.
 
 ## Our Pledge
 
-In the interest of fostering an open and welcoming environment, we pledge to make participation in **CoSketch** a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
+In the interest of fostering an open and welcoming environment, we pledge to make participation in **Sketch.io** a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 ## Our Standards
 
@@ -17,7 +17,7 @@ Examples of behavior that contribute to a positive and productive environment in
 
 ## Unacceptable Behavior
 
-The following behaviors are considered unacceptable in **CoSketch**:
+The following behaviors are considered unacceptable in **Sketch.io**:
 
 - **Harassment**: Any form of harassment, including but not limited to offensive comments, threats, or unwanted attention.
 - **Discrimination**: Discriminatory remarks or actions based on race, gender, sexual orientation, religion, disability, or any other personal characteristic.
@@ -35,4 +35,4 @@ We encourage all contributors and users to communicate and resolve conflicts in 
 
 ## Why This Matters
 
-By adhering to this Code of Conduct, we ensure that **CoSketch** remains a safe, collaborative space for everyone. Let's work together to build a better, more inclusive community!
+By adhering to this Code of Conduct, we ensure that **Sketch.io** remains a safe, collaborative space for everyone. Let's work together to build a better, more inclusive community!

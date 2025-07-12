@@ -1,4 +1,4 @@
-# Docker Compose configuration for CoSketch (Frontend, Backend, WebSocket, PostgreSQL)
+# Docker Compose configuration for Sketch.io (Frontend, Backend, WebSocket, PostgreSQL)
 services:
   frontend:
     build:
@@ -25,14 +25,14 @@ services:
       context: .
       dockerfile: docker/backend.prod.Dockerfile
       args:
-        DATABASE_URL: postgresql://narsi:secretpassword@database:5432/cosketch
+        DATABASE_URL: postgresql://yaqoob:secretpassword@database:5432/Sketch.io
     ports:
       - "9000:9000"
     depends_on:
       database:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://narsi:secretpassword@database:5432/cosketch
+      DATABASE_URL: postgresql://yaqoob:secretpassword@database:5432/Sketch.io
       JWT_SECRET: your_jwt_secret_here
       JWT_EXPIRES_IN: 1d
       FRONTEND_URL: http://localhost:3000
@@ -48,14 +48,14 @@ services:
       context: .
       dockerfile: docker/websocket.prod.Dockerfile
       args:
-        DATABASE_URL: postgresql://narsi:secretpassword@database:5432/cosketch
+        DATABASE_URL: postgresql://yaqoob:secretpassword@database:5432/Sketch.io
     ports:
       - "8000:8000"
     depends_on:
       database:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://narsi:secretpassword@database:5432/cosketch
+      DATABASE_URL: postgresql://yaqoob:secretpassword@database:5432/Sketch.io
       JWT_SECRET: your_jwt_secret_here
     restart: unless-stopped
 
@@ -63,15 +63,15 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_USER: narsi
+      POSTGRES_USER: yaqoob
       POSTGRES_PASSWORD: secretpassword
-      POSTGRES_DB: cosketch
+      POSTGRES_DB: Sketch.io
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U narsi -d cosketch"]
+      test: ["CMD-SHELL", "pg_isready -U yaqoob -d Sketch.io"]
       interval: 5s
       timeout: 5s
       retries: 5

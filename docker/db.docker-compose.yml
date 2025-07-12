@@ -5,9 +5,9 @@ services:
     container_name: local_postgres
     restart: always
     environment:
-      POSTGRES_USER: narsi
+      POSTGRES_USER: yaqoob
       POSTGRES_PASSWORD: secretpassword
-      POSTGRES_DB: cosketch
+      POSTGRES_DB: Sketch.io
     ports:
       - "5432:5432"
     volumes:

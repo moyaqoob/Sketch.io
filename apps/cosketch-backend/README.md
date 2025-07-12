@@ -1,6 +1,6 @@
-# 🛠️ CoSketch Backend
+# 🛠️ Sketch.io Backend
 
-CoSketch is a **real-time collaborative drawing application**, and this repository contains its **backend API**, built with **Express.js** and **Bun**. It manages **user authentication, room handling, and API logic** within a **Turborepo monorepo** setup.
+Sketch.io is a **real-time collaborative drawing application**, and this repository contains its **backend API**, built with **Express.js** and **Bun**. It manages **user authentication, room handling, and API logic** within a **Turborepo monorepo** setup.
 
 ---
 
@@ -19,7 +19,7 @@ CoSketch is a **real-time collaborative drawing application**, and this reposito
 ## 💂️ Folder Structure
 
 ```sh
-cosketch-backend/
+Sketch.io-backend/
 ├── src/             # Source code
 │   ├── config/      # Configuration (env variables, database setup)
 │   ├── controllers/ # Business logic for API endpoints

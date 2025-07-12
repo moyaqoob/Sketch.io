@@ -9,15 +9,15 @@ import {
 
 import { auth } from "../middleware/auth";
 
-const router = express.Router();
+const roomRouter = express.Router();
 
-router.use(auth);
+roomRouter.use(auth);
 
-router.post("/create-room", CreateRoom);
-router.post("/join-room", joinRoom);
-router.post("/leave-or-delete", leaveRoom);
-router.post("/verify", VerifyUserInRoom);
+roomRouter.post("/create-room", CreateRoom);
+roomRouter.post("/join-room", joinRoom);
+roomRouter.post("/leave-or-delete", leaveRoom);
+roomRouter.post("/verify", VerifyUserInRoom);
 
-router.get("/rooms", getRooms);
+roomRouter.get("/rooms", getRooms);
 
-export default router;
+export default roomRouter;

@@ -1,6 +1,6 @@
-# CoSketch WebSocket
+# Sketch.io WebSocket
 
-CoSketch WebSocket is the real-time communication server for **CoSketch**, enabling collaborative sketching with instant updates using WebSockets. Built with **Bun** for performance and efficiency.
+Sketch.io WebSocket is the real-time communication server for **Sketch.io**, enabling collaborative sketching with instant updates using WebSockets. Built with **Bun** for performance and efficiency.
 
 ## 🚀 Getting Started
 

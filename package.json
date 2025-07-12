@@ -1,5 +1,5 @@
 {
-  "name": "cosketch",
+  "name": "Sketch.io",
   "private": true,
   "packageManager": "bun@1.2.5",
   "engines": {
@@ -13,9 +13,9 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "start": "turbo run start",
-    "start:frontend": "turbo run start:frontend --filter=cosketch-frontend",
-    "start:backend": "turbo run start:backend --filter=cosketch-backend",
-    "start:websocket": "turbo run start:websocket --filter=cosketch-websocket",
+    "start:frontend": "turbo run start:frontend --filter=Sketch.io-frontend",
+    "start:backend": "turbo run start:backend --filter=Sketch.io-backend",
+    "start:websocket": "turbo run start:websocket --filter=Sketch.io-websocket",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",

@@ -1,15 +1,15 @@
-name: CoSketch backend
+name: Sketch.io backend
 
-on: 
-  push: 
-    branches: [ master ]
-    paths: 
-      - 'apps/cosketch-backend/**'
-      - 'packages/**'
-      - '.github/workflows/cd_backend.yml'
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/Sketch.io-backend/**"
+      - "packages/**"
+      - ".github/workflows/cd_backend.yml"
 
-jobs: 
-  build: 
+jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code backend
@@ -28,8 +28,8 @@ jobs:
           file: ./docker/backend.prod.Dockerfile
           push: true
           tags: |
-            narsibhati6545/cosketch-backend:${{ github.sha }} 
-            narsibhati6545/cosketch-backend:latest
+            mohdyaqoob/Sketch.io-backend:${{ github.sha }} 
+            mohdyaqoob/Sketch.io-backend:latest
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
@@ -39,15 +39,15 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            sudo docker pull narsibhati6545/cosketch-backend:latest
+            sudo docker pull mohdyaqoob/Sketch.io-backend:latest
 
-            if sudo docker ps -a --format '{{.Names}}' | grep -q "^cosketch-backend$"; then
-              sudo docker stop cosketch-backend
-              sudo docker rm cosketch-backend
+            if sudo docker ps -a --format '{{.Names}}' | grep -q "^Sketch.io-backend$"; then
+              sudo docker stop Sketch.io-backend
+              sudo docker rm Sketch.io-backend
             fi
 
             sudo docker run -d \
-              --name cosketch-backend \
+              --name Sketch.io-backend \
               -e NODE_ENV=production \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
@@ -55,9 +55,7 @@ jobs:
               -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
               -p 9000:9000 \
               --restart always \
-              narsibhati6545/cosketch-backend:latest
+              mohdyaqoob/Sketch.io-backend:latest
 
-            echo "CoSketch backend deployed successfully!"
+            echo "Sketch.io backend deployed successfully!"
             sudo docker image prune -f --filter "until=24h"
-
-     

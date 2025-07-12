@@ -1,15 +1,15 @@
-name: CoSketch websocket
+name: Sketch.io websocket
 
-on: 
-  push: 
-    branches: [ master ]
-    paths: 
-      - 'apps/cosketch-websocket/**'
-      - 'packages/**'
-      - '.github/workflows/cd_websocket.yml'
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/Sketch.io-websocket/**"
+      - "packages/**"
+      - ".github/workflows/cd_websocket.yml"
 
-jobs: 
-  build: 
+jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code websocket
@@ -28,8 +28,8 @@ jobs:
           file: ./docker/websocket.prod.Dockerfile
           push: true
           tags: |
-            narsibhati6545/cosketch-websocket:${{ github.sha }} 
-            narsibhati6545/cosketch-websocket:latest
+            mohdyaqoob/Sketch.io-websocket:${{ github.sha }} 
+            mohdyaqoob/Sketch.io-websocket:latest
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
@@ -39,21 +39,21 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            sudo docker pull narsibhati6545/cosketch-websocket:latest
+            sudo docker pull mohdyaqoob/Sketch.io-websocket:latest
 
-            if sudo docker ps -a --format '{{.Names}}' | grep -q "^cosketch-websocket$"; then
-              sudo docker stop cosketch-websocket
-              sudo docker rm cosketch-websocket
+            if sudo docker ps -a --format '{{.Names}}' | grep -q "^Sketch.io-websocket$"; then
+              sudo docker stop Sketch.io-websocket
+              sudo docker rm Sketch.io-websocket
             fi
 
             sudo docker run -d \
-              --name cosketch-websocket \
+              --name Sketch.io-websocket \
               -e NODE_ENV=production \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -p 8000:8000 \
               --restart always \
-              narsibhati6545/cosketch-websocket:latest
+              mohdyaqoob/Sketch.io-websocket:latest
 
-            echo "CoSketch WebSocket deployed successfully!"
+            echo "Sketch.io WebSocket deployed successfully!"
             sudo docker image prune -f --filter "until=24h"

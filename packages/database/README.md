@@ -1,17 +1,17 @@
-# CoSketch Database
+# Sketch.io Database
 
-This package manages the database setup, migrations, and interactions for the CoSketch application using **Prisma** and **PostgreSQL**.
+This package manages the database setup, migrations, and interactions for the Sketch.io application using **Prisma** and **PostgreSQL**.
 
 ## 📌 Overview
 
-This module is part of the CoSketch monorepo and provides database access to other services within the application.
+This module is part of the Sketch.io monorepo and provides database access to other services within the application.
 
 ![Database Schema](./database-schema.png)
 
 ## 📂 Project Structure
 
 ```sh
-CoSketch/database
+Sketch.io/database
 │── prisma/          # Prisma schema and migrations
 │   ├── schema.prisma  # Database schema
 │   ├── migrations/    # Migration files

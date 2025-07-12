@@ -1,15 +1,15 @@
-import type { Metadata } from 'next';
 import '@/styles/globals.css';
+import type { Metadata } from 'next';
 
 import { space_grotesk } from '@/data/fonts';
 import ReactQueryProvider from '@/lib/react-query';
-import { Toaster } from 'react-hot-toast';
 import siteMetadata from '@/lib/siteMetadata';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
-    default: 'CoSketch | Sketch Together, Think Better',
+    default: 'Sketch.io | Sketch Together, Think Better',
     template: `%s | ${siteMetadata.title}`,
   },
 
@@ -52,21 +52,14 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       {/* Favicons */}
-      <link
-        rel='icon'
-        type='image/png'
-        href='/favicons/favicon-96x96.png'
-        sizes='96x96'
-      />
-      <link rel='icon' type='image/svg+xml' href='/favicons/favicon.svg' />
-      <link rel='shortcut icon' href='/favicons/favicon.ico' />
-      <link
-        rel='apple-touch-icon'
-        sizes='180x180'
-        href='/favicons/apple-touch-icon.png'
-      />
-      <meta name='apple-mobile-web-app-title' content='CoSketch' />
+      <link rel='icon' type='image/png' href='/images/social-banner.png' sizes='96x96' />
+      <link rel='icon' type='image/svg+xml' href='/images/social-banner.svg' />
+      <link rel='shortcut icon' href='/images/logo.png' />
+      <link rel='apple-touch-icon' sizes='180x180' href='/images/logo.png' />
+      <meta name='apple-mobile-web-app-title' content='Sketch.io' />
       <link rel='manifest' href='/favicons/site.webmanifest' />
+      <meta property='og:image' content='/images/social-banner.png' />
+      <meta name='twitter:image' content='/images/social-banner.png' />
 
       <body className={`${space_grotesk.className} scroll-smooth antialiased`}>
         <ReactQueryProvider>
