@@ -1,12 +1,9 @@
 # Sketch.io
 
-![Sketch.io banner](https://github.com/yaqoobBhati-Dev/Sketch.io/blob/master/apps/Sketch.io-frontend/public/images/social-banner.webp?raw=true)
+![Sketch.io banner](https://github.com/yaqoobBhati-Dev/Sketch.io/blob/master/apps/Sketch.io-frontend/public/images/social-banner.png?raw=true)
 
 Sketch.io is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
 
-## 🎬 Sketch.io Demo
-
-[![Watch the Sketch.io Demo](https://img.youtube.com/vi/m_uOsRsr8bw/maxresdefault.jpg)](https://www.youtube.com/watch?v=m_uOsRsr8bw)
 
 ## Code of Conduct
 
