@@ -20,10 +20,9 @@ export const createCanvas = async ({
   });
 };
 
-
 export const deleteUserCanvasInRoom = async (
   roomId: string,
-  userId: string
+  userId: string,
 ) => {
   const existingCanvas = await client.canvas.findFirst({
     where: { roomId: roomId, userId },
@@ -35,7 +34,6 @@ export const deleteUserCanvasInRoom = async (
 
   return await client.canvas.deleteMany({ where: { roomId: roomId, userId } });
 };
-
 
 export const clearRoomCanvas = async (roomId: string) => {
   const existingCanvas = await client.canvas.findMany({
@@ -51,7 +49,6 @@ export const clearRoomCanvas = async (roomId: string) => {
   });
 };
 
-
 export const getRoomCanvas = async (roomId: string) => {
   return await client.canvas.findMany({
     where: { roomId },
@@ -60,20 +57,17 @@ export const getRoomCanvas = async (roomId: string) => {
   });
 };
 
-
 export const getCanvasShape = async (shapeId: string) => {
   return await client.canvas.findUnique({
     where: { id: shapeId },
   });
 };
 
-
 export const deleteCanvasShape = async (shapeId: string) => {
   return await client.canvas.delete({
     where: { id: shapeId },
   });
 };
-
 
 export const updateCanvasShape = async (shapeId: string, updateData: Shape) => {
   return await client.canvas.update({

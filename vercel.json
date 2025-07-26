@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/cosketch-frontend/next.config.js",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "apps/cosketch-backend/src/server.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "apps/cosketch-websocket/src/server.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "apps/cosketch-backend/src/server.ts"
+    },
+    {
+      "src": "/ws/(.*)",
+      "dest": "apps/cosketch-websocket/src/server.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "apps/cosketch-frontend/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  }
+}

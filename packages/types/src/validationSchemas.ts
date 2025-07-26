@@ -14,7 +14,6 @@ export const passwordSchema = z
   .nonempty({ message: "Password is required" })
   .min(6, { message: "Password must be at least 6 characters long" });
 
-
 // Name Schema
 export const nameSchema = z
   .string()
@@ -22,7 +21,6 @@ export const nameSchema = z
   .nonempty({ message: "Name is required" })
   .min(2, { message: "Name must be at least 2 characters long" })
   .max(50, { message: "Name cannot exceed 50 characters" });
-
 
 // Create User Schema (Signup)
 export const CreateUserSchema = z.object({

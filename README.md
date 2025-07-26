@@ -4,7 +4,6 @@
 
 Sketch.io is a **real-time collaborative drawing application** built using **Turborepo** and **Bun**. It includes separate apps for the frontend, backend API, and WebSocket server to enable seamless collaboration.
 
-
 ## Code of Conduct
 
 Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) to help keep **Sketch.io** a welcoming and inclusive space for everyone

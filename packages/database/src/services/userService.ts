@@ -3,7 +3,7 @@ import { client } from "..";
 export const createUser = async (
   email: string,
   hashedPassword: string,
-  name: string
+  name: string,
 ) => {
   return client.user.create({
     data: {
@@ -15,17 +15,16 @@ export const createUser = async (
 };
 
 export const getUserByEmail = async (email: string) => {
-  if(!email){
+  if (!email) {
     return;
   }
-  console.log("reached here",email)
+  console.log("reached here", email);
   return await client.user.findUnique({
     where: {
       email,
     },
   });
 };
-
 
 export const getUserById = async (id: string) => {
   return await client.user.findUnique({
