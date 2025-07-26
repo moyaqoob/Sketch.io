@@ -34,7 +34,7 @@ export const isUserInRoom = (socket: WebSocket, roomId: string): boolean => {
 export const broadcastToRoom = (
   roomId: string,
   message: OutgoinMessage,
-  excludeSocket?: WebSocket
+  excludeSocket?: WebSocket,
 ) => {
   if (!rooms[roomId]) return;
   const data = JSON.stringify(message);
