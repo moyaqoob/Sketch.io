@@ -7,21 +7,19 @@ import { getUserByEmail } from "@repo/database";
 import { generateToken } from "../utils/jwt";
 import type { AuthRequest } from "../utils/request-type";
 
-
-export const test = async(req:Request,res:Response)=>{
-  try{
-    console.log("test is working well")
-  }catch(err){
-    console.error("cant able to test the test")
+export const test = async (req: Request, res: Response) => {
+  try {
+    console.log("test is working well");
+  } catch (err) {
+    console.error("cant able to test the test");
   }
-}
-
+};
 
 export const signup = async (req: Request, res: Response) => {
   try {
     // Validate request
     const parsedData = CreateUserSchema.safeParse(req.body);
-    console.log("parsed the data")
+    console.log("parsed the data");
     if (!parsedData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
@@ -60,7 +58,6 @@ export const signup = async (req: Request, res: Response) => {
     return;
   }
 };
-
 
 export const signin = async (req: Request, res: Response) => {
   try {
@@ -117,7 +114,6 @@ export const signin = async (req: Request, res: Response) => {
   }
 };
 
-
 export const me = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.auth?.id) {
@@ -129,7 +125,7 @@ export const me = async (req: AuthRequest, res: Response) => {
     }
 
     const user = await getUserById(req.auth.id);
-    console.log(user)
+    console.log(user);
 
     if (!user) {
       res.status(HttpStatus.NOT_FOUND).json({

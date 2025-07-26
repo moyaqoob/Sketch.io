@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "bun run src/server.ts",
-    "start:backend": "bun run src/server.ts"
+    "start:backend": "bun run src/server.ts",
+    "build": "bun build src/server.ts "
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -14,16 +15,20 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@mswjs/interceptors": "^0.39.4",
     "@repo/backend-common": "*",
-    "@repo/types": "*",
     "@repo/database": "*",
+    "@repo/types": "*",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
+    "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mock-aws-s3": "^4.0.2",
+    "nock": "^14.0.6"
   }
 }
