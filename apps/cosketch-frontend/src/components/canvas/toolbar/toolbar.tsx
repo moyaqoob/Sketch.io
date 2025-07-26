@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import React, { useState, useEffect } from 'react';
 import { LucideIcon } from 'lucide-react';
@@ -99,7 +100,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ sendMessage, roomId }) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('mouseup', resetTool);
     };
-  }, [isLocked, selectedTool,handleToolSelect]);
+  }, [isLocked, selectedTool, handleToolSelect]);
 
   return (
     <nav className='bg-background flex items-center justify-between gap-2 rounded-lg px-4 py-1 text-white shadow-md'>

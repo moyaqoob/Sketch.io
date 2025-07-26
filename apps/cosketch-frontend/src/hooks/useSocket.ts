@@ -215,7 +215,7 @@ export const useSocket = ({
 
       socketRef.current = null;
     };
-  }, [connectWebSocket, token,roomId]);
+  }, [connectWebSocket, token, roomId]);
 
   return {
     sendMessage,

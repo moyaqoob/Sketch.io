@@ -135,7 +135,7 @@ const Signup = () => {
               href='/signin'
               className='text-primary-darkest hover:text-primary font-medium transition-all duration-300 hover:underline'
             >
-              Sign up
+              Sign in
             </Link>
           </p>
         </div>

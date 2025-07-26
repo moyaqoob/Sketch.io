@@ -52,7 +52,12 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       {/* Favicons */}
-      <link rel='icon' type='image/png' href='/images/social-banner.png' sizes='96x96' />
+      <link
+        rel='icon'
+        type='image/png'
+        href='/images/social-banner.png'
+        sizes='96x96'
+      />
       <link rel='icon' type='image/svg+xml' href='/images/social-banner.svg' />
       <link rel='shortcut icon' href='/images/logo.png' />
       <link rel='apple-touch-icon' sizes='180x180' href='/images/logo.png' />

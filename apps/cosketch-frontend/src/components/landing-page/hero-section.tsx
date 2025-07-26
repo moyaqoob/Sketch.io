@@ -8,7 +8,7 @@ const HeroSection = () => {
       {/* Headline */}
       <h1 className='flex flex-col items-center justify-between gap-4 text-center text-5xl font-semibold tracking-wide md:gap-2 md:text-6xl lg:flex-row xl:text-7xl'>
         <span>Online </span>
-        <span className={` font-light leading-0`}>
+        <span className={`leading-0 font-light`}>
           <Animation>Whiteboard</Animation>
         </span>
         <span>Made Simple </span>

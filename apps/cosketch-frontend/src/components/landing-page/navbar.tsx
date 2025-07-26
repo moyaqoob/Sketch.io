@@ -18,9 +18,7 @@ const Navbar = () => {
           </li>
         ))}
 
-        <li>
-         
-        </li>
+        <li></li>
 
         <li>
           <Link

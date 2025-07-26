@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { authorize } from '@/api/auth';
 import Spinner from '@/components/spinner';
@@ -37,7 +38,7 @@ const ProtectRoute: React.FC<ProtectRouteProps> = ({ children }) => {
     }
 
     return () => setIsLoading(false);
-  }, [authorizeMutation,router]);
+  }, [router]); // Remove authorizeMutation from dependencies
 
   if (isLoading || authorizeMutation.isPending) {
     return (

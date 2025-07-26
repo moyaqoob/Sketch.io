@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { verifyUserInRoom } from '@/api/room';
 import Spinner from '@/components/spinner';
@@ -38,7 +39,7 @@ const ProtectCanvasRoute = ({ children, roomId }: ProtectCanvasRouteProps) => {
     }
 
     return () => setIsLoading(false);
-  }, [roomId,router,verifyUserInRoomMutation]);
+  }, [roomId, router]);
 
   if (isLoading || verifyUserInRoomMutation.isPending) {
     return (

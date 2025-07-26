@@ -18,7 +18,7 @@ interface AnimationProps {
 }
 
 const Animation = ({
-  type = "underline",
+  type = 'underline',
   color = '		#00F0FF',
   children,
 }: AnimationProps) => {

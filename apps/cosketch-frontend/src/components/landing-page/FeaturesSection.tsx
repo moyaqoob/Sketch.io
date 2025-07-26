@@ -31,7 +31,6 @@ const featureItems = [
       'Optimized performance for smooth drawing and collaboration experience.',
     icon: <Zap className='h-10 w-10 text-red-600' />,
   },
-
 ];
 
 export function Features() {
