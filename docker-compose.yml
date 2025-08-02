@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=cosketch
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./apps/cosketch-backend/Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/excalidraw
+      - JWT_SECRET=123yaqoob
+      - NEXT_PUBLIC_FRONTEND_URL=http://localhost:3000
+    depends_on:
+      - db
+
+  ws-backend:
+    build:
+      context: .
+      dockerfile: ./apps/cosketch-websocket/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/excalidraw
+      - JWT_SECRET=123yaqoob
+    depends_on:
+      - db
+  
+  frontend:
+    build:
+      context: .
+      dockerfile: ./apps/cosketch-frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://backend:3001
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8080
+    depends_on:
+      - backend
+      - ws-backend
+
+volumes:
+  postgres_data:

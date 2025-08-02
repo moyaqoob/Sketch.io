@@ -29,7 +29,7 @@ jobs:
           push: true
           tags: |
             mohdyaqoob/Sketch.io-websocket:${{ github.sha }} 
-            mohdyaqoob/Sketch.io-websocket:latest
+            mohdyaqoob/Sketch.io-websocket:sha
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            sudo docker pull mohdyaqoob/Sketch.io-websocket:latest
+            sudo docker pull mohdyaqoob/Sketch.io-websocket:sha
 
             if sudo docker ps -a --format '{{.Names}}' | grep -q "^Sketch.io-websocket$"; then
               sudo docker stop Sketch.io-websocket
@@ -53,7 +53,7 @@ jobs:
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -p 8000:8000 \
               --restart always \
-              mohdyaqoob/Sketch.io-websocket:latest
+              mohdyaqoob/Sketch.io-websocket:sha
 
             echo "Sketch.io WebSocket deployed successfully!"
             sudo docker image prune -f --filter "until=24h"
