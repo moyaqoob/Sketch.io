@@ -13,7 +13,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: ./apps/cosketch-backend/Dockerfile
+      dockerfile: apps/cosketch-backend/Dockerfile
     ports:
       - "9000:9000"
     environment:
@@ -26,7 +26,7 @@ services:
   ws-backend:
     build:
       context: .
-      dockerfile: ./apps/cosketch-websocket/Dockerfile
+      dockerfile: apps/cosketch-websocket/Dockerfile
     ports:
       - "8080:8080"
     environment:
@@ -38,7 +38,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: ./apps/cosketch-frontend/Dockerfile
+      dockerfile: apps/cosketch-frontend/Dockerfile
     ports:
       - "3000:3000"
     environment:
