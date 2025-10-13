@@ -81,18 +81,12 @@ export const signin = async (req: Request, res: Response) => {
         error: "Invalid email or password",
       });
       return;
-    }
-
+    } 
+  
     // Compare passwords
     const isPasswordValid = await verifyPassword(password, user.password);
 
-    if (!isPasswordValid) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        success: false,
-        error: "Invalid email or password",
-      });
-      return;
-    }
+    
 
     // Generate JWT token
     const token = generateToken(user.id);
