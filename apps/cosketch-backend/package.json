@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run src/server.ts",
+    "dev": "bun run dist/server.js",
     "start:backend": "bun run src/server.ts",
-    "build": "bun build src/server.ts "
+    "build": "bun build src/server.ts --target=bun --outdir dist "
   },
   "devDependencies": {
     "@types/bun": "latest"
