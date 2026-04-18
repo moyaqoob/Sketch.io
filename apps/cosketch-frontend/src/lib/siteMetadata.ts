@@ -1,8 +1,12 @@
-// import { envSiteUrl } from '@/config';
+import { envSiteUrl } from '@/config';
 
+if (!envSiteUrl) {
+  throw new Error(
+    '❌ NEXT_PUBLIC_SITE_URL is missing or empty! Check your .env file.',
+  );
+}
 
-
-// const SITE_URL = envSiteUrl.replace(/\/$/, '');
+const SITE_URL = envSiteUrl.replace(/\/$/, '');
 
 const siteMetadata = {
   title: 'Sketch.io',
@@ -15,12 +19,12 @@ const siteMetadata = {
 
   developer: 'Mohd Yaqoob',
 
-  // siteUrl: SITE_URL,
+  siteUrl: SITE_URL,
 
   language: 'en-US',
   locale: 'en-US',
 
-  // socialBanner: `${SITE_URL}/images/social-banner.png`,
+  socialBanner: `${SITE_URL}/images/social-banner.png`,
 
   // social links
   linkedIn: 'https://www.linkedin.com/in/moyaqoob/',
