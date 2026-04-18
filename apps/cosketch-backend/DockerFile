@@ -9,7 +9,12 @@ COPY package.json bun.lock* ./
 COPY packages ./packages
 COPY apps/cosketch-backend ./apps/cosketch-backend
 
+
 RUN bun install
+WORKDIR /app/packages/database
+RUN bunx prisma generate
+
+RUN bun run db:deploy
 
 WORKDIR /app/apps/cosketch-backend
 RUN bun run build
