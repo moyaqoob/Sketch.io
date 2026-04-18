@@ -14,7 +14,6 @@ RUN bun install
 WORKDIR /app/packages/database
 RUN bunx prisma generate
 
-RUN bun run db:deploy
 
 WORKDIR /app/apps/cosketch-backend
 RUN bun run build
