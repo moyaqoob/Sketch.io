@@ -20,7 +20,7 @@ RUN bun install
 WORKDIR /app/packages/database
 RUN bunx prisma generate
 
-WORKDIR /app/apps/cosketch-websocket
+WORKDIR /app/apps/cosketch-frontend
 RUN bun run build
 
 EXPOSE 3001
