@@ -1,26 +1,28 @@
 
-FROM node:18-alpine
+FROM oven/bun:1
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-ARG NEXT_PUBLIC_BACKEND_URL
-ARG NEXT_PUBLIC_WS_URL
-ARG DATABASE_URL
+
 
 ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
 ENV NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
-ENV DATABASE_URL=${DATABASE_URL}
 
 
-COPY ./packages ./packages
-COPY ./package.json ./package.json
-COPY ./turbo.json ./turbo.json
-COPY ./apps/excalidraw-frontend ./apps/cosketch-frontend
+# Copy root workspace metadata first
+COPY package.json bun.lock* ./
 
+# Copy only the workspaces required by backend
+COPY packages ./packages
+COPY apps/cosketch-frontend ./apps/cosketch-frontend
 
-RUN npm install
-RUN npm build
+RUN bun install
+WORKDIR /app/packages/database
+RUN bunx prisma generate
 
-EXPOSE 3000
+WORKDIR /app/apps/cosketch-websocket
+RUN bun run build
 
-CMD ["npm", "run", "start:frontend"]
+EXPOSE 3001
+
+CMD ["bun", "run", "start:frontend"]
