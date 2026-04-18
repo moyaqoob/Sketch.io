@@ -2,15 +2,13 @@ FROM oven/bun:1 AS base
 
 WORKDIR /usr/src/app
 
-COPY ../packages ../packages
-COPY ./package.json ./package.json
-COPY ./apps/cosketch-backend ./apps/cosketch-backend
+COPY . .
+RUN bun install
 
-RUN bun ci
+WORKDIR /usr/src/apps/packages/database
+RUN bun run db:deploy
 
 WORKDIR /usr/src/app/apps/cosketch-backend
-
-RUN bun run db:generate
 RUN bun run build
 
 EXPOSE 9000
