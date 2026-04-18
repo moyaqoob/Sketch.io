@@ -20,7 +20,6 @@
     "@repo/database": "workspace:*",
     "@repo/types": "workspace:*",
     "@types/ws": "^8.18.0",
-    "Sketch.io-websocket": "workspace:*",
     "ws": "^8.18.1",
     "zod": "^3.24.2"
   }
