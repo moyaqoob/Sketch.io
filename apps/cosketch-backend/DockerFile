@@ -5,9 +5,6 @@ WORKDIR /usr/src/app
 COPY . .
 RUN bun install
 
-WORKDIR /usr/src/apps/packages/database
-RUN bun run db:deploy
-
 WORKDIR /usr/src/app/apps/cosketch-backend
 RUN bun run build
 
