@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
-    "@repo/types": "*",
+    "@repo/types": "workspace:*",
     "add": "^2.0.6",
     "bun": "^1.2.9",
     "prisma": "^6.6.0"
