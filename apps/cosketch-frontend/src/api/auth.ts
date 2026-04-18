@@ -16,7 +16,9 @@ export const signupUser = async (userData: {
   name: string;
 }) => {
   try {
+    console.log("enter",HTTP_URL)
     const response = await axios.post(`${HTTP_URL}/auth/signup`, userData);
+    console.log("response",response.data)
     return response.data;
   } catch (error) {
     const err = error as AuthError;
@@ -26,7 +28,7 @@ export const signupUser = async (userData: {
       throw new Error('Network error. Please check your connection.');
     }
   }
-};
+}
 
 export const signinUser = async (userData: {
   email: string;

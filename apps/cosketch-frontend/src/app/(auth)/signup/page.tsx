@@ -5,7 +5,7 @@ import React from 'react';
 export const metadata = getPageMetadata({
   title: 'Sign Up',
   description:
-    'Create a new account on CoScribe and start collaborating in real-time.',
+    'Create a new account on Sketch.io and start collaborating in real-time.',
 });
 
 const SignUpPage = () => {

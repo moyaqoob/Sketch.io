@@ -5,7 +5,7 @@ import React from 'react';
 export const metadata = getPageMetadata({
   title: 'Sign In',
   description:
-    'Sign in to your CoScribe account and continue your collaborative work.',
+    'Sign in to your Sketch.io account and continue your collaborative work.',
 });
 
 const SignInPage = () => {

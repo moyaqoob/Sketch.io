@@ -19,7 +19,7 @@ export const signup = async (req: Request, res: Response) => {
   try {
     // Validate request
     const parsedData = CreateUserSchema.safeParse(req.body);
-    console.log("parsed the data");
+    console.log("parsed the data",parsedData);
     if (!parsedData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
