@@ -9,12 +9,19 @@ import canvasRouter from "./routes/canvas.routes";
 
 const app = express();
 
+// Origin must match the browser's `Origin` header exactly (no trailing slash).
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  ...(FRONTEND_URL ? [FRONTEND_URL.replace(/\/$/, "")] : []),
+];
+
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:3000", FRONTEND_URL],
+    origin: allowedOrigins,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
@@ -35,4 +42,5 @@ app.use("/canvas", canvasRouter);
 
 app.listen(PORT, () => {
   console.log(`[ server ] is listening on : http://localhost:${PORT}`);
+  
 });
