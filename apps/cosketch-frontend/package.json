@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:cf": "opennextjs-cloudflare build",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "start:frontend": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix && prettier --write ."
@@ -27,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@opennextjs/cloudflare": "^1.19.1",
     "@tailwindcss/postcss": "^4",
     "@types/body-scroll-lock": "^3.1.2",
     "@types/bun": "^1.2.5",
@@ -39,6 +43,7 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "wrangler": "^4.83.0",
     "zod": "^3.24.2"
   }
 }
