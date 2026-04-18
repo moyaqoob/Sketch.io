@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@mswjs/interceptors": "^0.39.4",
-    "@repo/backend-common": "*",
-    "@repo/database": "*",
-    "@repo/types": "*",
+    "@repo/backend-common": "workspace:*",
+    "@repo/database": "workspace:*",
+    "@repo/types": "workspace:*",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",

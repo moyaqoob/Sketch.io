@@ -1,9 +1,16 @@
+# Must build from the monorepo root so workspace packages resolve (not fetched from npm):
+#   docker build -f apps/cosketch-backend/Dockerfile .
+
 FROM oven/bun:1 AS base
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY package.json bun.lock ./
+COPY packages ./packages
+COPY apps ./apps
+
 RUN bun install
+RUN bunx prisma generate --schema packages/database/prisma/schema.prisma
 
 WORKDIR /usr/src/app/apps/cosketch-backend
 RUN bun run build
