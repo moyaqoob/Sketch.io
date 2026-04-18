@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
     paths:
-      - "apps/Sketch.io-backend/**"
+      - "apps/cosketch-backend/**"
       - "packages/**"
       - ".github/workflows/cd_backend.yml"
 
@@ -25,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./docker/backend.prod.Dockerfile
+          file: ./apps/cosketch-backend/Dockerfile
           push: true
           tags: |
             mohdyaqoob/Sketch.io-backend:${{ github.sha }} 
