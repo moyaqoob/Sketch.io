@@ -9,7 +9,10 @@ import type { AuthRequest } from "../utils/request-type";
 
 export const test = async (req: Request, res: Response) => {
   try {
-    console.log("test is working well");
+    res.json({
+      success:"true",
+      message:"the test has passed"
+    })
   } catch (err) {
     console.error("cant able to test the test");
   }
