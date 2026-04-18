@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "bun run src/server.ts",
-    "start:websocket": "bun run src/server.ts"
+    "start:websocket": "bun run src/server.ts",
+    "build": "bun build src/server.ts --target=bun --outdir dist "
+
   },
   "devDependencies": {
     "@types/bun": "latest"

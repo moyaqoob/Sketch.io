@@ -1,5 +1,10 @@
 import type { Shape } from "@repo/types";
+import { Prisma } from "@prisma/client";
 import { client } from "..";
+
+const toPrismaJson = (value: unknown): Prisma.InputJsonValue => {
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
+};
 
 export const createCanvas = async ({
   roomId,
@@ -15,7 +20,7 @@ export const createCanvas = async ({
       id: String(design.id),
       roomId,
       userId,
-      design,
+      design: toPrismaJson(design),
     },
   });
 };
@@ -73,7 +78,7 @@ export const updateCanvasShape = async (shapeId: string, updateData: Shape) => {
   return await client.canvas.update({
     where: { id: shapeId },
     data: {
-      design: updateData,
+      design: toPrismaJson(updateData),
     },
   });
 };
