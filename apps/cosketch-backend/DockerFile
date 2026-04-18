@@ -2,7 +2,12 @@ FROM oven/bun:1
 
 WORKDIR /app
 
-COPY . .
+# Copy root workspace metadata first
+COPY package.json bun.lock* ./
+
+# Copy only the workspaces required by backend
+COPY packages ./packages
+COPY apps/cosketch-backend ./apps/cosketch-backend
 
 RUN bun install
 
