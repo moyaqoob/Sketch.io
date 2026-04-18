@@ -35,7 +35,7 @@ export const setupWebSocketServer = (wss: WebSocketServer) => {
     // Handle incoming messages
     socket.on("message", (data) => {
       try {
-        const message = JSON.parse(data.toString());
+        const message = JSON.parse(data.toString())
 
         switch (message.type) {
           case "room:join":

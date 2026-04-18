@@ -9,7 +9,7 @@ interface DecodedToken {
 
 export const authenticateWebSocket = (token: string): DecodedToken | null => {
   try {
-    if (!token) {
+    if (!token){
       logger.error("[authenticateWebSocket] No token provided");
       return null;
     }
