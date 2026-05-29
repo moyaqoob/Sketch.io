@@ -48,6 +48,36 @@ Sketch.io-backend/
 
 ---
 
+## ☁️ Deploy to Cloudflare Workers
+
+The API runs on Cloudflare Workers via `src/worker.ts` (Hono). Express in `src/server.ts` is for local dev and Docker only.
+
+### Cloudflare dashboard (Workers Builds)
+
+| Setting | Value |
+|--------|--------|
+| **Root directory** | `/` (repository root) |
+| **Build command** | `bun install && cd packages/database && bunx prisma generate` |
+| **Deploy command** | `npx wrangler deploy --config wrangler.backend.jsonc` |
+
+### Secrets (Settings → Variables)
+
+| Name | Description |
+|------|-------------|
+| `DATABASE_URL` | Neon PostgreSQL connection string |
+| `JWT_SECRET` | Same secret used for auth tokens |
+| `FRONTEND_URL` | Frontend origin for CORS (e.g. `https://sketch-io.moyaqoob28.workers.dev`) |
+
+### Local Worker dev
+
+```sh
+cp apps/cosketch-backend/.dev.vars.example apps/cosketch-backend/.dev.vars
+# edit .dev.vars with your values
+bun run dev:cf --filter=Sketch.io-backend
+```
+
+---
+
 ## 🔧 Setup & Installation
 
 ### 1️⃣ Install Dependencies

@@ -1,3 +1,5 @@
+export { initDatabase } from "./src/index";
+
 import {
   getUserByEmail,
   createUser,

@@ -40,7 +40,6 @@ app.use("/auth", authRouter);
 app.use("/room", roomRouter);
 app.use("/canvas", canvasRouter);
 
-app.listen(PORT, () => {
+app.listen(Number(PORT), "0.0.0.0", () => {
   console.log(`[ server ] is listening on : http://localhost:${PORT}`);
-  
 });

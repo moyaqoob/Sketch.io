@@ -1,8 +1,15 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../config/env";
 
 interface TokenPayload {
   id: string;
+}
+
+function jwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is required");
+  }
+  return secret;
 }
 
 /**
@@ -11,7 +18,7 @@ interface TokenPayload {
  * @returns The generated JWT token.
  */
 export const generateToken = (id: string): string => {
-  return jwt.sign({ id }, JWT_SECRET as string, { expiresIn: "1d" });
+  return jwt.sign({ id }, jwtSecret(), { expiresIn: "1d" });
 };
 
 /**
