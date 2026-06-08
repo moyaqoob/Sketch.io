@@ -1,0 +1,49 @@
+# Monorepo root build context for websocket image (see apps/cosketch-websocket/Dockerfile)
+
+# Other apps not needed for websocket build
+apps/cosketch-frontend
+apps/cosketch-backend
+
+# Don't copy environment variables
+.env
+.env.local
+.env.*.local
+.example.env
+
+# Ignore node_modules (reinstalled during build)
+**/node_modules
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# OS/System junk
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Testing & coverage
+coverage
+**/*.test.ts
+**/*.test.js
+jest.config.js
+
+# Build output (rebuilt inside container)
+**/.next
+**/out
+**/dist
+
+# IDE/editor configs
+.vscode
+.turbo
+.idea
+*.swp
+
+# CI / infra not needed in image
+.github
+docker-compose.yml

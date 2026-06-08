@@ -3,6 +3,7 @@ primary_region = 'bom'
 
 [build]
   dockerfile = "apps/cosketch-websocket/Dockerfile"
+  ignorefile = ".dockerignore.websocket"
 
 [ws_service]
   internal_port = 8000
