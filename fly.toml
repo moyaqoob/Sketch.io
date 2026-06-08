@@ -1,16 +1,16 @@
-# fly.toml app configuration file generated for sketch-io on 2026-06-08T17:24:04Z
+# fly.toml app configuration file generated for sketch-io on 2026-06-08T12:46:24Z
 #
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+# Deploy from the monorepo root so Docker can COPY packages/ and apps/cosketch-backend/.
+# See https://fly.io/docs/launch/monorepo/
 
 app = 'sketch-io'
-primary_region = 'bom'
+primary_region = 'iad'
 
 [build]
-  dockerfile = "apps/cosketch-websocket/Dockerfile"
+  dockerfile = "apps/cosketch-backend/Dockerfile"
 
-[ws_service]
-  internal_port = 8000
+[http_service]
+  internal_port = 9000
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
