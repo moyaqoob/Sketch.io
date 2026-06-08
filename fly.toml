@@ -7,10 +7,10 @@ app = 'sketch-io'
 primary_region = 'bom'
 
 [build]
-  dockerfile = 'apps/cosketch-backend/Dockerfile'
+  dockerfile = "apps/cosketch-websocket/Dockerfile"
 
-[http_service]
-  internal_port = 8080
+[ws_service]
+  internal_port = 8000
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
