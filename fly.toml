@@ -7,7 +7,7 @@ app = 'sketch-io'
 primary_region = 'iad'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "apps/cosketch-backend/Dockerfile"
 
 [http_service]
   internal_port = 9000
