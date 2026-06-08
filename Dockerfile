@@ -1,5 +1,5 @@
-# Used by docker-compose and GitHub Actions (build context: monorepo root).
-# Fly.io uses the root Dockerfile instead — keep both in sync.
+# Backend image for Fly.io (monorepo root build context).
+# Replaces the fly launch template that runs `turbo run build` for every app.
 
 FROM oven/bun:1
 
@@ -20,4 +20,3 @@ RUN bun run build
 EXPOSE 9000
 
 CMD ["bun", "run", "start:backend"]
-
